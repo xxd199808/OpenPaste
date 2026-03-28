@@ -311,21 +311,23 @@ final class ClipboardViewModel: ObservableObject {
     // MARK: - Private Methods - Data Handling
 
     func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
-        // Save to Core Data
-        let context = dataStore.viewContext
-        let newItem = ClipboardItem(context: context)
-        newItem.id = UUID()
-        newItem.content = content
-        newItem.contentType = contentType
-        newItem.sourceApp = sourceApp
-        newItem.capturedAt = Date()
-        newItem.isPinned = false
-        newItem.expiresAt = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+        // Save to Core Data on main thread
+        await MainActor.run {
+            let context = dataStore.viewContext
+            let newItem = ClipboardItem(context: context)
+            newItem.id = UUID()
+            newItem.content = content
+            newItem.contentType = contentType
+            newItem.sourceApp = sourceApp
+            newItem.capturedAt = Date()
+            newItem.isPinned = false
+            newItem.expiresAt = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
 
-        do {
-            try dataStore.saveItem(newItem)
-        } catch {
-            showError("Failed to save clipboard item: \(error.localizedDescription)")
+            do {
+                try dataStore.saveItem(newItem)
+            } catch {
+                showError("Failed to save clipboard item: \(error.localizedDescription)")
+            }
         }
 
         await refresh()
