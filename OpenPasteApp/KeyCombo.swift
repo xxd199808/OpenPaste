@@ -72,7 +72,7 @@ extension KeyCombo {
 
 extension KeyCombo: CustomStringConvertible {
     public var description: String {
-        var output = modifiers.description
+        var output = modifiers.modifierDescription
 
         if let keyDescription = key?.description {
             output += keyDescription

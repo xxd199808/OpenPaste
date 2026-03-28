@@ -36,6 +36,7 @@
 		BB1000000000000000000000 /* CategoryManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000000 /* CategoryManagementView.swift */; };
 		BB1100000000000000000000 /* ClipboardItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000000 /* ClipboardItemRow.swift */; };
 		CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */; };
+		DD0000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD0000000000000000000002 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -71,6 +72,7 @@
 		AA1100000000000000000000 /* ClipboardItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardItemRow.swift"; sourceTree = "<group>"; };
 
 		CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = "Resources/OpenPasteApp.xcdatamodeld"; sourceTree = "<group>"; };
+		DD0000000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Resources/Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				AA1000000000000000000000 /* CategoryManagementView.swift */,
 				AA1100000000000000000000 /* ClipboardItemRow.swift */,
 			CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */,
+			DD0000000000000000000002 /* Assets.xcassets */,
 			);
 			path = OpenPasteApp;
 			sourceTree = "<group>";
@@ -189,6 +192,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DD0000000000000000000001 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +257,8 @@
 		A8F8384C6F8E46FBAFBAC195 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
 				INFOPLIST_KEY_LSUIElement = YES;
@@ -266,6 +272,8 @@
 		3F9E32896FA440C2BB1F292F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
 				INFOPLIST_KEY_LSUIElement = YES;

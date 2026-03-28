@@ -46,8 +46,8 @@ extension NSEvent.ModifierFlags {
 	}
 }
 
-extension NSEvent.ModifierFlags: CustomStringConvertible {
-    public var description: String {
+extension NSEvent.ModifierFlags {
+    public var modifierDescription: String {
         var output = ""
 
         if contains(.control) {

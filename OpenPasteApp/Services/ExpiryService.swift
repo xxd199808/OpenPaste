@@ -46,7 +46,7 @@ final class ExpiryService {
         isActive = true
 
         // Run initial cleanup
-        performCleanup()
+        _ = performCleanup()
 
         // Schedule daily cleanup using main queue Timer
         // Main queue ensures Core Data operations are thread-safe
@@ -54,7 +54,7 @@ final class ExpiryService {
             withTimeInterval: cleanupInterval,
             repeats: true
         ) { [weak self] _ in
-            self?.performCleanup()
+            _ = self?.performCleanup()
         }
 
         log("ExpiryService started - daily cleanup scheduled")

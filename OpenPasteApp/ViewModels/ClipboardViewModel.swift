@@ -434,11 +434,11 @@ final class ClipboardViewModel: ObservableObject {
 extension ClipboardItem {
     func toData() -> ClipboardItemData {
         ClipboardItemData(
-            id: self.id ?? UUID(),
+            id: self.id,
             content: String(data: self.content, encoding: .utf8) ?? "",
             contentType: self.contentType,
             sourceApp: self.sourceApp,
-            capturedAt: self.capturedAt ?? Date(),
+            capturedAt: self.capturedAt,
             isPinned: self.isPinned
         )
     }

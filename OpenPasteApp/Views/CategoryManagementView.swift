@@ -296,8 +296,6 @@ struct CategoryManagementView: View {
 
     private func deleteCategory(_ category: CategoryData) {
         do {
-            // Find and delete the NSManagedObject
-            let predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
             let fetched = try viewModel.fetchCategories()
             if let cat = fetched.first(where: { $0.id == category.id }) {
                 // Remove category relationship from items first
@@ -325,7 +323,6 @@ struct CategoryManagementView: View {
                 let predicate = NSPredicate(format: "id == %@", itemId as CVarArg)
                 let fetched = try viewModel.fetchItems(predicate: predicate, sortDescriptors: nil, limit: 1)
                 if let item = fetched.first {
-                    let catPredicate = NSPredicate(format: "id == %@", category.id as CVarArg)
                     let cats = try viewModel.fetchCategories()
                     if let cat = cats.first(where: { $0.id == category.id }) {
                         item.category = cat

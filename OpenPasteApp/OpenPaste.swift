@@ -301,7 +301,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
         if let button = statusItem?.button {
-            button.title = "📋"
+            // Load custom status bar icon
+            if let icon = NSImage(named: "StatusBarIcon") {
+                icon.isTemplate = true  // Auto-adapt to dark/light mode
+                icon.size = NSSize(width: 18, height: 18)
+                button.image = icon
+                button.imageScaling = .scaleProportionallyDown
+            } else {
+                // Fallback to emoji if icon not found
+                button.title = "📋"
+            }
+            
             button.toolTip = "OpenPaste - 点击打开剪贴板历史\n右键显示菜单"
             
             // Add click gesture to button
@@ -309,7 +319,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             button.target = self
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
             
-            NSLog("✅ Status bar button created: \(button.title)")
+            NSLog("✅ Status bar button created")
         } else {
             NSLog("❌ Failed to create status bar button")
         }
