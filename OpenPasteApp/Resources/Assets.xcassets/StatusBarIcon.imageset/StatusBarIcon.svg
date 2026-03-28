@@ -1,17 +1,13 @@
 <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
   <!-- 剪贴板主体描边 -->
-  <rect x="1.6" y="1.6" width="12.8" height="12.8" rx="1.28" ry="1.28"
+  <rect x="1.6" y="1.6" width="12.8" height="12.8" rx="1.2800000000000002" ry="1.2800000000000002"
         fill="none" stroke="currentColor" stroke-width="1"/>
 
-  <!-- 剪贴板顶部夹子 (Y坐标翻转) -->
-  <rect x="5.44" y="1.6" width="5.12" height="1.92" rx="0.58" ry="0.58"
+  <!-- 剪贴板顶部夹子 -->
+  <rect x="5.4399999999999995" y="1.6" width="5.120000000000001" height="1.92" rx="0.576" ry="0.576"
         fill="currentColor"/>
 
-  <!-- 剪贴板上的线条 (Y坐标翻转) -->
-  <rect x="4.16" y="5.5" width="7.68" height="0.5" rx="0.25" ry="0.25"
-        fill="currentColor"/>
-  <rect x="4.16" y="7.5" width="7.68" height="0.5" rx="0.25" ry="0.25"
-        fill="currentColor"/>
-  <rect x="4.16" y="9.5" width="7.68" height="0.5" rx="0.25" ry="0.25"
-        fill="currentColor"/>
-</svg>
+  <!-- 剪贴板上的线条 -->  <rect x="4.16" y="4.800000000000001" width="7.68" height="0.512" rx="0.256" ry="0.256"
+        fill="currentColor"/>  <rect x="4.16" y="6.720000000000001" width="7.68" height="0.512" rx="0.256" ry="0.256"
+        fill="currentColor"/>  <rect x="4.16" y="8.64" width="7.68" height="0.512" rx="0.256" ry="0.256"
+        fill="currentColor"/></svg>
