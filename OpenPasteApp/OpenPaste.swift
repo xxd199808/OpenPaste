@@ -302,23 +302,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if let button = statusItem?.button {
             button.title = "📋"
-            button.toolTip = "OpenPaste - Click to open clipboard history"
+            button.toolTip = "OpenPaste - 点击打开剪贴板历史\n右键显示菜单"
+            
+            // Add click gesture to button
+            button.action = #selector(statusBarButtonClicked(_:))
+            button.target = self
+            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
+            
             NSLog("✅ Status bar button created: \(button.title)")
         } else {
             NSLog("❌ Failed to create status bar button")
         }
 
-        let menu = NSMenu()
-        let openItem = NSMenuItem(title: "打开剪贴板历史", action: #selector(showFloatingPanel), keyEquivalent: "v")
-        openItem.target = self
-        menu.addItem(openItem)
-        menu.addItem(NSMenuItem.separator())
-        let quitItem = NSMenuItem(title: "退出 OpenPaste", action: #selector(quitApp), keyEquivalent: "q")
-        quitItem.target = self
-        menu.addItem(quitItem)
-        statusItem?.menu = menu
-
-        NSLog("✅ Status bar menu created with \(menu.numberOfItems) items")
+        NSLog("✅ Status bar setup complete")
+    }
+    
+    @objc private func statusBarButtonClicked(_ sender: NSStatusBarButton) {
+        guard let event = NSApp.currentEvent else { return }
+        
+        if event.type == .rightMouseUp {
+            // Show menu on right click
+            let menu = NSMenu()
+            let quitItem = NSMenuItem(title: "退出 OpenPaste", action: #selector(quitApp), keyEquivalent: "q")
+            quitItem.target = self
+            menu.addItem(quitItem)
+            statusItem?.menu = menu
+            statusItem?.button?.performClick(nil)
+            statusItem?.menu = nil
+        } else {
+            // Toggle panel on left click
+            toggleFloatingPanel()
+        }
     }
 
     @objc private func quitApp() {
