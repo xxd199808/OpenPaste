@@ -60,7 +60,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         setupGlobalHotkey()
 
         // Create ClipboardViewModel with Core Data persistence
-        let dataStore = CoreDataStore(modelName: "OpenPasteApp")
+        let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
         let expiryService = ExpiryService(dataStore: dataStore)
         let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp in
             Task { @MainActor in

@@ -35,7 +35,7 @@ final class ClipboardRepository {
 
     /// Convenience initializer with default Core Data store
     convenience init() {
-        let coreDataStore = CoreDataStore(modelName: "OpenPasteApp")
+        let coreDataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
         self.init(dataStore: coreDataStore)
     }
 

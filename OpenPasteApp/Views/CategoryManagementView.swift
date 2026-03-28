@@ -419,7 +419,7 @@ struct CategoryDropDelegate: DropDelegate {
 // MARK: - Preview
 
 #Preview {
-    let dataStore = CoreDataStore(modelName: "OpenPasteApp")
+    let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
     let monitor = ClipboardMonitor(onChange: { _, _, _ in })
     let expiryService = ExpiryService(dataStore: dataStore)
     let viewModel = ClipboardViewModel(

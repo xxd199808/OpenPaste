@@ -6,6 +6,11 @@ import CoreData
 /// Provides thread-safe access to Core Data's persistent container using
 /// performAndWait to ensure all operations happen on the viewContext's queue.
 final class CoreDataStore: ClipboardDataStore {
+    // MARK: - Constants
+
+    /// Default Core Data model name
+    static let defaultModelName = "OpenPasteApp"
+
     // MARK: - Properties
 
     /// The persistent container for Core Data stack
@@ -42,7 +47,7 @@ final class CoreDataStore: ClipboardDataStore {
 
     /// Convenience initializer that creates a default container
     /// - Parameter modelName: The name of the Core Data model file (without extension)
-    convenience init(modelName: String = "OpenPasteApp") {
+    convenience init(modelName: String = CoreDataStore.defaultModelName) {
         // Create the persistent container
         let container = NSPersistentContainer(name: modelName)
 
