@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23A344" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ClipboardItem" representedClassName="ClipboardItem" syncable="YES">
+        <attribute name="capturedAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="content" optional="NO" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="contentType" optional="NO" attributeType="String"/>
+        <attribute name="expiresAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isPinned" optional="NO" attributeType="Boolean" usesScalarValueType="YES"/>
+        <attribute name="sourceApp" optional="YES" attributeType="String"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="items" inverseEntity="Category"/>
+    </entity>
+    <entity name="Category" representedClassName="Category" syncable="YES">
+        <attribute name="icon" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" optional="NO" attributeType="String"/>
+        <attribute name="sortOrder" optional="NO" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="type" optional="NO" attributeType="String"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ClipboardItem" inverseName="category" inverseEntity="ClipboardItem"/>
+    </entity>
+</model>

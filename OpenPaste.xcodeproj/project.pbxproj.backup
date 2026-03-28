@@ -1,0 +1,188 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4EE410D8A2F8402B93EE6453 /* OpenPaste.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenPaste.swift; sourceTree = "<group>"; };
+		CF4B0D0D3AEB4A8797D73F66 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		88938743581B435B9EB7E9C9 /* OpenPaste.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenPaste.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		DC9D10A6059F4A1A8DC141C6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CCDF25D1985F4ACA95183054 /* PasteApp */ = {
+			isa = PBXGroup;
+			children = (
+				D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */,
+			);
+			path = OpenPasteApp;
+			sourceTree = "<group>";
+		};
+		308F19D54CAB43A6AFBF5D1D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				88938743581B435B9EB7E9C9 /* OpenPaste.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D07F4C62B474DDA9EEEDD01 /* Main group */ = {
+			isa = PBXGroup;
+			children = (
+				CCDF25D1985F4ACA95183054 /* PasteApp */,
+				308F19D54CAB43A6AFBF5D1D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		E52BFC2B8D64498D954CBBFC /* OpenPaste */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2732BFECA3C4FBD9C1AE00E /* Build configuration list for PBXNativeTarget "OpenPaste" */;
+			buildPhases = (
+				4F078BE06E0F4FD693EFE69A /* Resources */,
+				D738F071188E4965A48957C4 /* Sources */,
+				DC9D10A6059F4A1A8DC141C6 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OpenPaste;
+			productName = OpenPaste;
+			productReference = 88938743581B435B9EB7E9C9 /* OpenPaste.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B2BB905234E14714A9B35ED8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = CD9920053FCE453AB3E9E2E1 /* Build configuration list for PBXProject "OpenPaste" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5D07F4C62B474DDA9EEEDD01 /* Main group */;
+			productRefGroup = 308F19D54CAB43A6AFBF5D1D /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				E52BFC2B8D64498D954CBBFC /* OpenPaste */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4F078BE06E0F4FD693EFE69A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		D738F071188E4965A48957C4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4EE410D8A2F8402B93EE6453 /* OpenPaste.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C3B1A2E9ABCB48199581A630 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		B946AB4187414926AB077710 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		A8F8384C6F8E46FBAFBAC195 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fictionking.OpenPaste;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		3F9E32896FA440C2BB1F292F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fictionking.OpenPaste;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		D2732BFECA3C4FBD9C1AE00E /* Build configuration list for PBXNativeTarget "OpenPaste" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A8F8384C6F8E46FBAFBAC195 /* Debug */,
+				3F9E32896FA440C2BB1F292F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CD9920053FCE453AB3E9E2E1 /* Build configuration list for PBXProject "OpenPaste" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3B1A2E9ABCB48199581A630 /* Debug */,
+				B946AB4187414926AB077710 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B2BB905234E14714A9B35ED8 /* Project object */;
+}
