@@ -8,6 +8,18 @@
 import AppKit
 import SwiftUI
 
+// MARK: - CustomPanel
+/// Custom NSPanel subclass that can become key window even with utilityWindow style
+class CustomPanel: NSPanel {
+    override var canBecomeKey: Bool {
+        return true
+    }
+    
+    override var canBecomeMain: Bool {
+        return true
+    }
+}
+
 // MARK: - AppDelegate
 /// Application delegate for handling Dock icon events and application lifecycle
 class AppDelegate: NSObject, NSApplicationDelegate {
@@ -17,16 +29,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     /// Floating panel reference for showing on Dock icon click
     var floatingPanel: NSPanel?
-
-    /// Badge label for showing clipboard item count
-    private var badgeLabel: NSView?
-
-    /// Number of items from the last 24 hours (for badge display)
-    var recentItemCount: Int = 0 {
-        didSet {
-            updateDockBadge()
-        }
-    }
 
     /// View model for clipboard data, persistence, and monitoring
     private var viewModel: ClipboardViewModel?
@@ -50,12 +52,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             window.setIsVisible(false)
         }
 
-        // Setup Dock icon click handler
-        setupDockIconHandler()
-
-        // Create badge overlay for item count
-        setupDockBadge()
-
         // Setup global hotkey with HotKey library
         setupGlobalHotkey()
 
@@ -70,9 +66,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         viewModel = ClipboardViewModel(
             dataStore: dataStore, monitor: monitor, expiryService: expiryService)
-
-        // Subscribe to recent item count for Dock badge
-        subscribeToRecentItemCount()
 
         NSLog("✅ OpenPaste setup complete")
 
@@ -96,17 +89,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // MARK: - ViewModel Subscription
-
-    private func subscribeToRecentItemCount() {
-        // viewModel publishes recentItemCount; mirror it for Dock badge
-        // Using a Timer-based check since AppDelegate isn't SwiftUI-observable
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self = self, let vm = self.viewModel else { return }
-            self.recentItemCount = vm.recentItemCount
-        }
-    }
-
     /// Copy content to clipboard without triggering new entry
     /// - Parameter content: The string content to copy
     func copyToClipboard(_ content: String) {
@@ -115,25 +97,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(content, forType: .string)
-    }
-
-    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
-        // Called when Dock icon is clicked
-        // Show floating panel even if no windows are visible
-        showFloatingPanel()
-        return true
-    }
-
-    // MARK: - Dock Icon Management
-
-    private func setupDockIconHandler() {
-        // Enable Dock icon (LSUIElement = false in Info.plist)
-        // Dock icon clicks are handled by applicationShouldHandleReopen
-    }
-
-    private func setupDockBadge() {
-        // Badge is shown using NSApplication.dockTile.badgeLabel
-        // This property is a String, so we'll update it in updateDockBadge()
     }
 
     private func setupGlobalHotkey() {
@@ -146,7 +109,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         })
 
         NSLog("✅ Hotkey ⌘⇧V registered successfully!")
-        updateStatusTitle("📋✅")
     }
 
     private func updateStatusTitle(_ title: String) {
@@ -165,14 +127,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             hideFloatingPanel()
         } else {
             showFloatingPanel()
-        }
-    }
-
-    private func updateDockBadge() {
-        if recentItemCount > 0 {
-            NSApplication.shared.dockTile.badgeLabel = "\(recentItemCount)"
-        } else {
-            NSApplication.shared.dockTile.badgeLabel = nil
         }
     }
 
@@ -230,7 +184,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let targetY = (screen.height - panelHeight) / 2
 
         // Create panel at target position first
-        let panel = NSPanel(
+        let panel = CustomPanel(
             contentRect: NSRect(x: targetX, y: targetY, width: panelWidth, height: panelHeight),
             styleMask: [.resizable, .utilityWindow, .fullSizeContentView],
             backing: .buffered,

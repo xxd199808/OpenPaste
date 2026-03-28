@@ -255,6 +255,7 @@
 			buildSettings = {
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
+				INFOPLIST_KEY_LSUIElement = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fictionking.OpenPaste;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
@@ -267,6 +268,7 @@
 			buildSettings = {
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
+				INFOPLIST_KEY_LSUIElement = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.fictionking.OpenPaste;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;

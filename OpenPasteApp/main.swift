@@ -16,8 +16,8 @@ let delegate = AppDelegate()
 let app = NSApplication.shared
 app.delegate = delegate
 
-// Set activation policy
-app.setActivationPolicy(.regular)
+// Set activation policy to accessory (no Dock icon)
+app.setActivationPolicy(.accessory)
 
 // Run the app
 NSLog("About to call app.run()")
