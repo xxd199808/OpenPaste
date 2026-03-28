@@ -28,11 +28,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// In-memory clipboard items for display
-    private var clipboardItems: [(String, Date)] = []
-
-    /// Flag to track when app is triggering clipboard paste (to avoid duplicates)
-    private var isInternalPaste = false
+    /// View model for clipboard data, persistence, and monitoring
+    private var viewModel: ClipboardViewModel?
 
     /// Status bar menu item
     private var statusItem: NSStatusItem?
@@ -62,8 +59,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Setup global hotkey with HotKey library
         setupGlobalHotkey()
 
-        // Start clipboard monitoring (simplified version)
-        startSimpleClipboardMonitoring()
+        // Create ClipboardViewModel with Core Data persistence
+        let dataStore = CoreDataStore(modelName: "OpenPasteApp")
+        let expiryService = ExpiryService(dataStore: dataStore)
+        let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp in
+            Task { @MainActor in
+                await self?.viewModel?.handleNewClipboardItem(
+                    content: content, contentType: contentType, sourceApp: sourceApp)
+            }
+        }
+        viewModel = ClipboardViewModel(
+            dataStore: dataStore, monitor: monitor, expiryService: expiryService)
+
+        // Subscribe to recent item count for Dock badge
+        subscribeToRecentItemCount()
 
         NSLog("✅ OpenPaste setup complete")
 
@@ -87,47 +96,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    // MARK: - Simple Clipboard Monitoring
+    // MARK: - ViewModel Subscription
 
-    private func startSimpleClipboardMonitoring() {
-        let pasteboard = NSPasteboard.general
-        var lastChangeCount = pasteboard.changeCount
-
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-
-            let currentChangeCount = pasteboard.changeCount
-            if currentChangeCount != lastChangeCount {
-                lastChangeCount = currentChangeCount
-
-                // Skip if this was triggered by the app itself
-                if self.isInternalPaste {
-                    self.isInternalPaste = false
-                    return
-                }
-
-                // Get clipboard content
-                if let stringContent = pasteboard.string(forType: .string), !stringContent.isEmpty {
-                    // Avoid duplicate entries
-                    if self.clipboardItems.isEmpty || self.clipboardItems[0].0 != stringContent {
-                        // Add to in-memory storage
-                        self.clipboardItems.insert((stringContent, Date()), at: 0)
-                        self.recentItemCount = self.clipboardItems.count
-
-                        // Update floating panel if visible
-                        self.updateFloatingPanelContent()
-
-                        print("✅ Clipboard captured: \(stringContent.prefix(50))...")
-                    }
-                }
-            }
+    private func subscribeToRecentItemCount() {
+        // viewModel publishes recentItemCount; mirror it for Dock badge
+        // Using a Timer-based check since AppDelegate isn't SwiftUI-observable
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self, let vm = self.viewModel else { return }
+            self.recentItemCount = vm.recentItemCount
         }
     }
 
     /// Copy content to clipboard without triggering new entry
     /// - Parameter content: The string content to copy
     func copyToClipboard(_ content: String) {
-        isInternalPaste = true
+        MainActor.assumeIsolated {
+            viewModel?.skipNextChange()
+        }
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(content, forType: .string)
     }
@@ -228,8 +213,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     private func createFloatingPanel() {
-        // Create the hosting view for SwiftUI with clipboard data and copy handler
-        let contentView = FloatingPanelView(items: clipboardItems) { content in
+        // Create the hosting view for SwiftUI with ViewModel
+        guard let vm = viewModel else { return }
+        let contentView = FloatingPanelView(viewModel: vm) { content in
             self.copyToClipboard(content)
         }
         let hostingView = NSHostingView(rootView: contentView)
@@ -353,26 +339,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Update the floating panel content when clipboard items change
-    func updateFloatingPanelContent() {
-        guard let panel = floatingPanel,
-              let hostingView = panel.contentView as? NSHostingView<FloatingPanelView> else {
-            return
-        }
-
-        // Update the view with new data and copy handler
-        let newContentView = FloatingPanelView(items: clipboardItems) { content in
-            self.copyToClipboard(content)
-        }
-        hostingView.rootView = newContentView
-    }
-
-    /// Update the recent item count (called by ClipboardViewModel)
-    /// - Parameter count: Number of items captured in the last 24 hours
-    func updateRecentItemCount(_ count: Int) {
-        recentItemCount = count
-    }
-
     // MARK: - Status Bar
 
     private func setupStatusBar() {
@@ -410,148 +376,149 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 /// View wrapper for the floating panel that contains the clipboard list
 struct FloatingPanelView: View {
-    let items: [(String, Date)]
+    @ObservedObject var viewModel: ClipboardViewModel
     let copyHandler: (String) -> Void
 
     @State private var selectedIndex: Int = 0
+    @State private var selectedTab: PanelTab = .history
 
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
+            // Header with tab navigation
+            HStack(spacing: 16) {
                 Image(systemName: "doc.on.clipboard")
                     .font(.title2)
                     .foregroundColor(.accentColor)
 
-                Text("OpenPaste - Clipboard History")
-                    .font(.headline)
+                // Tab picker
+                Picker("", selection: $selectedTab) {
+                    Image(systemName: "clock.arrow.circlepath").tag(PanelTab.history)
+                    Image(systemName: "folder").tag(PanelTab.categories)
+                    Image(systemName: "gearshape").tag(PanelTab.settings)
+                }
+                .pickerStyle(.segmented)
+                .frame(width: 200)
 
                 Spacer()
 
-                Text("\(items.count) items")
+                Text("\(viewModel.items.count) items")
                     .font(.caption)
                     .foregroundColor(.secondary)
             }
-            .padding()
+            .padding(.horizontal)
+            .padding(.vertical, 10)
             .background(Color(NSColor.controlBackgroundColor))
 
             Divider()
 
-            // Clipboard items list
-            if items.isEmpty {
-                VStack(spacing: 16) {
-                    Spacer()
-                    Image(systemName: "doc.on.clipboard")
-                        .font(.system(size: 60))
-                        .foregroundColor(.secondary.opacity(0.5))
-
-                    Text("No clipboard items yet")
-                        .font(.title3)
-                        .foregroundColor(.secondary)
-
-                    Text("Copy some text to get started")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                    Spacer()
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 8) {
-                        ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                            ClipboardItemRow(
-                                content: item.0,
-                                timestamp: item.1,
-                                index: index,
-                                isSelected: index == selectedIndex,
-                                copyHandler: copyHandler,
-                                onTap: {
-                                    selectedIndex = index
-                                    copyHandler(item.0)
-                                }
-                            )
-                        }
-                    }
-                    .padding()
+            // Content based on selected tab
+            Group {
+                switch selectedTab {
+                case .history:
+                    historyContent
+                case .categories:
+                    CategoryManagementView(viewModel: viewModel, copyHandler: copyHandler)
+                case .settings:
+                    SettingsView()
                 }
             }
         }
         .frame(minWidth: 400, minHeight: 300)
     }
+
+    // MARK: - History Content
+
+    @ViewBuilder
+    private var historyContent: some View {
+        if viewModel.items.isEmpty {
+            VStack(spacing: 16) {
+                Spacer()
+                Image(systemName: "doc.on.clipboard")
+                    .font(.system(size: 60))
+                    .foregroundColor(.secondary.opacity(0.5))
+                Text("No clipboard items yet")
+                    .font(.title3)
+                    .foregroundColor(.secondary)
+                Text("Copy some text to get started")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 8) {
+                    ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, item in
+                        itemRow(for: item, at: index)
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func itemRow(for item: ClipboardItemData, at index: Int) -> some View {
+        ClipboardItemRow(
+            content: item.content,
+            timestamp: item.capturedAt,
+            index: index,
+            isSelected: index == selectedIndex,
+            copyHandler: copyHandler,
+            onTap: {
+                selectedIndex = index
+                copyHandler(item.content)
+            }
+        )
+        .contextMenu {
+            categoryMenuContent(for: item)
+        }
+    }
+
+    @ViewBuilder
+    private func categoryMenuContent(for item: ClipboardItemData) -> some View {
+        if !viewModel.categories.isEmpty {
+            Menu("添加到分类") {
+                ForEach(viewModel.categories) { category in
+                    Button(category.name) {
+                        handleAssignToCategory(item, categoryId: category.id)
+                    }
+                }
+            }
+
+            Divider()
+
+            Button("从分类中移除", role: .destructive) {
+                handleRemoveFromCategory(item)
+            }
+        } else {
+            Button("暂无分类") {
+                selectedTab = .categories
+            }
+            .disabled(true)
+        }
+    }
+
+    private func handleAssignToCategory(_ item: ClipboardItemData, categoryId: UUID) {
+        Task {
+            await viewModel.assignItem(item, toCategory: categoryId)
+            await viewModel.loadCategories()
+        }
+    }
+
+    private func handleRemoveFromCategory(_ item: ClipboardItemData) {
+        Task {
+            await viewModel.removeFromCategory(item)
+        }
+    }
 }
 
-// MARK: - ClipboardItemRow
+// MARK: - PanelTab
 
-struct ClipboardItemRow: View {
-    let content: String
-    let timestamp: Date
-    let index: Int
-    let isSelected: Bool
-    let copyHandler: (String) -> Void
-    let onTap: () -> Void
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 12) {
-            // Selected checkmark or index badge
-            if isSelected {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title3)
-                    .foregroundColor(.accentColor)
-                    .allowsHitTesting(false)
-            } else {
-                Text("\(index + 1)")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(4)
-                    .allowsHitTesting(false)
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                // Content preview
-                Text(previewText)
-                    .font(.body)
-                    .lineLimit(3)
-                    .foregroundColor(.primary)
-
-                // Timestamp
-                Text(formatDate(timestamp))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .allowsHitTesting(false)
-
-            Spacer()
-        }
-        .padding(12)
-        .background(
-            Color(isSelected ? NSColor.controlAccentColor.withAlphaComponent(0.1) : NSColor.controlBackgroundColor)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
-                )
-                .onTapGesture {
-                    onTap()
-                }
-        )
-    }
-
-    private var previewText: String {
-        if content.isEmpty {
-            return "[Empty content]"
-        }
-        return content
-    }
-
-    private func formatDate(_ date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        return formatter.localizedString(for: date, relativeTo: Date())
-    }
+enum PanelTab: String, CaseIterable {
+    case history
+    case categories
+    case settings
 }
 
 // MARK: - ContentView

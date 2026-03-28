@@ -58,7 +58,7 @@ struct ClipboardListView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(items, id: \.id) { item in
-                        ClipboardItemRow(item: item)
+                        ClipboardItemCell(item: item)
                             .onAppear {
                                 // Trigger next batch when nearing the end
                                 if shouldTriggerNextBatch(for: item) {
@@ -180,22 +180,10 @@ struct ClipboardListView: View {
     }
 }
 
-// MARK: - ClipboardItemData
+// MARK: - ClipboardItemCell
 
-/// Data model for clipboard item display
-struct ClipboardItemData: Identifiable, Equatable {
-    let id: UUID
-    let content: String
-    let contentType: String
-    let sourceApp: String?
-    let capturedAt: Date
-    let isPinned: Bool
-}
-
-// MARK: - ClipboardItemRow
-
-/// Individual row view for a clipboard item
-struct ClipboardItemRow: View {
+/// Individual cell view for a clipboard item
+struct ClipboardItemCell: View {
     let item: ClipboardItemData
 
     var body: some View {

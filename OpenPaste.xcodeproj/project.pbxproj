@@ -18,6 +18,24 @@
 		7B2E55BE45E74FCC9C34340B /* KeyCombo+System.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */; };
 		D82FEE6B2ACA4D5C97EDA6E4 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */; };
 		8A59ED8015FA44C389BC3717 /* NSEventModifierFlags+HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99355C38AEBB4FDFA5426026 /* NSEventModifierFlags+HotKey.swift */; };
+		BB1111111111111111111111 /* ClipboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1111111111111111111111 /* ClipboardViewModel.swift */; };
+		BB2222222222222222222222 /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2222222222222222222222 /* ClipboardMonitor.swift */; };
+		BB3333333333333333333333 /* ExpiryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3333333333333333333333 /* ExpiryService.swift */; };
+		B44444444444444444444444 /* HotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44444444444444444444444 /* HotkeyService.swift */; };
+		B55555555555555555555555 /* CoreDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55555555555555555555555 /* CoreDataStore.swift */; };
+		B66666666666666666666666 /* ClipboardDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6666666666666666666666 /* ClipboardDataStore.swift */; };
+		B77777777777777777777777 /* ClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7777777777777777777777 /* ClipboardRepository.swift */; };
+		BB8888888888888888888888 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8888888888888888888888 /* DateRange.swift */; };
+		BB9999999999999999999999 /* ClipboardItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9999999999999999999999 /* ClipboardItemData.swift */; };
+		BB0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift */; };
+		BB0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift */; };
+		BB0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift */; };
+		BB0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift */; };
+		BB0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */; };
+		BB0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */; };
+		BB1000000000000000000000 /* CategoryManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000000 /* CategoryManagementView.swift */; };
+		BB1100000000000000000000 /* ClipboardItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000000 /* ClipboardItemRow.swift */; };
+		CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +52,25 @@
 		A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyCombo+System.swift"; sourceTree = "<group>"; };
 		EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
 		99355C38AEBB4FDFA5426026 /* NSEventModifierFlags+HotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSEventModifierFlags+HotKey.swift"; sourceTree = "<group>"; };
+		AA1111111111111111111111 /* ClipboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewModels/ClipboardViewModel.swift"; sourceTree = "<group>"; };
+		AA2222222222222222222222 /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/ClipboardMonitor.swift"; sourceTree = "<group>"; };
+		AA3333333333333333333333 /* ExpiryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/ExpiryService.swift"; sourceTree = "<group>"; };
+		A44444444444444444444444 /* HotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/HotkeyService.swift"; sourceTree = "<group>"; };
+		A55555555555555555555555 /* CoreDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataStores/CoreDataStore.swift"; sourceTree = "<group>"; };
+		AA6666666666666666666666 /* ClipboardDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Protocols/ClipboardDataStore.swift"; sourceTree = "<group>"; };
+		AA7777777777777777777777 /* ClipboardRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Repositories/ClipboardRepository.swift"; sourceTree = "<group>"; };
+		AA8888888888888888888888 /* DateRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/DateRange.swift"; sourceTree = "<group>"; };
+		AA9999999999999999999999 /* ClipboardItemData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/ClipboardItemData.swift"; sourceTree = "<group>"; };
+		AA0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenPasteApp+CoreDataClass.swift"; sourceTree = "<group>"; };
+		AA0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenPasteApp+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		AA0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardListView.swift"; sourceTree = "<group>"; };
+		AA0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardItemView.swift"; sourceTree = "<group>"; };
+		AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SearchBarView.swift"; sourceTree = "<group>"; };
+		AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
+		AA1000000000000000000000 /* CategoryManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/CategoryManagementView.swift"; sourceTree = "<group>"; };
+		AA1100000000000000000000 /* ClipboardItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardItemRow.swift"; sourceTree = "<group>"; };
+
+		CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = "Resources/OpenPasteApp.xcdatamodeld"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +98,24 @@
 				A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */,
 				EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */,
 				99355C38AEBB4FDFA5426026 /* NSEventModifierFlags+HotKey.swift */,
+				AA1111111111111111111111 /* ClipboardViewModel.swift */,
+				AA2222222222222222222222 /* ClipboardMonitor.swift */,
+				AA3333333333333333333333 /* ExpiryService.swift */,
+				A44444444444444444444444 /* HotkeyService.swift */,
+				A55555555555555555555555 /* CoreDataStore.swift */,
+				AA6666666666666666666666 /* ClipboardDataStore.swift */,
+				AA7777777777777777777777 /* ClipboardRepository.swift */,
+				AA8888888888888888888888 /* DateRange.swift */,
+				AA9999999999999999999999 /* ClipboardItemData.swift */,
+				AA0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift */,
+				AA0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift */,
+				AA0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift */,
+				AA0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift */,
+				AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */,
+				AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */,
+				AA1000000000000000000000 /* CategoryManagementView.swift */,
+				AA1100000000000000000000 /* ClipboardItemRow.swift */,
+			CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */,
 			);
 			path = OpenPasteApp;
 			sourceTree = "<group>";
@@ -155,6 +210,24 @@
 				7B2E55BE45E74FCC9C34340B /* KeyCombo+System.swift in Sources */,
 				D82FEE6B2ACA4D5C97EDA6E4 /* KeyCombo.swift in Sources */,
 				8A59ED8015FA44C389BC3717 /* NSEventModifierFlags+HotKey.swift in Sources */,
+				BB1111111111111111111111 /* ClipboardViewModel.swift in Sources */,
+				BB2222222222222222222222 /* ClipboardMonitor.swift in Sources */,
+				BB3333333333333333333333 /* ExpiryService.swift in Sources */,
+				B44444444444444444444444 /* HotkeyService.swift in Sources */,
+				B55555555555555555555555 /* CoreDataStore.swift in Sources */,
+				B66666666666666666666666 /* ClipboardDataStore.swift in Sources */,
+				B77777777777777777777777 /* ClipboardRepository.swift in Sources */,
+				BB8888888888888888888888 /* DateRange.swift in Sources */,
+				BB9999999999999999999999 /* ClipboardItemData.swift in Sources */,
+				BB0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift in Sources */,
+				BB0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift in Sources */,
+				BB0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift in Sources */,
+				BB0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift in Sources */,
+				BB0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift in Sources */,
+				BB0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift in Sources */,
+				BB1000000000000000000000 /* CategoryManagementView.swift in Sources */,
+				BB1100000000000000000000 /* ClipboardItemRow.swift in Sources */,
+			CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,3 +299,4 @@
 	};
 	rootObject = B2BB905234E14714A9B35ED8 /* Project object */;
 }
+

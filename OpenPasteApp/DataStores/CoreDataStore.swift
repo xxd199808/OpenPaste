@@ -42,7 +42,7 @@ final class CoreDataStore: ClipboardDataStore {
 
     /// Convenience initializer that creates a default container
     /// - Parameter modelName: The name of the Core Data model file (without extension)
-    convenience init(modelName: String = "PasteApp") {
+    convenience init(modelName: String = "OpenPasteApp") {
         // Create the persistent container
         let container = NSPersistentContainer(name: modelName)
 

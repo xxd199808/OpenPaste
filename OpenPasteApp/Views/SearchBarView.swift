@@ -145,68 +145,6 @@ struct FilterMenu: View {
     }
 }
 
-// MARK: - SearchPredicateBuilder
-
-/// Builds NSPredicate for multi-dimensional search filtering
-struct SearchPredicateBuilder {
-    /// Build a compound predicate from search criteria
-    /// - Parameters:
-    ///   - searchText: Text to search for in content
-    ///   - contentType: Optional content type filter
-    ///   - dateRange: Optional date range filter
-    ///   - sourceApp: Optional source app filter
-    /// - Returns: NSPredicate for Core Data filtering
-    static func buildPredicate(
-        searchText: String,
-        contentType: String?,
-        dateRange: DateRange?,
-        sourceApp: String?
-    ) -> NSPredicate? {
-        var predicates: [NSPredicate] = []
-
-        // Content text search (case-insensitive)
-        if !searchText.isEmpty {
-            let contentPredicate = NSPredicate(
-                format: "content CONTAINS[cd] %@",
-                searchText
-            )
-            predicates.append(contentPredicate)
-        }
-
-        // Content type filter
-        if let contentType = contentType {
-            let typePredicate = NSPredicate(
-                format: "contentType == %@",
-                contentType
-            )
-            predicates.append(typePredicate)
-        }
-
-        // Date range filter
-        if let dateRangePredicate = dateRange?.predicate {
-            predicates.append(dateRangePredicate)
-        }
-
-        // Source app filter
-        if let sourceApp = sourceApp {
-            let appPredicate = NSPredicate(
-                format: "sourceApp == %@",
-                sourceApp
-            )
-            predicates.append(appPredicate)
-        }
-
-        // Combine all predicates with AND
-        if predicates.isEmpty {
-            return nil // No filters
-        } else if predicates.count == 1 {
-            return predicates.first
-        } else {
-            return NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
-        }
-    }
-}
-
 // MARK: - DebouncedTextPublisher
 
 /// Publisher that debounces search text changes

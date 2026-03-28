@@ -35,7 +35,7 @@ final class ClipboardRepository {
 
     /// Convenience initializer with default Core Data store
     convenience init() {
-        let coreDataStore = CoreDataStore(modelName: "PasteApp")
+        let coreDataStore = CoreDataStore(modelName: "OpenPasteApp")
         self.init(dataStore: coreDataStore)
     }
 
@@ -80,9 +80,9 @@ final class ClipboardRepository {
         // Save to data store
         try dataStore.saveItem(newItem)
 
-        // Cache content if panel is visible
+        // Cache content if panel is visible (id is non-optional, set above)
         if isPanelVisible {
-            contentCache[newItem.id!] = content
+            contentCache[newItem.id] = content
         }
 
         // Broadcast update
@@ -109,12 +109,10 @@ final class ClipboardRepository {
             limit: limit
         )
 
-        // Load content into cache if panel is visible
+        // Load content into cache if panel is visible (id and content are non-optional)
         if isPanelVisible {
             for item in items {
-                if let id = item.id, let content = item.content {
-                    contentCache[id] = content
-                }
+                contentCache[item.id] = item.content
             }
         }
 
@@ -128,9 +126,9 @@ final class ClipboardRepository {
         // Save changes to data store
         try dataStore.saveItem(item)
 
-        // Update cache if panel is visible
-        if isPanelVisible, let id = item.id, let content = item.content {
-            contentCache[id] = content
+        // Update cache if panel is visible (id and content are non-optional)
+        if isPanelVisible {
+            contentCache[item.id] = item.content
         }
 
         // Broadcast update
@@ -142,9 +140,7 @@ final class ClipboardRepository {
     /// - Throws: Error if deletion fails
     func deleteItem(_ item: ClipboardItem) throws {
         // Remove from cache
-        if let id = item.id {
-            contentCache.removeValue(forKey: id)
-        }
+        contentCache.removeValue(forKey: item.id)
 
         // Delete from data store
         try dataStore.deleteItem(item)

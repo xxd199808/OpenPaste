@@ -53,14 +53,15 @@ struct SettingsView: View {
                     }
 
                     Slider(
-                        value: $settings.retentionDays,
+                        value: Binding(
+                            get: { Double(settings.retentionDays) },
+                            set: { settings.retentionDays = Int($0) }
+                        ),
                         in: 7...90,
                         step: 1
-                    ) {
-                        Text("Retention Period")
-                            .accessibilityHidden(true)
-                    }
+                    )
                     .accessibilityValue("\(settings.retentionDays) days")
+                    .labelsHidden()
 
                     Text("Items are automatically deleted after this many days, unless pinned")
                         .font(.caption)
@@ -94,11 +95,9 @@ struct SettingsView: View {
                         ),
                         in: 1_000...50_000,
                         step: 1_000
-                    ) {
-                        Text("Maximum History Size")
-                            .accessibilityHidden(true)
-                    }
+                    )
                     .accessibilityValue("\(settings.maxHistorySize) items")
+                    .labelsHidden()
 
                     Text("Oldest items are removed when this limit is reached")
                         .font(.caption)
@@ -214,10 +213,10 @@ final class AppSettings: ObservableObject {
     /// Human-readable hotkey description (e.g., "⌘⇧V")
     var hotkeyDescription: String {
         var parts: [String] = []
-        if hotkeyModifiers & cmdKey != 0 { parts.append("⌘") }
-        if hotkeyModifiers & shiftKey != 0 { parts.append("⇧") }
-        if hotkeyModifiers & optionKey != 0 { parts.append("⌥") }
-        if hotkeyModifiers & controlKey != 0 { parts.append("⌃") }
+        if hotkeyModifiers & UInt32(cmdKey) != 0 { parts.append("⌘") }
+        if hotkeyModifiers & UInt32(shiftKey) != 0 { parts.append("⇧") }
+        if hotkeyModifiers & UInt32(optionKey) != 0 { parts.append("⌥") }
+        if hotkeyModifiers & UInt32(controlKey) != 0 { parts.append("⌃") }
         parts.append("V")
         return parts.joined()
     }
@@ -225,32 +224,25 @@ final class AppSettings: ObservableObject {
     // MARK: - Initialization
 
     private init() {
-        // Load from UserDefaults or set defaults
-        self.hotkeyModifiers = UInt32(UserDefaults.standard.integer(forKey: Keys.hotkeyModifiers))
-        if self.hotkeyModifiers == 0 {
-            self.hotkeyModifiers = cmdKey | shiftKey // Default: ⌘⇧V
-        }
+        // Load from UserDefaults into local variables first to avoid
+        // accessing self before all stored properties are initialized
+        let modifiers = UInt32(UserDefaults.standard.integer(forKey: Keys.hotkeyModifiers))
+        self.hotkeyModifiers = modifiers == 0 ? UInt32(cmdKey) | UInt32(shiftKey) : modifiers
 
-        self.hotkeyCode = UInt32(UserDefaults.standard.integer(forKey: Keys.hotkeyCode))
-        if self.hotkeyCode == 0 {
-            self.hotkeyCode = kVK_ANSI_V // Default: V key
-        }
+        let code = UInt32(UserDefaults.standard.integer(forKey: Keys.hotkeyCode))
+        self.hotkeyCode = code == 0 ? UInt32(kVK_ANSI_V) : code
 
-        self.retentionDays = UserDefaults.standard.integer(forKey: Keys.retentionDays)
-        if self.retentionDays == 0 {
-            self.retentionDays = 30 // Default: 30 days
-        }
+        let retention = UserDefaults.standard.integer(forKey: Keys.retentionDays)
+        self.retentionDays = retention == 0 ? 30 : retention
 
-        self.maxHistorySize = UserDefaults.standard.integer(forKey: Keys.maxHistorySize)
-        if self.maxHistorySize == 0 {
-            self.maxHistorySize = 10_000 // Default: 10,000 items
-        }
+        let maxHistory = UserDefaults.standard.integer(forKey: Keys.maxHistorySize)
+        self.maxHistorySize = maxHistory == 0 ? 10_000 : maxHistory
 
         if let themeRaw = UserDefaults.standard.string(forKey: Keys.theme),
-           let theme = AppTheme(rawValue: themeRaw) {
-            self.theme = theme
+           let loadedTheme = AppTheme(rawValue: themeRaw) {
+            self.theme = loadedTheme
         } else {
-            self.theme = .auto // Default: Auto
+            self.theme = .auto
         }
 
         // App version from Info.plist
@@ -285,13 +277,7 @@ enum AppTheme: String {
     }
 }
 
-// MARK: - Carbon Constants (re-export from HotkeyService)
-
-let cmdKey: UInt32 = 0x100
-let shiftKey: UInt32 = 0x200
-let optionKey: UInt32 = 0x400
-let controlKey: UInt32 = 0x1000
-let kVK_ANSI_V: UInt32 = 9
+import Carbon
 
 // MARK: - Preview
 

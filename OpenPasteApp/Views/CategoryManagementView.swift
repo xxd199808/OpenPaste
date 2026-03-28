@@ -1,11 +1,18 @@
 import SwiftUI
 import CoreData
+import UniformTypeIdentifiers
 
 // MARK: - CategoryManagementView
 /// Category management UI with auto-categorization and manual folder creation.
 /// Supports drag-and-drop to organize clipboard items into categories.
 struct CategoryManagementView: View {
     // MARK: - Properties
+
+    /// View model for clipboard operations
+    @ObservedObject var viewModel: ClipboardViewModel
+
+    /// Handler for copying content to clipboard
+    var copyHandler: (String) -> Void = { _ in }
 
     /// Available categories
     @State private var categories: [CategoryData] = []
@@ -24,6 +31,9 @@ struct CategoryManagementView: View {
 
     /// Clipboard items filtered by selected category
     @State private var filteredItems: [ClipboardItemData] = []
+
+    /// Error message
+    @State private var errorMessage: String?
 
     // MARK: - Body
 
@@ -111,9 +121,18 @@ struct CategoryManagementView: View {
                     } else {
                         ScrollView {
                             LazyVStack(spacing: 0) {
-                                ForEach(filteredItems, id: \.id) { item in
-                                    ClipboardItemRow(item: item)
-                                        .draggable(item.id.uuidString)
+                                ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
+                                    ClipboardItemRow(
+                                        content: item.content,
+                                        timestamp: item.capturedAt,
+                                        index: index,
+                                        isSelected: false,
+                                        copyHandler: copyHandler,
+                                        onTap: {
+                                            copyHandler(item.content)
+                                        }
+                                    )
+                                    .draggable(item.id.uuidString)
                                 }
                             }
                         }
@@ -163,7 +182,6 @@ struct CategoryManagementView: View {
             }
             .formStyle(.grouped)
             .navigationTitle("New Category")
-            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
@@ -211,105 +229,120 @@ struct CategoryManagementView: View {
     // MARK: - Helper Methods
 
     private func loadCategories() {
-        // Mock data for now
-        // In production, this would fetch from ClipboardRepository
-        categories = [
-            CategoryData(
-                id: UUID(),
-                name: "All Items",
-                type: .auto,
-                icon: "doc.on.doc",
-                sortOrder: 0
-            ),
-            CategoryData(
-                id: UUID(),
-                name: "Safari",
-                type: .auto,
-                icon: "safari",
-                sortOrder: 1
-            ),
-            CategoryData(
-                id: UUID(),
-                name: "Finder",
-                type: .auto,
-                icon: "finder",
-                sortOrder: 2
-            ),
-            CategoryData(
-                id: UUID(),
-                name: "Work",
-                type: .manual,
-                icon: "folder",
-                sortOrder: 3
-            ),
-            CategoryData(
-                id: UUID(),
-                name: "Personal",
-                type: .manual,
-                icon: "folder",
-                sortOrder: 4
-            )
-        ]
-
-        // Select first category by default
-        if selectedCategory == nil, let first = categories.first {
-            selectedCategory = first
-            loadItems(for: first)
+        do {
+            let fetched = try viewModel.fetchCategories()
+            categories = fetched.map { cat in
+                CategoryData(
+                    id: cat.id,
+                    name: cat.name,
+                    type: cat.type == "auto" ? .auto : .manual,
+                    icon: cat.icon ?? "folder",
+                    sortOrder: Int(cat.sortOrder)
+                )
+            }
+            // Select first category by default
+            if selectedCategory == nil, let first = categories.first {
+                selectedCategory = first
+                loadItems(for: first)
+            }
+        } catch {
+            errorMessage = "Failed to load categories: \(error.localizedDescription)"
         }
     }
 
     private func loadItems(for category: CategoryData) {
-        // Mock data for now
-        // In production, this would fetch from ClipboardRepository
-        filteredItems = (1...5).map { index in
-            ClipboardItemData(
-                id: UUID(),
-                content: "Item \(index) in \(category.name)",
-                contentType: "public.utf8-plain-text",
-                sourceApp: category.name,
-                capturedAt: Date().addingTimeInterval(-Double(index * 3600)),
-                isPinned: false
+        do {
+            let predicate = NSPredicate(format: "category.id == %@", category.id as CVarArg)
+            let fetched = try viewModel.fetchItems(
+                predicate: predicate,
+                sortDescriptors: [NSSortDescriptor(key: "capturedAt", ascending: false)],
+                limit: nil
             )
+            filteredItems = fetched.map { $0.toData() }
+        } catch {
+            filteredItems = []
         }
     }
 
     private func itemCount(for category: CategoryData) -> Int {
-        // Mock implementation
-        // In production, this would query from data store
-        return Int.random(in: 1...50)
+        do {
+            let predicate = NSPredicate(format: "category.id == %@", category.id as CVarArg)
+            let items = try viewModel.fetchItems(predicate: predicate, sortDescriptors: nil, limit: nil)
+            return items.count
+        } catch {
+            return 0
+        }
     }
 
     private func createCategory() {
-        let newCategory = CategoryData(
-            id: UUID(),
-            name: newCategoryName,
-            type: newCategoryType,
-            icon: newCategoryType == .manual ? "folder" : "app",
-            sortOrder: categories.count
-        )
-
-        categories.append(newCategory)
-        newCategoryName = ""
+        do {
+            let cat = try viewModel.createCategory(
+                name: newCategoryName,
+                type: newCategoryType.rawValue
+            )
+            let newData = CategoryData(
+                id: cat.id,
+                name: cat.name,
+                type: newCategoryType,
+                icon: cat.icon ?? "folder",
+                sortOrder: Int(cat.sortOrder)
+            )
+            categories.append(newData)
+            newCategoryName = ""
+        } catch {
+            errorMessage = "Failed to create category: \(error.localizedDescription)"
+        }
     }
 
     private func deleteCategory(_ category: CategoryData) {
-        categories.removeAll { $0.id == category.id }
-
-        if selectedCategory?.id == category.id {
-            selectedCategory = categories.first
+        do {
+            // Find and delete the NSManagedObject
+            let predicate = NSPredicate(format: "id == %@", category.id as CVarArg)
+            let fetched = try viewModel.fetchCategories()
+            if let cat = fetched.first(where: { $0.id == category.id }) {
+                // Remove category relationship from items first
+                if let items = cat.items as? Set<ClipboardItem> {
+                    for item in items {
+                        item.category = nil
+                        try viewModel.saveItem(item)
+                    }
+                }
+            }
+            categories.removeAll { $0.id == category.id }
+            if selectedCategory?.id == category.id {
+                selectedCategory = categories.first
+            }
+        } catch {
+            errorMessage = "Failed to delete category: \(error.localizedDescription)"
         }
     }
 
     private func moveItemsToCategory(_ items: [String], category: CategoryData) {
-        // In production, this would update the ClipboardItem's category relationship
-        print("Moved \(items.count) items to \(category.name)")
+        // Move clipboard items to category by updating their category relationship
+        for itemIdString in items {
+            guard let itemId = UUID(uuidString: itemIdString) else { continue }
+            do {
+                let predicate = NSPredicate(format: "id == %@", itemId as CVarArg)
+                let fetched = try viewModel.fetchItems(predicate: predicate, sortDescriptors: nil, limit: 1)
+                if let item = fetched.first {
+                    let catPredicate = NSPredicate(format: "id == %@", category.id as CVarArg)
+                    let cats = try viewModel.fetchCategories()
+                    if let cat = cats.first(where: { $0.id == category.id }) {
+                        item.category = cat
+                        try viewModel.saveItem(item)
+                    }
+                }
+            } catch {
+                print("Failed to move item: \(error)")
+            }
+        }
     }
 }
 
 // MARK: - CategoryData
 
 /// Data model for category display
-struct CategoryData: Identifiable, Equatable {
+struct CategoryData: Identifiable, Equatable, Hashable {
     let id: UUID
     let name: String
     let type: CategoryType
@@ -386,5 +419,15 @@ struct CategoryDropDelegate: DropDelegate {
 // MARK: - Preview
 
 #Preview {
-    CategoryManagementView()
+    let dataStore = CoreDataStore(modelName: "OpenPasteApp")
+    let monitor = ClipboardMonitor(onChange: { _, _, _ in })
+    let expiryService = ExpiryService(dataStore: dataStore)
+    let viewModel = ClipboardViewModel(
+        dataStore: dataStore,
+        monitor: monitor,
+        expiryService: expiryService
+    )
+    CategoryManagementView(viewModel: viewModel, copyHandler: { content in
+        print("Copy: \(content)")
+    })
 }

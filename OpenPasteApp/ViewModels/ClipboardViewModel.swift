@@ -57,11 +57,10 @@ final class ClipboardViewModel: ObservableObject {
     @Published var availableSourceApps: [String] = []
 
     /// Number of items from last 24 hours (for Dock badge)
-    @Published(publishes: recentItemCount) var recentItemCountInternal: Int = 0
-    var recentItemCount: Int {
-        get { recentItemCountInternal }
-        set { recentItemCountInternal = newValue }
-    }
+    @Published var recentItemCount: Int = 0
+
+    /// Available categories for categorizing items
+    @Published var categories: [CategoryData] = []
 
     // MARK: - Properties
 
@@ -102,25 +101,8 @@ final class ClipboardViewModel: ObservableObject {
         // Load initial data
         Task {
             await loadInitialData()
+            await loadCategories()
         }
-    }
-
-    /// Convenience initializer with default services
-    convenience init() {
-        // Create Core Data store
-        let dataStore = CoreDataStore(modelName: "PasteApp")
-
-        // Create clipboard monitor
-        let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp in
-            Task { @MainActor in
-                await self?.handleNewClipboardItem(content: content, contentType: contentType, sourceApp: sourceApp)
-            }
-        }
-
-        // Create expiry service
-        let expiryService = ExpiryService(dataStore: dataStore)
-
-        self.init(dataStore: dataStore, monitor: monitor, expiryService: expiryService)
     }
 
     // MARK: - Public Methods
@@ -217,6 +199,63 @@ final class ClipboardViewModel: ObservableObject {
         showingError = false
     }
 
+    /// Signal to skip the next clipboard change detection (before writing to pasteboard)
+    func skipNextChange() {
+        monitor.skipNextChange()
+    }
+
+    /// Assign an item to a category
+    /// - Parameters:
+    ///   - item: The item to categorize
+    ///   - categoryId: The category ID to assign
+    func assignItem(_ item: ClipboardItemData, toCategory categoryId: UUID) async {
+        do {
+            let predicate = NSPredicate(format: "id == %@", item.id as CVarArg)
+            let fetchedItems = try dataStore.fetchItems(
+                predicate: predicate,
+                sortDescriptors: nil,
+                limit: 1
+            )
+
+            if let nsItem = fetchedItems.first {
+                // Find the category entity
+                let categories = try dataStore.fetchCategories()
+                if let category = categories.first(where: { $0.id == categoryId }) {
+                    nsItem.category = category
+                    try dataStore.saveItem(nsItem)
+
+                    // Refresh to update local arrays with the new category information
+                    await refresh()
+                }
+            }
+        } catch {
+            showError("Failed to assign item: \(error.localizedDescription)")
+        }
+    }
+
+    /// Remove item from its category
+    /// - Parameter item: The item to uncategorize
+    func removeFromCategory(_ item: ClipboardItemData) async {
+        do {
+            let predicate = NSPredicate(format: "id == %@", item.id as CVarArg)
+            let fetchedItems = try dataStore.fetchItems(
+                predicate: predicate,
+                sortDescriptors: nil,
+                limit: 1
+            )
+
+            if let nsItem = fetchedItems.first {
+                nsItem.category = nil
+                try dataStore.saveItem(nsItem)
+
+                // Refresh to update local arrays with the new category information
+                await refresh()
+            }
+        } catch {
+            showError("Failed to remove from category: \(error.localizedDescription)")
+        }
+    }
+
     // MARK: - Private Methods - Setup
 
     private func setupMonitoring() {
@@ -251,11 +290,44 @@ final class ClipboardViewModel: ObservableObject {
         isLoading = false
     }
 
+    func loadCategories() async {
+        do {
+            let fetched = try dataStore.fetchCategories()
+            categories = fetched.map { cat in
+                CategoryData(
+                    id: cat.id,
+                    name: cat.name,
+                    type: cat.type == "auto" ? .auto : .manual,
+                    icon: cat.icon ?? "folder",
+                    sortOrder: Int(cat.sortOrder)
+                )
+            }
+        } catch {
+            // Silently fail - categories might not exist yet
+            categories = []
+        }
+    }
+
     // MARK: - Private Methods - Data Handling
 
-    private func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
-        // In production, this would save to Core Data via dataStore
-        // For now, we'll just add to the local array and refresh
+    func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
+        // Save to Core Data
+        let context = dataStore.viewContext
+        let newItem = ClipboardItem(context: context)
+        newItem.id = UUID()
+        newItem.content = content
+        newItem.contentType = contentType
+        newItem.sourceApp = sourceApp
+        newItem.capturedAt = Date()
+        newItem.isPinned = false
+        newItem.expiresAt = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+
+        do {
+            try dataStore.saveItem(newItem)
+        } catch {
+            showError("Failed to save clipboard item: \(error.localizedDescription)")
+        }
+
         await refresh()
     }
 
@@ -310,6 +382,47 @@ final class ClipboardViewModel: ObservableObject {
     private func showError(_ message: String) {
         errorMessage = message
         showingError = true
+    }
+
+    // MARK: - Public Methods - Category Management
+
+    /// Fetch all categories from the data store
+    /// - Returns: Array of category entities
+    func fetchCategories() throws -> [Category] {
+        return try dataStore.fetchCategories()
+    }
+
+    /// Fetch clipboard items with optional filtering
+    /// - Parameters:
+    ///   - predicate: Optional NSPredicate for filtering
+    ///   - sortDescriptors: Optional sort descriptors
+    ///   - limit: Optional limit on number of items
+    /// - Returns: Array of clipboard item entities
+    func fetchItems(
+        predicate: NSPredicate?,
+        sortDescriptors: [NSSortDescriptor]?,
+        limit: Int?
+    ) throws -> [ClipboardItem] {
+        return try dataStore.fetchItems(
+            predicate: predicate,
+            sortDescriptors: sortDescriptors,
+            limit: limit
+        )
+    }
+
+    /// Create a new category
+    /// - Parameters:
+    ///   - name: Category name
+    ///   - type: Category type (auto or manual)
+    /// - Returns: The created category entity
+    func createCategory(name: String, type: String) throws -> Category {
+        return try dataStore.createCategory(name: name, type: type)
+    }
+
+    /// Save a clipboard item to the data store
+    /// - Parameter item: The clipboard item to save
+    func saveItem(_ item: ClipboardItem) throws {
+        try dataStore.saveItem(item)
     }
 }
 

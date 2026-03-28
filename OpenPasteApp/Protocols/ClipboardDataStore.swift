@@ -46,4 +46,7 @@ protocol ClipboardDataStore {
     /// - Returns: The newly created Category object
     /// - Throws: NSError if creation fails
     func createCategory(name: String, type: String) throws -> Category
+
+    /// The managed object context for creating new objects
+    var viewContext: NSManagedObjectContext { get }
 }

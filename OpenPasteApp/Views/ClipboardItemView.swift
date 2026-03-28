@@ -74,7 +74,9 @@ struct ClipboardItemView: View {
                 )
             }
             Divider()
-            Button(action: { onDelete?() }, role: .destructive) {
+            Button(role: .destructive) {
+                onDelete?()
+            } label: {
                 Label("Delete", systemImage: "trash")
             }
         }

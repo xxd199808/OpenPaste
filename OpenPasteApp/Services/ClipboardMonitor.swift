@@ -39,6 +39,9 @@ final class ClipboardMonitor {
     /// Whether monitoring is currently active
     private(set) var isMonitoring = false
 
+    /// Flag to skip the next clipboard change detection (used when app writes to clipboard)
+    private var skipNextChangeFlag = false
+
     /// Callback invoked when clipboard changes are detected
     private let onChange: ((Data, String, String?) -> Void)
 
@@ -72,6 +75,11 @@ final class ClipboardMonitor {
 
         // Start polling timer
         scheduleNextPoll()
+    }
+
+    /// Skip the next detected clipboard change (call before writing to pasteboard)
+    func skipNextChange() {
+        skipNextChangeFlag = true
     }
 
     /// Stop monitoring the clipboard
@@ -158,6 +166,12 @@ final class ClipboardMonitor {
 
         if currentChangeCount != lastChangeCount {
             lastChangeCount = currentChangeCount
+
+            // Skip if the app itself triggered this change
+            if skipNextChangeFlag {
+                skipNextChangeFlag = false
+                return
+            }
 
             // Reset to fast polling when change is detected
             adaptiveLevel = 0
