@@ -84,7 +84,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CCDF25D1985F4ACA95183054 /* PasteApp */ = {
+		CCDF25D1985F4ACA95183054 /* OpenPasteApp */ = {
 			isa = PBXGroup;
 			children = (
 				39C6FEB81B894EAC8B6CE2B3 /* main.swift */,
