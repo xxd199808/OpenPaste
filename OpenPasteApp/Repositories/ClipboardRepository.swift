@@ -68,8 +68,8 @@ final class ClipboardRepository {
         if let expiresAt = expiresAt {
             newItem.expiresAt = expiresAt
         } else {
-            // Default: 30 days from now
-            let retentionDays = 30
+            // Use retention days from settings
+            let retentionDays = AppSettings.shared.retentionDays
             newItem.expiresAt = Calendar.current.date(
                 byAdding: .day,
                 value: retentionDays,

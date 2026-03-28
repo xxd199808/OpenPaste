@@ -321,7 +321,7 @@ final class ClipboardViewModel: ObservableObject {
             newItem.sourceApp = sourceApp
             newItem.capturedAt = Date()
             newItem.isPinned = false
-            newItem.expiresAt = Calendar.current.date(byAdding: .day, value: 30, to: Date()) ?? Date()
+            newItem.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
 
             do {
                 try dataStore.saveItem(newItem)
