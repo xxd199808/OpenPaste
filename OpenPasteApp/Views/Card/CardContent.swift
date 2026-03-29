@@ -34,7 +34,7 @@ struct CardContent: View {
         Text(item.content.isEmpty ? "[Empty content]" : item.content)
             .font(.system(size: 13))
             .foregroundColor(Color(red: 0.1, green: 0.1, blue: 0.1))
-            .lineLimit(3)
+            .lineLimit(6)
             .multilineTextAlignment(.leading)
     }
 
