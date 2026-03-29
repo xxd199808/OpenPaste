@@ -211,10 +211,12 @@ final class ClipboardMonitor {
     // MARK: - Private Methods - Content Extraction
 
     private func extractClipboardContent() -> (Data, String)? {
-        // Try to get string content first
-        if let string = pasteboard.string(forType: .string),
-           let data = string.data(using: .utf8) {
-            return (data, "public.utf8-plain-text")
+        // Try to get file URLs FIRST (before checking text)
+        // This ensures copied files are identified correctly
+        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
+           !fileURLs.isEmpty,
+           let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
+            return (data, "public.file-url")
         }
 
         // Try to get image content - save as file and return file path JSON
@@ -223,10 +225,10 @@ final class ClipboardMonitor {
             return (imagePathData, "public.image")
         }
 
-        // Try to get file URLs
-        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
-           let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
-            return (data, "public.file-url")
+        // Try to get string content last
+        if let string = pasteboard.string(forType: .string),
+           let data = string.data(using: .utf8) {
+            return (data, "public.utf8-plain-text")
         }
 
         return nil
