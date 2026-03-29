@@ -87,7 +87,7 @@ struct CardHeader: View {
             if isICloudSynced {
                 // Show iCloud sync icon
                 Image(systemName: "icloud")
-                    .font(.system(size: 48, weight: .medium))
+                    .font(.system(size: 40, weight: .medium))
                     .foregroundStyle(.white)
                     .frame(width: 64, height: 64)
                     .background(
@@ -108,18 +108,22 @@ struct CardHeader: View {
                     .frame(width: 64, height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .offset(x: -20, y: 0)
-            } else if let fallbackIcon = fallbackAppIcon {
-                Image(nsImage: fallbackIcon)
-                    .resizable()
-                    .frame(width: 64, height: 64)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .offset(x: -20, y: 0)
             } else {
-                Image(systemName: "app")
-                    .font(.system(size: 52))
-                    .foregroundStyle(.secondary)
+                // Show unified cloud icon for no app icon
+                Image(systemName: "icloud")
+                    .font(.system(size: 40, weight: .medium))
+                    .foregroundStyle(.white)
                     .frame(width: 64, height: 64)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.blue.opacity(0.8), Color.cyan.opacity(0.6)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    )
                     .offset(x: -20, y: 0)
             }
         }
