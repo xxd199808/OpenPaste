@@ -434,9 +434,23 @@ final class ClipboardViewModel: ObservableObject {
 /// Extension to convert NSManagedObject to ClipboardItemData
 extension ClipboardItem {
     func toData() -> ClipboardItemData {
-        ClipboardItemData(
+        // Convert content Data to String based on content type
+        let contentString: String
+        switch contentType {
+        case "public.image", "public.tiff", "public.png":
+            // For images, content is file path JSON - keep as string
+            contentString = String(data: self.content, encoding: .utf8) ?? "[]"
+        case "public.file-url":
+            // For file URLs, content is already JSON array
+            contentString = String(data: self.content, encoding: .utf8) ?? "[]"
+        default:
+            // For text content, direct conversion
+            contentString = String(data: self.content, encoding: .utf8) ?? ""
+        }
+
+        return ClipboardItemData(
             id: self.id,
-            content: String(data: self.content, encoding: .utf8) ?? "",
+            content: contentString,
             contentType: self.contentType,
             sourceApp: self.sourceApp,
             capturedAt: self.capturedAt,

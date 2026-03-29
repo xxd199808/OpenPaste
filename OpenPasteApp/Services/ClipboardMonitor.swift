@@ -217,9 +217,10 @@ final class ClipboardMonitor {
             return (data, "public.utf8-plain-text")
         }
 
-        // Try to get image content
-        if let image = pasteboard.data(forType: .tiff) {
-            return (image, "public.image")
+        // Try to get image content - save as file and return file path JSON
+        if let imageData = pasteboard.data(forType: .tiff),
+           let imagePathData = ImageStorageManager.shared.saveImage(imageData) {
+            return (imagePathData, "public.image")
         }
 
         // Try to get file URLs

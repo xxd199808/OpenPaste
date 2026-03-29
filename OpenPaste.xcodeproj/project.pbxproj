@@ -7,88 +7,88 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		038E1F3E2F794CAE00D8E1A5 /* Services/ImageStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 038E1F3D2F794CAE00D8E1A5 /* Services/ImageStorageManager.swift */; };
+		038E1F3F2F794D7900D8E1A5 /* DataStores/CoreDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55555555555555555555555 /* DataStores/CoreDataStore.swift */; };
+		07893BD49B93400E9CF624A1 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C143EB3DB42A45BCB097E783 /* HotkeyManager.swift */; };
 		12E89031C5BA4D2AB0A69561 /* StatusBarMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E05B5E3312442EC937C11B2 /* StatusBarMenu.swift */; };
 		43355C5A2F08458293D22B4A /* SimpleHotkey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3518239B3A034B0D8014A0DE /* SimpleHotkey.swift */; };
-		07893BD49B93400E9CF624A1 /* HotkeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C143EB3DB42A45BCB097E783 /* HotkeyManager.swift */; };
 		4EE410D8A2F8402B93EE6453 /* OpenPaste.swift in Sources */ = {isa = PBXBuildFile; fileRef = D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */; };
-		E374AF1B833B47B1B09EF0E1 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C6FEB81B894EAC8B6CE2B3 /* main.swift */; };
 		5DC154C590CE4B6CAE0A65BC /* HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34203BCCDF0A425189CA1D1D /* HotKey.swift */; };
-		AAD7F2DCEFAF4789B74EC45A /* HotKeysController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6873B7624DD470C9793D211 /* HotKeysController.swift */; };
-		931CC2F0D9C74A6990B4797F /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91552ACDB821440CB143A3B7 /* Key.swift */; };
 		7B2E55BE45E74FCC9C34340B /* KeyCombo+System.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */; };
-		D82FEE6B2ACA4D5C97EDA6E4 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */; };
 		8A59ED8015FA44C389BC3717 /* NSEventModifierFlags+HotKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99355C38AEBB4FDFA5426026 /* NSEventModifierFlags+HotKey.swift */; };
-		BB1111111111111111111111 /* ClipboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1111111111111111111111 /* ClipboardViewModel.swift */; };
-		BB2222222222222222222222 /* ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2222222222222222222222 /* ClipboardMonitor.swift */; };
-		BB3333333333333333333333 /* ExpiryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3333333333333333333333 /* ExpiryService.swift */; };
-		B44444444444444444444444 /* HotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44444444444444444444444 /* HotkeyService.swift */; };
-		B55555555555555555555555 /* CoreDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A55555555555555555555555 /* CoreDataStore.swift */; };
-		B66666666666666666666666 /* ClipboardDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6666666666666666666666 /* ClipboardDataStore.swift */; };
-		B77777777777777777777777 /* ClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7777777777777777777777 /* ClipboardRepository.swift */; };
-		BB8888888888888888888888 /* DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8888888888888888888888 /* DateRange.swift */; };
-		BB9999999999999999999999 /* ClipboardItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9999999999999999999999 /* ClipboardItemData.swift */; };
+		931CC2F0D9C74A6990B4797F /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = 91552ACDB821440CB143A3B7 /* Key.swift */; };
+		AAD7F2DCEFAF4789B74EC45A /* HotKeysController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6873B7624DD470C9793D211 /* HotKeysController.swift */; };
+		B44444444444444444444444 /* Services/HotkeyService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A44444444444444444444444 /* Services/HotkeyService.swift */; };
+		B66666666666666666666666 /* Protocols/ClipboardDataStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA6666666666666666666666 /* Protocols/ClipboardDataStore.swift */; };
+		B77777777777777777777777 /* Repositories/ClipboardRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA7777777777777777777777 /* Repositories/ClipboardRepository.swift */; };
 		BB0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift */; };
 		BB0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift */; };
-		BB0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift */; };
-		BB0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift */; };
-		BB0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */; };
-		BB0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */; };
-		BB1000000000000000000000 /* CategoryManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000000 /* CategoryManagementView.swift */; };
-		BB1200000000000000000000 /* PresetCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1200000000000000000000 /* PresetCategory.swift */; };
-		BB1300000000000000000000 /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1300000000000000000000 /* CategorySelector.swift */; };
-		BB1400000000000000000000 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1400000000000000000000 /* CategoryButton.swift */; };
-		BB1500000000000000000000 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1500000000000000000000 /* SidebarView.swift */; };
-		BB1600000000000000000000 /* UnifiedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1600000000000000000000 /* UnifiedContentView.swift */; };
-		BB1700000000000000000000 /* AppIconColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1700000000000000000000 /* AppIconColorExtractor.swift */; };
-		BB1800000000000000000000 /* CardHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1800000000000000000000 /* CardHeader.swift */; };
-		BB1900000000000000000000 /* CardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1900000000000000000000 /* CardContent.swift */; };
-		BB1A00000000000000000000 /* ClipboardItemCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1A00000000000000000000 /* ClipboardItemCard.swift */; };
-		CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */; };
-		DD0000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD0000000000000000000002 /* Assets.xcassets */; };
+		BB0CCCCCCCCCCCCCCCCCCCCC /* Views/ClipboardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0CCCCCCCCCCCCCCCCCCCCC /* Views/ClipboardListView.swift */; };
+		BB0DDDDDDDDDDDDDDDDDDDDD /* Views/ClipboardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0DDDDDDDDDDDDDDDDDDDDD /* Views/ClipboardItemView.swift */; };
+		BB0EEEEEEEEEEEEEEEEEEEEE /* Views/SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0EEEEEEEEEEEEEEEEEEEEE /* Views/SearchBarView.swift */; };
+		BB0FFFFFFFFFFFFFFFFFFFFF /* Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0FFFFFFFFFFFFFFFFFFFFF /* Views/SettingsView.swift */; };
+		BB1000000000000000000000 /* Views/CategoryManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000000 /* Views/CategoryManagementView.swift */; };
+		BB1111111111111111111111 /* ViewModels/ClipboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1111111111111111111111 /* ViewModels/ClipboardViewModel.swift */; };
+		BB1200000000000000000000 /* Models/PresetCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1200000000000000000000 /* Models/PresetCategory.swift */; };
+		BB1300000000000000000000 /* Models/CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1300000000000000000000 /* Models/CategorySelector.swift */; };
+		BB1400000000000000000000 /* Views/CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1400000000000000000000 /* Views/CategoryButton.swift */; };
+		BB1500000000000000000000 /* Views/SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1500000000000000000000 /* Views/SidebarView.swift */; };
+		BB1600000000000000000000 /* Views/UnifiedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1600000000000000000000 /* Views/UnifiedContentView.swift */; };
+		BB1700000000000000000000 /* Utils/AppIconColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1700000000000000000000 /* Utils/AppIconColorExtractor.swift */; };
+		BB1800000000000000000000 /* Views/Card/CardHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1800000000000000000000 /* Views/Card/CardHeader.swift */; };
+		BB1900000000000000000000 /* Views/Card/CardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1900000000000000000000 /* Views/Card/CardContent.swift */; };
+		BB1A00000000000000000000 /* Views/Card/ClipboardItemCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1A00000000000000000000 /* Views/Card/ClipboardItemCard.swift */; };
+		BB2222222222222222222222 /* Services/ClipboardMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA2222222222222222222222 /* Services/ClipboardMonitor.swift */; };
+		BB3333333333333333333333 /* Services/ExpiryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA3333333333333333333333 /* Services/ExpiryService.swift */; };
+		BB8888888888888888888888 /* Models/DateRange.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA8888888888888888888888 /* Models/DateRange.swift */; };
+		BB9999999999999999999999 /* Models/ClipboardItemData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA9999999999999999999999 /* Models/ClipboardItemData.swift */; };
+		CD0000000000000000000003 /* Resources/OpenPasteApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000001 /* Resources/OpenPasteApp.xcdatamodeld */; };
+		D82FEE6B2ACA4D5C97EDA6E4 /* KeyCombo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */; };
+		DD0000000000000000000001 /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD0000000000000000000002 /* Resources/Assets.xcassets */; };
+		E374AF1B833B47B1B09EF0E1 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39C6FEB81B894EAC8B6CE2B3 /* main.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		038E1F3D2F794CAE00D8E1A5 /* Services/ImageStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ImageStorageManager.swift; sourceTree = "<group>"; };
+		34203BCCDF0A425189CA1D1D /* HotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKey.swift; sourceTree = "<group>"; };
 		3518239B3A034B0D8014A0DE /* SimpleHotkey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleHotkey.swift; sourceTree = "<group>"; };
 		39C6FEB81B894EAC8B6CE2B3 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5E05B5E3312442EC937C11B2 /* StatusBarMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarMenu.swift; sourceTree = "<group>"; };
-		C143EB3DB42A45BCB097E783 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
-		D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenPaste.swift; sourceTree = "<group>"; };
-		CF4B0D0D3AEB4A8797D73F66 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		88938743581B435B9EB7E9C9 /* OpenPaste.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenPaste.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		34203BCCDF0A425189CA1D1D /* HotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKey.swift; sourceTree = "<group>"; };
-		B6873B7624DD470C9793D211 /* HotKeysController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeysController.swift; sourceTree = "<group>"; };
 		91552ACDB821440CB143A3B7 /* Key.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Key.swift; sourceTree = "<group>"; };
-		A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyCombo+System.swift"; sourceTree = "<group>"; };
-		EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
 		99355C38AEBB4FDFA5426026 /* NSEventModifierFlags+HotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSEventModifierFlags+HotKey.swift"; sourceTree = "<group>"; };
-		AA1111111111111111111111 /* ClipboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewModels/ClipboardViewModel.swift"; sourceTree = "<group>"; };
-		AA2222222222222222222222 /* ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/ClipboardMonitor.swift"; sourceTree = "<group>"; };
-		AA3333333333333333333333 /* ExpiryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/ExpiryService.swift"; sourceTree = "<group>"; };
-		A44444444444444444444444 /* HotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/HotkeyService.swift"; sourceTree = "<group>"; };
-		A55555555555555555555555 /* CoreDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DataStores/CoreDataStore.swift"; sourceTree = "<group>"; };
-		AA6666666666666666666666 /* ClipboardDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Protocols/ClipboardDataStore.swift"; sourceTree = "<group>"; };
-		AA7777777777777777777777 /* ClipboardRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Repositories/ClipboardRepository.swift"; sourceTree = "<group>"; };
-		AA8888888888888888888888 /* DateRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/DateRange.swift"; sourceTree = "<group>"; };
-		AA9999999999999999999999 /* ClipboardItemData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/ClipboardItemData.swift"; sourceTree = "<group>"; };
+		A44444444444444444444444 /* Services/HotkeyService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/HotkeyService.swift; sourceTree = "<group>"; };
+		A55555555555555555555555 /* DataStores/CoreDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStores/CoreDataStore.swift; sourceTree = "<group>"; };
+		A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyCombo+System.swift"; sourceTree = "<group>"; };
 		AA0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenPasteApp+CoreDataClass.swift"; sourceTree = "<group>"; };
 		AA0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OpenPasteApp+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		AA0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardListView.swift"; sourceTree = "<group>"; };
-		AA0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardItemView.swift"; sourceTree = "<group>"; };
-		AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SearchBarView.swift"; sourceTree = "<group>"; };
-		AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
-		AA1000000000000000000000 /* CategoryManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/CategoryManagementView.swift"; sourceTree = "<group>"; };
-		AA1200000000000000000000 /* PresetCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/PresetCategory.swift"; sourceTree = "<group>"; };
-		AA1300000000000000000000 /* CategorySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/CategorySelector.swift"; sourceTree = "<group>"; };
-		AA1400000000000000000000 /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/CategoryButton.swift"; sourceTree = "<group>"; };
-		AA1500000000000000000000 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SidebarView.swift"; sourceTree = "<group>"; };
-		AA1600000000000000000000 /* UnifiedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/UnifiedContentView.swift"; sourceTree = "<group>"; };
-		AA1700000000000000000000 /* AppIconColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/AppIconColorExtractor.swift"; sourceTree = "<group>"; };
-		AA1800000000000000000000 /* CardHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Card/CardHeader.swift"; sourceTree = "<group>"; };
-		AA1900000000000000000000 /* CardContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Card/CardContent.swift"; sourceTree = "<group>"; };
-		AA1A00000000000000000000 /* ClipboardItemCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Card/ClipboardItemCard.swift"; sourceTree = "<group>"; };
-
-		CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = "Resources/OpenPasteApp.xcdatamodeld"; sourceTree = "<group>"; };
-		DD0000000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Resources/Assets.xcassets"; sourceTree = "<group>"; };
+		AA0CCCCCCCCCCCCCCCCCCCCC /* Views/ClipboardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ClipboardListView.swift; sourceTree = "<group>"; };
+		AA0DDDDDDDDDDDDDDDDDDDDD /* Views/ClipboardItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/ClipboardItemView.swift; sourceTree = "<group>"; };
+		AA0EEEEEEEEEEEEEEEEEEEEE /* Views/SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SearchBarView.swift; sourceTree = "<group>"; };
+		AA0FFFFFFFFFFFFFFFFFFFFF /* Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SettingsView.swift; sourceTree = "<group>"; };
+		AA1000000000000000000000 /* Views/CategoryManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/CategoryManagementView.swift; sourceTree = "<group>"; };
+		AA1111111111111111111111 /* ViewModels/ClipboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels/ClipboardViewModel.swift; sourceTree = "<group>"; };
+		AA1200000000000000000000 /* Models/PresetCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/PresetCategory.swift; sourceTree = "<group>"; };
+		AA1300000000000000000000 /* Models/CategorySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/CategorySelector.swift; sourceTree = "<group>"; };
+		AA1400000000000000000000 /* Views/CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/CategoryButton.swift; sourceTree = "<group>"; };
+		AA1500000000000000000000 /* Views/SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SidebarView.swift; sourceTree = "<group>"; };
+		AA1600000000000000000000 /* Views/UnifiedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/UnifiedContentView.swift; sourceTree = "<group>"; };
+		AA1700000000000000000000 /* Utils/AppIconColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Utils/AppIconColorExtractor.swift; sourceTree = "<group>"; };
+		AA1800000000000000000000 /* Views/Card/CardHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Card/CardHeader.swift; sourceTree = "<group>"; };
+		AA1900000000000000000000 /* Views/Card/CardContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Card/CardContent.swift; sourceTree = "<group>"; };
+		AA1A00000000000000000000 /* Views/Card/ClipboardItemCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Card/ClipboardItemCard.swift; sourceTree = "<group>"; };
+		AA2222222222222222222222 /* Services/ClipboardMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ClipboardMonitor.swift; sourceTree = "<group>"; };
+		AA3333333333333333333333 /* Services/ExpiryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/ExpiryService.swift; sourceTree = "<group>"; };
+		AA6666666666666666666666 /* Protocols/ClipboardDataStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols/ClipboardDataStore.swift; sourceTree = "<group>"; };
+		AA7777777777777777777777 /* Repositories/ClipboardRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repositories/ClipboardRepository.swift; sourceTree = "<group>"; };
+		AA8888888888888888888888 /* Models/DateRange.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/DateRange.swift; sourceTree = "<group>"; };
+		AA9999999999999999999999 /* Models/ClipboardItemData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/ClipboardItemData.swift; sourceTree = "<group>"; };
+		B6873B7624DD470C9793D211 /* HotKeysController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeysController.swift; sourceTree = "<group>"; };
+		C143EB3DB42A45BCB097E783 /* HotkeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotkeyManager.swift; sourceTree = "<group>"; };
+		CD0000000000000000000001 /* Resources/OpenPasteApp.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = Resources/OpenPasteApp.xcdatamodeld; sourceTree = "<group>"; };
+		D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenPaste.swift; sourceTree = "<group>"; };
+		DD0000000000000000000002 /* Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
+		EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCombo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,9 +102,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		308F19D54CAB43A6AFBF5D1D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				88938743581B435B9EB7E9C9 /* OpenPaste.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5D07F4C62B474DDA9EEEDD01 = {
+			isa = PBXGroup;
+			children = (
+				CCDF25D1985F4ACA95183054 /* OpenPasteApp */,
+				308F19D54CAB43A6AFBF5D1D /* Products */,
+			);
+			sourceTree = "<group>";
+		};
 		CCDF25D1985F4ACA95183054 /* OpenPasteApp */ = {
 			isa = PBXGroup;
 			children = (
+				038E1F3D2F794CAE00D8E1A5 /* Services/ImageStorageManager.swift */,
 				39C6FEB81B894EAC8B6CE2B3 /* main.swift */,
 				C143EB3DB42A45BCB097E783 /* HotkeyManager.swift */,
 				D77C6FF7AE7640FA9753C860 /* OpenPaste.swift */,
@@ -116,51 +133,35 @@
 				A5655589F55D4D78AE08C826 /* KeyCombo+System.swift */,
 				EA09EFAA325E480BBDA770D4 /* KeyCombo.swift */,
 				99355C38AEBB4FDFA5426026 /* NSEventModifierFlags+HotKey.swift */,
-				AA1111111111111111111111 /* ClipboardViewModel.swift */,
-				AA2222222222222222222222 /* ClipboardMonitor.swift */,
-				AA3333333333333333333333 /* ExpiryService.swift */,
-				A44444444444444444444444 /* HotkeyService.swift */,
-				A55555555555555555555555 /* CoreDataStore.swift */,
-				AA6666666666666666666666 /* ClipboardDataStore.swift */,
-				AA7777777777777777777777 /* ClipboardRepository.swift */,
-				AA8888888888888888888888 /* DateRange.swift */,
-				AA9999999999999999999999 /* ClipboardItemData.swift */,
+				AA1111111111111111111111 /* ViewModels/ClipboardViewModel.swift */,
+				AA2222222222222222222222 /* Services/ClipboardMonitor.swift */,
+				AA3333333333333333333333 /* Services/ExpiryService.swift */,
+				A44444444444444444444444 /* Services/HotkeyService.swift */,
+				A55555555555555555555555 /* DataStores/CoreDataStore.swift */,
+				AA6666666666666666666666 /* Protocols/ClipboardDataStore.swift */,
+				AA7777777777777777777777 /* Repositories/ClipboardRepository.swift */,
+				AA8888888888888888888888 /* Models/DateRange.swift */,
+				AA9999999999999999999999 /* Models/ClipboardItemData.swift */,
 				AA0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift */,
 				AA0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift */,
-				AA0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift */,
-				AA0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift */,
-				AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */,
-				AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */,
-				AA1000000000000000000000 /* CategoryManagementView.swift */,
-				AA1200000000000000000000 /* PresetCategory.swift */,
-				AA1300000000000000000000 /* CategorySelector.swift */,
-				AA1400000000000000000000 /* CategoryButton.swift */,
-				AA1500000000000000000000 /* SidebarView.swift */,
-				AA1600000000000000000000 /* UnifiedContentView.swift */,
-				AA1700000000000000000000 /* AppIconColorExtractor.swift */,
-				AA1800000000000000000000 /* CardHeader.swift */,
-				AA1900000000000000000000 /* CardContent.swift */,
-				AA1A00000000000000000000 /* ClipboardItemCard.swift */,
-			CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */,
-			DD0000000000000000000002 /* Assets.xcassets */,
+				AA0CCCCCCCCCCCCCCCCCCCCC /* Views/ClipboardListView.swift */,
+				AA0DDDDDDDDDDDDDDDDDDDDD /* Views/ClipboardItemView.swift */,
+				AA0EEEEEEEEEEEEEEEEEEEEE /* Views/SearchBarView.swift */,
+				AA0FFFFFFFFFFFFFFFFFFFFF /* Views/SettingsView.swift */,
+				AA1000000000000000000000 /* Views/CategoryManagementView.swift */,
+				AA1200000000000000000000 /* Models/PresetCategory.swift */,
+				AA1300000000000000000000 /* Models/CategorySelector.swift */,
+				AA1400000000000000000000 /* Views/CategoryButton.swift */,
+				AA1500000000000000000000 /* Views/SidebarView.swift */,
+				AA1600000000000000000000 /* Views/UnifiedContentView.swift */,
+				AA1700000000000000000000 /* Utils/AppIconColorExtractor.swift */,
+				AA1800000000000000000000 /* Views/Card/CardHeader.swift */,
+				AA1900000000000000000000 /* Views/Card/CardContent.swift */,
+				AA1A00000000000000000000 /* Views/Card/ClipboardItemCard.swift */,
+				CD0000000000000000000001 /* Resources/OpenPasteApp.xcdatamodeld */,
+				DD0000000000000000000002 /* Resources/Assets.xcassets */,
 			);
 			path = OpenPasteApp;
-			sourceTree = "<group>";
-		};
-		308F19D54CAB43A6AFBF5D1D /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				88938743581B435B9EB7E9C9 /* OpenPaste.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		5D07F4C62B474DDA9EEEDD01 /* Main group */ = {
-			isa = PBXGroup;
-			children = (
-				CCDF25D1985F4ACA95183054 /* PasteApp */,
-				308F19D54CAB43A6AFBF5D1D /* Products */,
-			);
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,7 +202,7 @@
 				en,
 				Base,
 			);
-			mainGroup = 5D07F4C62B474DDA9EEEDD01 /* Main group */;
+			mainGroup = 5D07F4C62B474DDA9EEEDD01;
 			productRefGroup = 308F19D54CAB43A6AFBF5D1D /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -216,7 +217,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DD0000000000000000000001 /* Assets.xcassets in Resources */,
+				DD0000000000000000000001 /* Resources/Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,51 +239,51 @@
 				7B2E55BE45E74FCC9C34340B /* KeyCombo+System.swift in Sources */,
 				D82FEE6B2ACA4D5C97EDA6E4 /* KeyCombo.swift in Sources */,
 				8A59ED8015FA44C389BC3717 /* NSEventModifierFlags+HotKey.swift in Sources */,
-				BB1111111111111111111111 /* ClipboardViewModel.swift in Sources */,
-				BB2222222222222222222222 /* ClipboardMonitor.swift in Sources */,
-				BB3333333333333333333333 /* ExpiryService.swift in Sources */,
-				B44444444444444444444444 /* HotkeyService.swift in Sources */,
-				B55555555555555555555555 /* CoreDataStore.swift in Sources */,
-				B66666666666666666666666 /* ClipboardDataStore.swift in Sources */,
-				B77777777777777777777777 /* ClipboardRepository.swift in Sources */,
-				BB8888888888888888888888 /* DateRange.swift in Sources */,
-				BB9999999999999999999999 /* ClipboardItemData.swift in Sources */,
+				BB1111111111111111111111 /* ViewModels/ClipboardViewModel.swift in Sources */,
+				BB2222222222222222222222 /* Services/ClipboardMonitor.swift in Sources */,
+				BB3333333333333333333333 /* Services/ExpiryService.swift in Sources */,
+				038E1F3E2F794CAE00D8E1A5 /* Services/ImageStorageManager.swift in Sources */,
+				B44444444444444444444444 /* Services/HotkeyService.swift in Sources */,
+				B66666666666666666666666 /* Protocols/ClipboardDataStore.swift in Sources */,
+				B77777777777777777777777 /* Repositories/ClipboardRepository.swift in Sources */,
+				BB8888888888888888888888 /* Models/DateRange.swift in Sources */,
+				BB9999999999999999999999 /* Models/ClipboardItemData.swift in Sources */,
 				BB0AAAAAAAAAAAAAAAAAAAAA /* OpenPasteApp+CoreDataClass.swift in Sources */,
 				BB0BBBBBBBBBBBBBBBBBBBBB /* OpenPasteApp+CoreDataProperties.swift in Sources */,
-				BB0CCCCCCCCCCCCCCCCCCCCC /* ClipboardListView.swift in Sources */,
-				BB0DDDDDDDDDDDDDDDDDDDDD /* ClipboardItemView.swift in Sources */,
-				BB0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift in Sources */,
-				BB0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift in Sources */,
-				BB1000000000000000000000 /* CategoryManagementView.swift in Sources */,
-				BB1200000000000000000000 /* PresetCategory.swift in Sources */,
-				BB1300000000000000000000 /* CategorySelector.swift in Sources */,
-				BB1400000000000000000000 /* CategoryButton.swift in Sources */,
-				BB1500000000000000000000 /* SidebarView.swift in Sources */,
-				BB1600000000000000000000 /* UnifiedContentView.swift in Sources */,
-				BB1700000000000000000000 /* AppIconColorExtractor.swift in Sources */,
-				BB1800000000000000000000 /* CardHeader.swift in Sources */,
-				BB1900000000000000000000 /* CardContent.swift in Sources */,
-				BB1A00000000000000000000 /* ClipboardItemCard.swift in Sources */,
-			CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */,
+				BB0CCCCCCCCCCCCCCCCCCCCC /* Views/ClipboardListView.swift in Sources */,
+				BB0DDDDDDDDDDDDDDDDDDDDD /* Views/ClipboardItemView.swift in Sources */,
+				038E1F3F2F794D7900D8E1A5 /* DataStores/CoreDataStore.swift in Sources */,
+				BB0EEEEEEEEEEEEEEEEEEEEE /* Views/SearchBarView.swift in Sources */,
+				BB0FFFFFFFFFFFFFFFFFFFFF /* Views/SettingsView.swift in Sources */,
+				BB1000000000000000000000 /* Views/CategoryManagementView.swift in Sources */,
+				BB1200000000000000000000 /* Models/PresetCategory.swift in Sources */,
+				BB1300000000000000000000 /* Models/CategorySelector.swift in Sources */,
+				BB1400000000000000000000 /* Views/CategoryButton.swift in Sources */,
+				BB1500000000000000000000 /* Views/SidebarView.swift in Sources */,
+				BB1600000000000000000000 /* Views/UnifiedContentView.swift in Sources */,
+				BB1700000000000000000000 /* Utils/AppIconColorExtractor.swift in Sources */,
+				BB1800000000000000000000 /* Views/Card/CardHeader.swift in Sources */,
+				BB1900000000000000000000 /* Views/Card/CardContent.swift in Sources */,
+				BB1A00000000000000000000 /* Views/Card/ClipboardItemCard.swift in Sources */,
+				CD0000000000000000000003 /* Resources/OpenPasteApp.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		C3B1A2E9ABCB48199581A630 /* Debug */ = {
+		3F9E32896FA440C2BB1F292F /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
+				INFOPLIST_KEY_LSUIElement = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.fictionking.OpenPaste;
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-			};
-			name = Debug;
-		};
-		B946AB4187414926AB077710 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				SDKROOT = macosx;
+				SWIFT_VERSION = 5.9;
 			};
 			name = Release;
 		};
@@ -301,33 +302,25 @@
 			};
 			name = Debug;
 		};
-		3F9E32896FA440C2BB1F292F /* Release */ = {
+		B946AB4187414926AB077710 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = OpenPaste;
-				INFOPLIST_KEY_LSUIElement = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.fictionking.OpenPaste;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				SDKROOT = macosx;
-				SWIFT_VERSION = 5.9;
 			};
 			name = Release;
+		};
+		C3B1A2E9ABCB48199581A630 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		D2732BFECA3C4FBD9C1AE00E /* Build configuration list for PBXNativeTarget "OpenPaste" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A8F8384C6F8E46FBAFBAC195 /* Debug */,
-				3F9E32896FA440C2BB1F292F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		CD9920053FCE453AB3E9E2E1 /* Build configuration list for PBXProject "OpenPaste" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -337,8 +330,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		D2732BFECA3C4FBD9C1AE00E /* Build configuration list for PBXNativeTarget "OpenPaste" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A8F8384C6F8E46FBAFBAC195 /* Debug */,
+				3F9E32896FA440C2BB1F292F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 	};
 	rootObject = B2BB905234E14714A9B35ED8 /* Project object */;
 }
-
