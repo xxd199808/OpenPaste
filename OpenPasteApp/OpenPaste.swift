@@ -186,7 +186,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create panel at target position first
         let panel = CustomPanel(
             contentRect: NSRect(x: targetX, y: targetY, width: panelWidth, height: panelHeight),
-            styleMask: [.resizable, .utilityWindow, .fullSizeContentView],
+            styleMask: [.borderless, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
@@ -195,6 +195,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         panel.title = ""
         panel.isFloatingPanel = true
         panel.titlebarAppearsTransparent = true
+
+        // Enable transparency for glass effect
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+
+        // Remove all window decorations
+        panel.hasShadow = false
+        panel.contentView?.wantsLayer = true
+        panel.level = .modalPanel
+
+        // Remove activation frame border
+        panel.styleMask.insert(.nonactivatingPanel)
+
         panel.standardWindowButton(.closeButton)?.isHidden = true
         panel.standardWindowButton(.miniaturizeButton)?.isHidden = true
         panel.standardWindowButton(.zoomButton)?.isHidden = true
@@ -359,6 +372,31 @@ struct FloatingPanelView: View {
 
     @State private var selectedIndex: Int = 0
     @State private var selectedTab: PanelTab = .history
+    @Namespace private var tabAnimation
+
+    // MARK: - Computed Properties for Background Effects
+
+    @ViewBuilder
+    private var headerBackground: some View {
+        if #available(macOS 26.0, *) {
+            RoundedRectangle(cornerRadius: 8)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
+        } else {
+            RoundedRectangle(cornerRadius: 8)
+                .background(.ultraThinMaterial)
+        }
+    }
+
+    @ViewBuilder
+    private var panelBackground: some View {
+        if #available(macOS 26.0, *) {
+            RoundedRectangle(cornerRadius: 12)
+                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+        } else {
+            RoundedRectangle(cornerRadius: 12)
+                .background(.ultraThinMaterial)
+        }
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -385,7 +423,7 @@ struct FloatingPanelView: View {
             }
             .padding(.horizontal)
             .padding(.vertical, 10)
-            .background(Color(NSColor.controlBackgroundColor))
+            .background(headerBackground)
 
             Divider()
 
@@ -402,6 +440,7 @@ struct FloatingPanelView: View {
             }
         }
         .frame(minWidth: 400, minHeight: 300)
+        .background(panelBackground)
     }
 
     // MARK: - History Content

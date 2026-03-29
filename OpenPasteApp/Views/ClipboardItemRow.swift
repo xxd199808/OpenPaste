@@ -12,7 +12,7 @@ struct ClipboardItemRow: View {
     let onTap: () -> Void
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: 16) {
             // Selected checkmark or index badge
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
@@ -23,11 +23,11 @@ struct ClipboardItemRow: View {
                 Text("\(index + 1)")
                     .font(.caption)
                     .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .padding(.horizontal, 6)
                     .padding(.vertical, 2)
-                    .background(Color.secondary.opacity(0.2))
-                    .cornerRadius(4)
+                    .background(badgeBackground)
+                    .clipShape(RoundedRectangle(cornerRadius: 4))
                     .allowsHitTesting(false)
             }
 
@@ -36,29 +36,56 @@ struct ClipboardItemRow: View {
                 Text(previewText)
                     .font(.body)
                     .lineLimit(3)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
 
                 // Timestamp
                 Text(formatDate(timestamp))
                     .font(.caption)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             .allowsHitTesting(false)
 
             Spacer()
         }
-        .padding(12)
-        .background(
-            Color(isSelected ? NSColor.controlAccentColor.withAlphaComponent(0.1) : NSColor.controlBackgroundColor)
-                .cornerRadius(8)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
-                )
-                .onTapGesture {
-                    onTap()
-                }
+        .padding(16)
+        .background(cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .strokeBorder(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
         )
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
+        }
+    }
+
+    // MARK: - Progressive Glass Effects
+
+    @ViewBuilder
+    private var badgeBackground: some View {
+        if #available(macOS 26.0, *) {
+            RoundedRectangle(cornerRadius: 4)
+                .fill(.ultraThinMaterial)
+        } else {
+            Color.secondary.opacity(0.2)
+        }
+    }
+
+    @ViewBuilder
+    private var cardBackground: some View {
+        if #available(macOS 26.0, *) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.ultraThinMaterial)
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
+                )
+        } else {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(.regularMaterial)
+                .background(isSelected ? Color.accentColor.opacity(0.1) : Color(NSColor.controlBackgroundColor))
+        }
     }
 
     private var previewText: String {

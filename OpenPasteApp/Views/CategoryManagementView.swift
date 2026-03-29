@@ -35,6 +35,20 @@ struct CategoryManagementView: View {
     /// Error message
     @State private var errorMessage: String?
 
+    // MARK: - Computed Properties
+
+    /// Progressive glass background for sidebar header
+    @ViewBuilder
+    private var sidebarHeaderBackground: some View {
+        Rectangle().fill(.thinMaterial)
+    }
+
+    /// Progressive glass background for sidebar
+    @ViewBuilder
+    private var sidebarBackground: some View {
+        Rectangle().fill(.ultraThinMaterial)
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -56,6 +70,7 @@ struct CategoryManagementView: View {
                     .accessibilityLabel("Create new category")
                 }
                 .padding()
+                .background(sidebarHeaderBackground)
 
                 Divider()
 
@@ -90,6 +105,7 @@ struct CategoryManagementView: View {
                 .listStyle(.sidebar)
             }
             .frame(minWidth: 200, maxWidth: 300)
+            .background(sidebarBackground)
 
             // Items in selected category
             VStack(spacing: 0) {

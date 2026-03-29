@@ -12,141 +12,202 @@ struct SettingsView: View {
     /// Showing hotkey customization alert
     @State private var showingHotkeyAlert = false
 
+    // MARK: - Computed Properties
+
+    /// Progressive glass background for settings view
+    @ViewBuilder
+    private var settingsBackground: some View {
+        Rectangle().fill(.thinMaterial)
+    }
+
+    /// Progressive glass background for settings sections
+    @ViewBuilder
+    private var sectionBackground: some View {
+        Rectangle().fill(.ultraThinMaterial)
+    }
+
+    // MARK: - Section Views
+
+    /// Keyboard shortcut section
+    private var keyboardShortcutSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Keyboard")
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            HStack {
+                Text("Keyboard Shortcut")
+                    .accessibilityLabel("Global keyboard shortcut")
+
+                Spacer()
+
+                Button(action: { showingHotkeyAlert = true }) {
+                    Text(settings.hotkeyDescription)
+                        .font(.body.monospaced())
+                }
+                .buttonStyle(.plain)
+                .foregroundColor(.accentColor)
+                .accessibilityLabel("Change keyboard shortcut")
+                .accessibilityHint("Current shortcut is \(settings.hotkeyDescription)")
+            }
+        }
+        .padding()
+        .background(sectionBackground)
+        .cornerRadius(10)
+    }
+
+    /// Data management section
+    private var dataManagementSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Data Management")
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Retention Period")
+                        .accessibilityLabel("Clipboard item retention period")
+
+                    Spacer()
+
+                    Text("\(settings.retentionDays) days")
+                        .foregroundColor(.secondary)
+                        .accessibilityLabel("\(settings.retentionDays) days")
+                        .accessibilityAddTraits(.updatesFrequently)
+                }
+
+                Slider(
+                    value: Binding(
+                        get: { Double(settings.retentionDays) },
+                        set: { settings.retentionDays = Int($0) }
+                    ),
+                    in: 7...90,
+                    step: 1
+                )
+                .accessibilityValue("\(settings.retentionDays) days")
+                .labelsHidden()
+
+                Text("Items are automatically deleted after this many days, unless pinned")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 4)
+        }
+        .padding()
+        .background(sectionBackground)
+        .cornerRadius(10)
+    }
+
+    /// History section
+    private var historySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("History")
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Maximum History Size")
+                        .accessibilityLabel("Maximum clipboard history size")
+
+                    Spacer()
+
+                    Text("\(settings.maxHistorySize.formatted()) items")
+                        .foregroundColor(.secondary)
+                        .accessibilityLabel("\(settings.maxHistorySize.formatted()) items")
+                        .accessibilityAddTraits(.updatesFrequently)
+                }
+
+                Slider(
+                    value: Binding(
+                        get: { Double(settings.maxHistorySize) },
+                        set: { settings.maxHistorySize = Int($0) }
+                    ),
+                    in: 1_000...50_000,
+                    step: 1_000
+                )
+                .accessibilityValue("\(settings.maxHistorySize) items")
+                .labelsHidden()
+
+                Text("Oldest items are removed when this limit is reached")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            .padding(.vertical, 4)
+        }
+        .padding()
+        .background(sectionBackground)
+        .cornerRadius(10)
+    }
+
+    /// Theme section
+    private var themeSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Theme")
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            Picker("Appearance", selection: $settings.theme) {
+                Text("Light").tag(AppTheme.light)
+                Text("Dark").tag(AppTheme.dark)
+                Text("Auto").tag(AppTheme.auto)
+            }
+            .pickerStyle(.segmented)
+            .accessibilityLabel("Theme preference")
+
+            Text("Auto matches your system appearance setting")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding()
+        .background(sectionBackground)
+        .cornerRadius(10)
+    }
+
+    /// About section
+    private var aboutSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("About")
+                .font(.headline)
+                .padding(.bottom, 4)
+
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("OpenPaste")
+                        .font(.headline)
+
+                    Text("Version \(settings.appVersion)")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                Link("View License", destination: URL(string: "https://opensource.org/licenses/MIT")!)
+                    .font(.caption)
+            }
+        }
+        .padding()
+        .background(sectionBackground)
+        .cornerRadius(10)
+    }
+
     // MARK: - Body
 
     var body: some View {
-        Form {
-            // Keyboard Shortcut Section
-            Section {
-                HStack {
-                    Text("Keyboard Shortcut")
-                        .accessibilityLabel("Global keyboard shortcut")
-
-                    Spacer()
-
-                    Button(action: { showingHotkeyAlert = true }) {
-                        Text(settings.hotkeyDescription)
-                            .font(.body.monospaced())
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundColor(.accentColor)
-                    .accessibilityLabel("Change keyboard shortcut")
-                    .accessibilityHint("Current shortcut is \(settings.hotkeyDescription)")
-                }
-            } header: {
-                Text("Keyboard")
+        ScrollView {
+            VStack(spacing: 16) {
+                keyboardShortcutSection
+                dataManagementSection
+                historySection
+                themeSection
+                aboutSection
             }
-
-            // Retention Period Section
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Retention Period")
-                            .accessibilityLabel("Clipboard item retention period")
-
-                        Spacer()
-
-                        Text("\(settings.retentionDays) days")
-                            .foregroundColor(.secondary)
-                            .accessibilityLabel("\(settings.retentionDays) days")
-                            .accessibilityAddTraits(.updatesFrequently)
-                    }
-
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.retentionDays) },
-                            set: { settings.retentionDays = Int($0) }
-                        ),
-                        in: 7...90,
-                        step: 1
-                    )
-                    .accessibilityValue("\(settings.retentionDays) days")
-                    .labelsHidden()
-
-                    Text("Items are automatically deleted after this many days, unless pinned")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 4)
-            } header: {
-                Text("Data Management")
-            }
-
-            // History Size Section
-            Section {
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Maximum History Size")
-                            .accessibilityLabel("Maximum clipboard history size")
-
-                        Spacer()
-
-                        Text("\(settings.maxHistorySize.formatted()) items")
-                            .foregroundColor(.secondary)
-                            .accessibilityLabel("\(settings.maxHistorySize.formatted()) items")
-                            .accessibilityAddTraits(.updatesFrequently)
-                    }
-
-                    Slider(
-                        value: Binding(
-                            get: { Double(settings.maxHistorySize) },
-                            set: { settings.maxHistorySize = Int($0) }
-                        ),
-                        in: 1_000...50_000,
-                        step: 1_000
-                    )
-                    .accessibilityValue("\(settings.maxHistorySize) items")
-                    .labelsHidden()
-
-                    Text("Oldest items are removed when this limit is reached")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 4)
-            } header: {
-                Text("History")
-            }
-
-            // Theme Section
-            Section {
-                Picker("Appearance", selection: $settings.theme) {
-                    Text("Light").tag(AppTheme.light)
-                    Text("Dark").tag(AppTheme.dark)
-                    Text("Auto").tag(AppTheme.auto)
-                }
-                .pickerStyle(.segmented)
-                .accessibilityLabel("Theme preference")
-            } header: {
-                Text("Theme")
-            } footer: {
-                Text("Auto matches your system appearance setting")
-                    .font(.caption)
-            }
-
-            // About Section
-            Section {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("OpenPaste")
-                            .font(.headline)
-
-                        Text("Version \(settings.appVersion)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    Spacer()
-
-                    Link("View License", destination: URL(string: "https://opensource.org/licenses/MIT")!)
-                        .font(.caption)
-                }
-            } header: {
-                Text("About")
-            }
+            .padding()
         }
-        .formStyle(.grouped)
+        .background(settingsBackground)
         .navigationTitle("Settings")
         .alert("Change Keyboard Shortcut", isPresented: $showingHotkeyAlert) {
             Button("Cancel", role: .cancel) { }
