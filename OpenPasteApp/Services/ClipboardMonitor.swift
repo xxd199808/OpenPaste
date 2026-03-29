@@ -236,7 +236,8 @@ final class ClipboardMonitor {
 
         // Get the currently active application
         if let runningApp = workspace.frontmostApplication {
-            return runningApp.localizedName
+            // Return bundle identifier for icon loading
+            return runningApp.bundleIdentifier ?? runningApp.localizedName
         }
 
         return nil

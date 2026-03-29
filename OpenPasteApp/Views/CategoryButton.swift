@@ -29,23 +29,6 @@ struct CategoryButton: View {
         HStack(spacing: 8) {
             Spacer()
 
-            // Text label (adaptive width, right-aligned next to button)
-            if isHovering || isSelected {
-                Text(title)
-                    .font(.system(size: 13))
-                    .foregroundColor(isSelected ? .white : .white.opacity(0.7))
-                    .multilineTextAlignment(.trailing)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        RoundedRectangle(cornerRadius: 6)
-                            .fill(isSelected ? Color.accentColor : Color.black.opacity(0.3))
-                    )
-                    .lineLimit(2)
-                    .fixedSize(horizontal: true, vertical: false)
-                    .transition(.opacity)
-            }
-
             // Button
             Button(action: action) {
                 ZStack {

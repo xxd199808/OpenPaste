@@ -311,6 +311,7 @@ final class ClipboardViewModel: ObservableObject {
     // MARK: - Private Methods - Data Handling
 
     func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
+
         // Save to Core Data on main thread
         await MainActor.run {
             let context = dataStore.viewContext

@@ -136,15 +136,11 @@ struct CategoryManagementView: View {
                         emptyStateView(for: selected)
                     } else {
                         ScrollView {
-                            LazyVStack(spacing: 0) {
+                            LazyVStack(spacing: 8) {
                                 ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                                    ClipboardItemRow(
-                                        content: item.content,
-                                        timestamp: item.capturedAt,
-                                        index: index,
-                                        isSelected: false,
-                                        copyHandler: copyHandler,
-                                        onTap: {
+                                    ClipboardItemView(
+                                        item: item,
+                                        onSelect: {
                                             copyHandler(item.content)
                                         }
                                     )
@@ -346,7 +342,7 @@ struct CategoryManagementView: View {
                     }
                 }
             } catch {
-                print("Failed to move item: \(error)")
+                // Ignore error
             }
         }
     }
@@ -441,6 +437,6 @@ struct CategoryDropDelegate: DropDelegate {
         expiryService: expiryService
     )
     CategoryManagementView(viewModel: viewModel, copyHandler: { content in
-        print("Copy: \(content)")
+        // Preview copy handler
     })
 }

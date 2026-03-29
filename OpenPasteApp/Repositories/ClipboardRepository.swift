@@ -257,7 +257,7 @@ final class ClipboardRepository {
             itemsSubject.send(items)
         } catch {
             // Log error but don't crash
-            print("Error broadcasting items: \(error)")
+            // Error broadcasting items
         }
     }
 }

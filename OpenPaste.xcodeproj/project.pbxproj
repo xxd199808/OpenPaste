@@ -34,12 +34,15 @@
 		BB0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */; };
 		BB0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */; };
 		BB1000000000000000000000 /* CategoryManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1000000000000000000000 /* CategoryManagementView.swift */; };
-		BB1100000000000000000000 /* ClipboardItemRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1100000000000000000000 /* ClipboardItemRow.swift */; };
 		BB1200000000000000000000 /* PresetCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1200000000000000000000 /* PresetCategory.swift */; };
 		BB1300000000000000000000 /* CategorySelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1300000000000000000000 /* CategorySelector.swift */; };
 		BB1400000000000000000000 /* CategoryButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1400000000000000000000 /* CategoryButton.swift */; };
 		BB1500000000000000000000 /* SidebarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1500000000000000000000 /* SidebarView.swift */; };
 		BB1600000000000000000000 /* UnifiedContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1600000000000000000000 /* UnifiedContentView.swift */; };
+		BB1700000000000000000000 /* AppIconColorExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1700000000000000000000 /* AppIconColorExtractor.swift */; };
+		BB1800000000000000000000 /* CardHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1800000000000000000000 /* CardHeader.swift */; };
+		BB1900000000000000000000 /* CardContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1900000000000000000000 /* CardContent.swift */; };
+		BB1A00000000000000000000 /* ClipboardItemCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1A00000000000000000000 /* ClipboardItemCard.swift */; };
 		CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */; };
 		DD0000000000000000000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DD0000000000000000000002 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -74,12 +77,15 @@
 		AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SearchBarView.swift"; sourceTree = "<group>"; };
 		AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
 		AA1000000000000000000000 /* CategoryManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/CategoryManagementView.swift"; sourceTree = "<group>"; };
-		AA1100000000000000000000 /* ClipboardItemRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/ClipboardItemRow.swift"; sourceTree = "<group>"; };
 		AA1200000000000000000000 /* PresetCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/PresetCategory.swift"; sourceTree = "<group>"; };
 		AA1300000000000000000000 /* CategorySelector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/CategorySelector.swift"; sourceTree = "<group>"; };
 		AA1400000000000000000000 /* CategoryButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/CategoryButton.swift"; sourceTree = "<group>"; };
 		AA1500000000000000000000 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SidebarView.swift"; sourceTree = "<group>"; };
 		AA1600000000000000000000 /* UnifiedContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/UnifiedContentView.swift"; sourceTree = "<group>"; };
+		AA1700000000000000000000 /* AppIconColorExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/AppIconColorExtractor.swift"; sourceTree = "<group>"; };
+		AA1800000000000000000000 /* CardHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Card/CardHeader.swift"; sourceTree = "<group>"; };
+		AA1900000000000000000000 /* CardContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Card/CardContent.swift"; sourceTree = "<group>"; };
+		AA1A00000000000000000000 /* ClipboardItemCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Card/ClipboardItemCard.swift"; sourceTree = "<group>"; };
 
 		CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodeld; path = "Resources/OpenPasteApp.xcdatamodeld"; sourceTree = "<group>"; };
 		DD0000000000000000000002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Resources/Assets.xcassets"; sourceTree = "<group>"; };
@@ -126,12 +132,15 @@
 				AA0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift */,
 				AA0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift */,
 				AA1000000000000000000000 /* CategoryManagementView.swift */,
-				AA1100000000000000000000 /* ClipboardItemRow.swift */,
 				AA1200000000000000000000 /* PresetCategory.swift */,
 				AA1300000000000000000000 /* CategorySelector.swift */,
 				AA1400000000000000000000 /* CategoryButton.swift */,
 				AA1500000000000000000000 /* SidebarView.swift */,
 				AA1600000000000000000000 /* UnifiedContentView.swift */,
+				AA1700000000000000000000 /* AppIconColorExtractor.swift */,
+				AA1800000000000000000000 /* CardHeader.swift */,
+				AA1900000000000000000000 /* CardContent.swift */,
+				AA1A00000000000000000000 /* ClipboardItemCard.swift */,
 			CD0000000000000000000001 /* OpenPasteApp.xcdatamodeld */,
 			DD0000000000000000000002 /* Assets.xcassets */,
 			);
@@ -245,12 +254,15 @@
 				BB0EEEEEEEEEEEEEEEEEEEEE /* SearchBarView.swift in Sources */,
 				BB0FFFFFFFFFFFFFFFFFFFFF /* SettingsView.swift in Sources */,
 				BB1000000000000000000000 /* CategoryManagementView.swift in Sources */,
-				BB1100000000000000000000 /* ClipboardItemRow.swift in Sources */,
 				BB1200000000000000000000 /* PresetCategory.swift in Sources */,
 				BB1300000000000000000000 /* CategorySelector.swift in Sources */,
 				BB1400000000000000000000 /* CategoryButton.swift in Sources */,
 				BB1500000000000000000000 /* SidebarView.swift in Sources */,
 				BB1600000000000000000000 /* UnifiedContentView.swift in Sources */,
+				BB1700000000000000000000 /* AppIconColorExtractor.swift in Sources */,
+				BB1800000000000000000000 /* CardHeader.swift in Sources */,
+				BB1900000000000000000000 /* CardContent.swift in Sources */,
+				BB1A00000000000000000000 /* ClipboardItemCard.swift in Sources */,
 			CD0000000000000000000003 /* OpenPasteApp.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

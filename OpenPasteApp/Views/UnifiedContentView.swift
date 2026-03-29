@@ -31,13 +31,9 @@ struct UnifiedContentView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 8) {
                     ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
-                        ClipboardItemRow(
-                            content: item.content,
-                            timestamp: item.capturedAt,
-                            index: index,
-                            isSelected: selectedIndex == index,
-                            copyHandler: copyHandler,
-                            onTap: {
+                        ClipboardItemView(
+                            item: item,
+                            onSelect: {
                                 selectedIndex = index
                                 copyHandler(item.content)
                             }
@@ -181,7 +177,7 @@ struct UnifiedContentView: View {
     UnifiedContentView(
         selectedCategory: .constant(.preset(.recent)),
         viewModel: previewViewModel(),
-        copyHandler: { print("Copy: \($0)") }
+        copyHandler: { _ in }
     )
 }
 

@@ -56,9 +56,9 @@ struct ClipboardListView: View {
 
             // Scrollable list with LazyVStack
             ScrollView {
-                LazyVStack(spacing: 0) {
+                LazyVStack(spacing: 8) {
                     ForEach(items, id: \.id) { item in
-                        ClipboardItemCell(item: item)
+                        ClipboardItemView(item: item)
                             .onAppear {
                                 // Trigger next batch when nearing the end
                                 if shouldTriggerNextBatch(for: item) {
@@ -177,57 +177,6 @@ struct ClipboardListView: View {
                 isPinned: offset + index < 3, // Pin first 3 items
                 categoryId: nil
             )
-        }
-    }
-}
-
-// MARK: - ClipboardItemCell
-
-/// Individual cell view for a clipboard item
-struct ClipboardItemCell: View {
-    let item: ClipboardItemData
-
-    var body: some View {
-        HStack(spacing: 12) {
-            // Pin icon for pinned items
-            if item.isPinned {
-                Image(systemName: "pin.fill")
-                    .foregroundColor(.accentColor)
-                    .font(.caption)
-                    .accessibilityLabel("Pinned item")
-            }
-
-            // Content preview
-            VStack(alignment: .leading, spacing: 4) {
-                Text(item.content)
-                    .lineLimit(2)
-                    .font(.body)
-
-                HStack(spacing: 8) {
-                    if let sourceApp = item.sourceApp {
-                        Text(sourceApp)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-
-                    Text(item.capturedAt, style: .relative)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Spacer()
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 8)
-        .contentShape(Rectangle())
-        .contextMenu {
-            Button(item.isPinned ? "Unpin" : "Pin") {
-                // Toggle pin state
-            }
-            Button("Delete", role: .destructive) {
-                // Delete item
-            }
         }
     }
 }
