@@ -25,6 +25,7 @@ struct SidebarView: View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 12)
             }
+            .frame(width: 250)
 
             Spacer()
 
@@ -36,7 +37,9 @@ struct SidebarView: View {
             ) {
                 selectedCategory = .settings
             }
+            .padding(.horizontal, 8)
             .padding(.bottom, 12)
+            .frame(width: 250) // Match scrollview width
         }
         .frame(width: 250)
         .background(Color.clear)
