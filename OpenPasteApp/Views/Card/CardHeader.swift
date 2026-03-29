@@ -16,6 +16,14 @@ struct CardHeader: View {
 
     @State private var availableCategories: [CategoryData] = []
 
+    /// Special identifier for iCloud synced content
+    private let iCloudSyncIdentifier = "com.apple.icloud.clipboard"
+
+    /// Whether this content appears to be from iCloud sync
+    private var isICloudSynced: Bool {
+        sourceApp == iCloudSyncIdentifier
+    }
+
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
             // Left side: App icon (overflowing left only)
@@ -76,7 +84,25 @@ struct CardHeader: View {
 
     private var appIconView: some View {
         Group {
-            if let icon = appIcon {
+            if isICloudSynced {
+                // Show iCloud sync icon
+                Image(systemName: "icloud")
+                    .font(.system(size: 48, weight: .medium))
+                    .foregroundStyle(.white)
+                    .frame(width: 64, height: 64)
+                    .background(
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.blue.opacity(0.8), Color.cyan.opacity(0.6)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .offset(x: -20, y: 0)
+            } else if let icon = appIcon {
                 Image(nsImage: icon)
                     .resizable()
                     .frame(width: 64, height: 64)
@@ -187,6 +213,12 @@ struct CardHeader: View {
 
     private func loadDominantColor(for appName: String) {
         Task { @MainActor in
+            // Use iCloud brand color for synced content
+            if appName == iCloudSyncIdentifier {
+                dominantColor = Color.blue.opacity(0.15)
+                return
+            }
+
             let extractedColor = await AppIconColorExtractor.shared.extractColor(for: appName)
             // Adjust brightness if too high (for white text readability)
             dominantColor = adjustBrightnessIfNeeded(extractedColor)

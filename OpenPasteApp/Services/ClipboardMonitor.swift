@@ -234,6 +234,11 @@ final class ClipboardMonitor {
     private func getCurrentSourceApp() -> String? {
         let workspace = NSWorkspace.shared
 
+        // Check if this appears to be iCloud-synced content
+        if isICloudSyncedContent() {
+            return "com.apple.icloud.clipboard"  // Special identifier for iCloud synced content
+        }
+
         // Get the currently active application
         if let runningApp = workspace.frontmostApplication {
             // Return bundle identifier for icon loading
@@ -241,5 +246,56 @@ final class ClipboardMonitor {
         }
 
         return nil
+    }
+
+    /// Detect if clipboard content appears to be from iCloud sync
+    /// Uses heuristics: iCloud sync typically doesn't include source app metadata
+    /// and the frontmost app is often a development tool or system app
+    private func isICloudSyncedContent() -> Bool {
+        guard let runningApp = NSWorkspace.shared.frontmostApplication,
+              let bundleId = runningApp.bundleIdentifier else {
+            return false
+        }
+
+        // Check if frontmost app is commonly active when receiving iCloud synced content
+        let suspectApps = [
+            "com.apple.Xcode",           // Xcode
+            "com.apple.dt.Xcode",        // Xcode alternative
+            "com.apple.simulator",       // iOS Simulator
+            "com.riotgames.leagueoflegends",  // Games (often idle)
+            "com.spotify.client",        // Spotify (commonly in background)
+            "com.apple.Music",           // Apple Music
+            "com.apple.TV",              // Apple TV
+        ]
+
+        // If frontmost app is in suspect list, likely iCloud sync
+        if suspectApps.contains(bundleId) {
+            return true
+        }
+
+        // Additional heuristic: check pasteboard for lack of source app metadata
+        // Local copy operations usually have more metadata
+        let types = pasteboard.types ?? []
+        let hasComplexMetadata = types.count > 2  // iCloud sync usually has minimal types
+
+        return !hasComplexMetadata && isSuspectAppBundle(bundleId)
+    }
+
+    /// Check if bundle ID belongs to an app category that's commonly not the source
+    private func isSuspectAppBundle(_ bundleId: String) -> Bool {
+        // Development tools
+        if bundleId.contains("xcode") || bundleId.contains("developer") {
+            return true
+        }
+        // Games and entertainment
+        if bundleId.contains("game") || bundleId.contains("riot") {
+            return true
+        }
+        // Media apps
+        if bundleId.contains("music") || bundleId.contains("spotify") {
+            return true
+        }
+
+        return false
     }
 }
