@@ -1,0 +1,266 @@
+import Foundation
+import SwiftUI
+
+/// Preset category types for sidebar navigation
+/// Represents built-in categories and 5 fixed favorite categories
+enum PresetCategory: String, CaseIterable {
+    // Sort order 1: Recent items (all items, sorted by date)
+    case recent = "最近"
+
+    // Sort order 2: Text content (plain + rich text combined)
+    case text = "文本"
+
+    // Sort order 3: Code snippets
+    case code = "代码"
+
+    // Sort order 4: Bash commands
+    case bash = "Bash命令"
+
+    // Sort order 5: Images
+    case image = "图片"
+
+    // Sort order 6: Files
+    case file = "文件"
+
+    // Sort order 7: Links/URLs
+    case link = "链接"
+
+    // Sort order 8: Email addresses
+    case email = "邮箱"
+
+    // Sort order 9: Phone numbers
+    case phoneNumber = "电话"
+
+    // Sort order 10: Color codes (hex, rgb, etc.)
+    case colorCode = "颜色"
+
+    // Sort order 11-15: Fixed favorite categories
+    case favorite1 = "收藏1"
+    case favorite2 = "收藏2"
+    case favorite3 = "收藏3"
+    case favorite4 = "收藏4"
+    case favorite5 = "收藏5"
+
+    // MARK: - Properties
+
+    /// Display name for the category
+    var displayName: String {
+        return self.rawValue
+    }
+
+    /// SF Symbol icon for the category
+    var icon: String {
+        switch self {
+        case .recent:
+            return "clock.arrow.circlepath"
+        case .text:
+            return "doc.text"
+        case .code:
+            return "curlybraces"
+        case .bash:
+            return "terminal"
+        case .image:
+            return "photo"
+        case .file:
+            return "doc"
+        case .link:
+            return "link"
+        case .email:
+            return "envelope"
+        case .phoneNumber:
+            return "phone"
+        case .colorCode:
+            return "paintpalette"
+        case .favorite1:
+            return "star.fill"
+        case .favorite2:
+            return "star.fill"
+        case .favorite3:
+            return "star.fill"
+        case .favorite4:
+            return "star.fill"
+        case .favorite5:
+            return "star.fill"
+        }
+    }
+
+    /// Icon color for favorite categories
+    var iconColor: Color? {
+        switch self {
+        case .favorite1:
+            return .red
+        case .favorite2:
+            return .orange
+        case .favorite3:
+            return .yellow
+        case .favorite4:
+            return .green
+        case .favorite5:
+            return .blue
+        default:
+            return nil
+        }
+    }
+
+    /// Sort order in sidebar
+    var sortOrder: Int {
+        switch self {
+        case .recent: return 1
+        case .text: return 2
+        case .code: return 3
+        case .bash: return 4
+        case .image: return 5
+        case .file: return 6
+        case .link: return 7
+        case .email: return 8
+        case .phoneNumber: return 9
+        case .colorCode: return 10
+        case .favorite1: return 11
+        case .favorite2: return 12
+        case .favorite3: return 13
+        case .favorite4: return 14
+        case .favorite5: return 15
+        }
+    }
+
+    /// Custom display name (can be modified in settings)
+    var customDisplayName: String? {
+        return UserDefaults.standard.string(forKey: "preset_\(rawValue)_name")
+    }
+
+    /// Update custom display name
+    func setCustomDisplayName(_ name: String) {
+        UserDefaults.standard.set(name, forKey: "preset_\(rawValue)_name")
+    }
+
+    // MARK: - Content Matching
+
+    /// Check if a clipboard item matches this preset category
+    /// - Parameter item: The clipboard item data to check
+    /// - Returns: True if the item belongs to this category
+    func matches(_ item: ClipboardItemData) -> Bool {
+        switch self {
+        case .recent:
+            // Recent shows everything
+            return true
+
+        case .text:
+            // Text content types
+            return isTextContentType(item.contentType)
+
+        case .code:
+            // Code file extensions or syntax
+            return isCodeContentType(item.contentType) || item.content.contains("func ") || item.content.contains("var ")
+
+        case .bash:
+            // Bash commands or shell scripts
+            return isBashContentType(item.contentType) || item.content.hasPrefix("#!/bin/bash") || item.content.hasPrefix("#!/bin/sh")
+
+        case .image:
+            // Image content types
+            return isImageContentType(item.contentType)
+
+        case .file:
+            // File attachments (not text, image, or code)
+            return isFileContentType(item.contentType)
+
+        case .link:
+            // URLs or links
+            return item.content.contains("http://") || item.content.contains("https://") || item.content.hasPrefix("www.")
+
+        case .email:
+            // Email addresses
+            return item.content.contains("@") && item.content.contains(".")
+
+        case .phoneNumber:
+            // Phone numbers (international, with parentheses, mobile, etc.)
+            return item.content.range(of: "^(\\+?\\d{1,3})?[-.\\(\\s]?\\d{1,4}[\\)\\s]?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$", options: .regularExpression) != nil
+
+        case .colorCode:
+            // Hex color codes (3-digit, 6-digit, and 8-digit with alpha)
+            return item.content.range(of: "#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\b", options: .regularExpression) != nil
+
+        case .favorite1, .favorite2, .favorite3, .favorite4, .favorite5:
+            // Favorites only show manually assigned items
+            // Check if item's categoryId matches this favorite's UUID
+            return item.categoryId == favoriteUUID
+        }
+    }
+
+    /// UUID for this favorite category (used for matching)
+    var favoriteUUID: UUID {
+        // Generate consistent UUID based on raw value
+        switch self {
+        case .favorite1:
+            return UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
+        case .favorite2:
+            return UUID(uuidString: "00000000-0000-0000-0000-000000000002")!
+        case .favorite3:
+            return UUID(uuidString: "00000000-0000-0000-0000-000000000003")!
+        case .favorite4:
+            return UUID(uuidString: "00000000-0000-0000-0000-000000000004")!
+        case .favorite5:
+            return UUID(uuidString: "00000000-0000-0000-0000-000000000005")!
+        default:
+            return UUID()
+        }
+    }
+
+    // MARK: - Content Type Helpers
+
+    private func isTextContentType(_ contentType: String) -> Bool {
+        return contentType == "public.utf8-plain-text" ||
+               contentType == "public.rtf" ||
+               contentType == "public.html" ||
+               contentType == "com.apple.flat-rtfd" ||
+               contentType.hasPrefix("public.text")
+    }
+
+    private func isCodeContentType(_ contentType: String) -> Bool {
+        let codeExtensions = [
+            "public.swift-source",
+            "public.objective-c-source",
+            "public.c-source",
+            "public.c-plus-plus-source",
+            "com.sun.java-source",
+            "com.microsoft.java-source",
+            "public.python-script",
+            "com.netscape.javascript-source",
+            "com.adobe.javascript-source",
+            "public.xml",
+            "com.apple.property-list",
+            "public.json",
+            "com.apple.swift-syntaxhighlight"
+        ]
+        return codeExtensions.contains(contentType) || contentType.hasPrefix("public.source-code")
+    }
+
+    private func isBashContentType(_ contentType: String) -> Bool {
+        return contentType == "public.shell-script" ||
+               contentType == "com.apple.shell-script" ||
+               contentType.hasPrefix("public.shell-script")
+    }
+
+    private func isImageContentType(_ contentType: String) -> Bool {
+        return contentType.hasPrefix("public.image") ||
+               contentType == "com.adobe.pdf" ||
+               contentType.hasSuffix(".png") ||
+               contentType.hasSuffix(".jpg") ||
+               contentType.hasSuffix(".jpeg") ||
+               contentType.hasSuffix(".gif") ||
+               contentType.hasSuffix(".webp")
+    }
+
+    private func isFileContentType(_ contentType: String) -> Bool {
+        // Files that are not text, code, or images
+        let fileTypes = [
+            "public.data",
+            "public.content",
+            "com.adobe.pdf",
+            "public.archive",
+            "public.zip-archive",
+            "com.apple.disk-image"
+        ]
+        return fileTypes.contains(contentType) || contentType.hasPrefix("public.")
+    }
+}

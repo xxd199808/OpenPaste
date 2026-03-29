@@ -8,4 +8,5 @@ struct ClipboardItemData: Identifiable, Equatable {
     let sourceApp: String?
     let capturedAt: Date
     let isPinned: Bool
+    let categoryId: UUID?  // Category assignment for filtering
 }

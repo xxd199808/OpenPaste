@@ -174,7 +174,8 @@ struct ClipboardListView: View {
                 contentType: "public.utf8-plain-text",
                 sourceApp: "TestApp",
                 capturedAt: Date(),
-                isPinned: offset + index < 3 // Pin first 3 items
+                isPinned: offset + index < 3, // Pin first 3 items
+                categoryId: nil
             )
         }
     }

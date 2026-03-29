@@ -138,13 +138,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if let panel = floatingPanel {
             let screen = NSScreen.main?.visibleFrame ?? NSRect.zero
+            let topBottomMargin: CGFloat = 20
 
-            // Use the panel's content view size to get accurate dimensions
-            // This is more reliable than panel.frame when window is off-screen
-            let panelWidth = panel.contentView?.frame.width ?? 400
-            let panelHeight = panel.contentView?.frame.height ?? 500
+            // Recalculate frame to match screen height with margin
+            let panelWidth = panel.contentView?.frame.width ?? 630
+            let panelHeight = screen.height - (topBottomMargin * 2)
             let targetX = screen.maxX - panelWidth
-            let targetY = (screen.height - panelHeight) / 2
+            let targetY = screen.minY + topBottomMargin
 
             // Set the panel frame to the correct size and position off-screen
             let offScreenFrame = NSRect(x: screen.maxX, y: targetY, width: panelWidth, height: panelHeight)
@@ -176,12 +176,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Get screen dimensions for positioning
         let screen = NSScreen.main?.visibleFrame ?? NSRect.zero
-        let panelWidth: CGFloat = 400
-        let panelHeight: CGFloat = screen.height * 0.7
+        let panelWidth: CGFloat = 630
+        let topBottomMargin: CGFloat = 20
+        let panelHeight: CGFloat = screen.height - (topBottomMargin * 2)
 
-        // Target position - flush against right edge
+        // Target position - flush against right edge, with margin on top/bottom
         let targetX = screen.maxX - panelWidth
-        let targetY = (screen.height - panelHeight) / 2
+        let targetY = screen.minY + topBottomMargin
 
         // Create panel at target position first
         let panel = CustomPanel(
@@ -200,9 +201,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         panel.isOpaque = false
         panel.backgroundColor = .clear
 
-        // Remove all window decorations
+        // Remove all window decorations and shadows
         panel.hasShadow = false
         panel.contentView?.wantsLayer = true
+        panel.contentView?.layer?.backgroundColor = .clear
+        panel.contentView?.layer?.shadowColor = .clear
+        panel.contentView?.layer?.shadowOpacity = 0
+        panel.contentView?.layer?.shadowRadius = 0
         panel.level = .modalPanel
 
         // Remove activation frame border
@@ -365,27 +370,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 // MARK: - FloatingPanelView
 
-/// View wrapper for the floating panel that contains the clipboard list
+/// View wrapper for the floating panel with sidebar navigation
+/// Uses HStack layout: 70pt sidebar + unified content area
 struct FloatingPanelView: View {
     @ObservedObject var viewModel: ClipboardViewModel
     let copyHandler: (String) -> Void
 
-    @State private var selectedIndex: Int = 0
-    @State private var selectedTab: PanelTab = .history
-    @Namespace private var tabAnimation
+    @State private var selectedCategory: CategorySelector = .preset(.recent)
 
     // MARK: - Computed Properties for Background Effects
-
-    @ViewBuilder
-    private var headerBackground: some View {
-        if #available(macOS 26.0, *) {
-            RoundedRectangle(cornerRadius: 8)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 8))
-        } else {
-            RoundedRectangle(cornerRadius: 8)
-                .background(.ultraThinMaterial)
-        }
-    }
 
     @ViewBuilder
     private var panelBackground: some View {
@@ -399,133 +392,23 @@ struct FloatingPanelView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Header with tab navigation
-            HStack(spacing: 16) {
-                Image(systemName: "doc.on.clipboard")
-                    .font(.title2)
-                    .foregroundColor(.accentColor)
+        HStack(spacing: 0) {
+            // Left sidebar (floating buttons outside background)
+            SidebarView(
+                viewModel: viewModel,
+                selectedCategory: $selectedCategory
+            )
+            .frame(width: 250)
 
-                // Tab picker
-                Picker("", selection: $selectedTab) {
-                    Image(systemName: "clock.arrow.circlepath").tag(PanelTab.history)
-                    Image(systemName: "folder").tag(PanelTab.categories)
-                    Image(systemName: "gearshape").tag(PanelTab.settings)
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 200)
-
-                Spacer()
-
-                Text("\(viewModel.items.count) items")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 10)
-            .background(headerBackground)
-
-            Divider()
-
-            // Content based on selected tab
-            Group {
-                switch selectedTab {
-                case .history:
-                    historyContent
-                case .categories:
-                    CategoryManagementView(viewModel: viewModel, copyHandler: copyHandler)
-                case .settings:
-                    SettingsView()
-                }
-            }
-        }
-        .frame(minWidth: 400, minHeight: 300)
-        .background(panelBackground)
-    }
-
-    // MARK: - History Content
-
-    @ViewBuilder
-    private var historyContent: some View {
-        if viewModel.items.isEmpty {
-            VStack(spacing: 16) {
-                Spacer()
-                Image(systemName: "doc.on.clipboard")
-                    .font(.system(size: 60))
-                    .foregroundColor(.secondary.opacity(0.5))
-                Text("No clipboard items yet")
-                    .font(.title3)
-                    .foregroundColor(.secondary)
-                Text("Copy some text to get started")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-                Spacer()
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 8) {
-                    ForEach(Array(viewModel.items.enumerated()), id: \.element.id) { index, item in
-                        itemRow(for: item, at: index)
-                    }
-                }
-                .padding()
-            }
-        }
-    }
-
-    @ViewBuilder
-    private func itemRow(for item: ClipboardItemData, at index: Int) -> some View {
-        ClipboardItemRow(
-            content: item.content,
-            timestamp: item.capturedAt,
-            index: index,
-            isSelected: index == selectedIndex,
-            copyHandler: copyHandler,
-            onTap: {
-                selectedIndex = index
-                copyHandler(item.content)
-            }
-        )
-        .contextMenu {
-            categoryMenuContent(for: item)
-        }
-    }
-
-    @ViewBuilder
-    private func categoryMenuContent(for item: ClipboardItemData) -> some View {
-        if !viewModel.categories.isEmpty {
-            Menu("添加到分类") {
-                ForEach(viewModel.categories) { category in
-                    Button(category.name) {
-                        handleAssignToCategory(item, categoryId: category.id)
-                    }
-                }
-            }
-
-            Divider()
-
-            Button("从分类中移除", role: .destructive) {
-                handleRemoveFromCategory(item)
-            }
-        } else {
-            Button("暂无分类") {
-                selectedTab = .categories
-            }
-            .disabled(true)
-        }
-    }
-
-    private func handleAssignToCategory(_ item: ClipboardItemData, categoryId: UUID) {
-        Task {
-            await viewModel.assignItem(item, toCategory: categoryId)
-            await viewModel.loadCategories()
-        }
-    }
-
-    private func handleRemoveFromCategory(_ item: ClipboardItemData) {
-        Task {
-            await viewModel.removeFromCategory(item)
+            // Right content area with rounded glass background
+            UnifiedContentView(
+                selectedCategory: $selectedCategory,
+                viewModel: viewModel,
+                copyHandler: copyHandler
+            )
+            .frame(maxWidth: .infinity)
+            .background(panelBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 }

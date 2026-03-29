@@ -439,7 +439,8 @@ extension ClipboardItem {
             contentType: self.contentType,
             sourceApp: self.sourceApp,
             capturedAt: self.capturedAt,
-            isPinned: self.isPinned
+            isPinned: self.isPinned,
+            categoryId: self.category?.id
         )
     }
 }

@@ -224,7 +224,8 @@ struct ClipboardItemView: View {
                 contentType: "public.utf8-plain-text",
                 sourceApp: "Safari",
                 capturedAt: Date().addingTimeInterval(-300),
-                isPinned: false
+                isPinned: false,
+                categoryId: nil
             )
         )
 
@@ -235,7 +236,8 @@ struct ClipboardItemView: View {
                 contentType: "public.utf8-plain-text",
                 sourceApp: "Finder",
                 capturedAt: Date(),
-                isPinned: true
+                isPinned: true,
+                categoryId: nil
             )
         )
     }
@@ -250,7 +252,8 @@ struct ClipboardItemView: View {
             contentType: "public.image",
             sourceApp: "Photos",
             capturedAt: Date().addingTimeInterval(-600),
-            isPinned: false
+            isPinned: false,
+            categoryId: nil
         )
     )
     .padding()
@@ -264,7 +267,8 @@ struct ClipboardItemView: View {
             contentType: "public.file-url",
             sourceApp: "Finder",
             capturedAt: Date(),
-            isPinned: false
+            isPinned: false,
+            categoryId: nil
         )
     )
     .padding()
