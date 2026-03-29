@@ -217,8 +217,8 @@ struct CardHeader: View {
 
     private func loadDominantColor(for appName: String) {
         Task { @MainActor in
-            // Use iCloud brand color for synced content
-            if appName == iCloudSyncIdentifier {
+            // Use iCloud brand color for synced content or when no app icon
+            if appName == iCloudSyncIdentifier || appIcon == nil {
                 dominantColor = Color.blue.opacity(0.15)
                 return
             }
