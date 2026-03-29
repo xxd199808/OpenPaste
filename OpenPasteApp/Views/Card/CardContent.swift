@@ -4,7 +4,7 @@ import SwiftUI
 struct CardContent: View {
     let item: ClipboardItemData
 
-    private let fixedHeight: CGFloat = 72
+    private let fixedHeight: CGFloat = 108
 
     var body: some View {
         Group {

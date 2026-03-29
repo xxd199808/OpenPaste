@@ -8,6 +8,11 @@
 import AppKit
 import SwiftUI
 
+// MARK: - Layout Constants
+
+/// Default width for the floating panel
+private let defaultPanelWidth: CGFloat = 520
+
 // MARK: - CustomPanel
 /// Custom NSPanel subclass that can become key window even with utilityWindow style
 class CustomPanel: NSPanel {
@@ -141,7 +146,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let topBottomMargin: CGFloat = 20
 
             // Recalculate frame to match screen height with margin
-            let panelWidth = panel.contentView?.frame.width ?? 630
+            let panelWidth = panel.contentView?.frame.width ?? defaultPanelWidth
             let panelHeight = screen.height - (topBottomMargin * 2)
             let targetX = screen.maxX - panelWidth
             let targetY = screen.minY + topBottomMargin
@@ -176,7 +181,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // Get screen dimensions for positioning
         let screen = NSScreen.main?.visibleFrame ?? NSRect.zero
-        let panelWidth: CGFloat = 630
+        let panelWidth: CGFloat = defaultPanelWidth
         let topBottomMargin: CGFloat = 20
         let panelHeight: CGFloat = screen.height - (topBottomMargin * 2)
 
