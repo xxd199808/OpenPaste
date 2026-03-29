@@ -39,8 +39,8 @@ final class ClipboardMonitor {
     /// Whether monitoring is currently active
     private(set) var isMonitoring = false
 
-    /// Flag to skip the next clipboard change detection (used when app writes to clipboard)
-    private var skipNextChangeFlag = false
+    /// Counter to skip the next clipboard change detection (used when app writes to clipboard)
+    private var skipNextChangesCount: Int = 0
 
     /// Callback invoked when clipboard changes are detected
     private let onChange: ((Data, String, String?) -> Void)
@@ -79,7 +79,7 @@ final class ClipboardMonitor {
 
     /// Skip the next detected clipboard change (call before writing to pasteboard)
     func skipNextChange() {
-        skipNextChangeFlag = true
+        skipNextChangesCount = 10  // Skip multiple changes to ensure write operations complete
     }
 
     /// Stop monitoring the clipboard
@@ -168,8 +168,8 @@ final class ClipboardMonitor {
             lastChangeCount = currentChangeCount
 
             // Skip if the app itself triggered this change
-            if skipNextChangeFlag {
-                skipNextChangeFlag = false
+            if skipNextChangesCount > 0 {
+                skipNextChangesCount -= 1
                 return
             }
 
@@ -179,6 +179,9 @@ final class ClipboardMonitor {
 
             // Extract clipboard content
             if let (content, contentType) = extractClipboardContent() {
+                // Play notification sound for new content
+                playNotificationSound()
+
                 // Get source app
                 let sourceApp = getCurrentSourceApp()
 
@@ -211,24 +214,25 @@ final class ClipboardMonitor {
     // MARK: - Private Methods - Content Extraction
 
     private func extractClipboardContent() -> (Data, String)? {
-        // Try to get file URLs FIRST (before checking text)
-        // This ensures copied files are identified correctly
-        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
-           !fileURLs.isEmpty,
-           let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
-            return (data, "public.file-url")
-        }
-
-        // Try to get image content - save as file and return file path JSON
+        // Try to get image content first
         if let imageData = pasteboard.data(forType: .tiff),
            let imagePathData = ImageStorageManager.shared.saveImage(imageData) {
             return (imagePathData, "public.image")
         }
 
-        // Try to get string content last
+        // Try to get string content
         if let string = pasteboard.string(forType: .string),
+           !string.isEmpty,
            let data = string.data(using: .utf8) {
             return (data, "public.utf8-plain-text")
+        }
+
+        // Try to get file URLs (only if there are actual file paths)
+        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
+           !fileURLs.isEmpty,
+           fileURLs.allSatisfy({ $0.isFileURL }),
+           let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
+            return (data, "public.file-url")
         }
 
         return nil
@@ -300,5 +304,12 @@ final class ClipboardMonitor {
         }
 
         return false
+    }
+
+    /// Play notification sound when new clipboard content is detected
+    private func playNotificationSound() {
+        if let sound = NSSound(named: NSSound.Name("Glass")) {
+            sound.play()
+        }
     }
 }
