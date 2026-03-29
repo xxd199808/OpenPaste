@@ -95,13 +95,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Copy content to clipboard without triggering new entry
-    /// - Parameter content: The string content to copy
+    /// - Parameter content: The string content to copy (for files, this is JSON array of URLs)
     func copyToClipboard(_ content: String) {
         MainActor.assumeIsolated {
             viewModel?.skipNextChange()
         }
-        NSPasteboard.general.clearContents()
-        NSPasteboard.general.setString(content, forType: .string)
+
+        // Check if this is a file URL (JSON array)
+        if let data = content.data(using: .utf8),
+           let urls = try? JSONDecoder().decode([String].self, from: data),
+           let firstURLString = urls.first,
+           let url = URL(string: firstURLString) {
+            // This is a file URL - write file URLs to pasteboard
+            NSPasteboard.general.clearContents()
+            let fileURLs = urls.compactMap { URL(string: $0) } as [NSURL]
+            NSPasteboard.general.writeObjects(fileURLs)
+        } else {
+            // Regular text content
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(content, forType: .string)
+        }
     }
 
     private func setupGlobalHotkey() {
