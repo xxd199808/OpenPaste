@@ -64,6 +64,9 @@ final class ClipboardViewModel: ObservableObject {
     /// Available categories for categorizing items
     @Published var categories: [CategoryData] = []
 
+    /// Current clipboard item ID (for highlighting the active item)
+    @Published var currentClipboardItemId: UUID? = nil
+
     // MARK: - Properties
 
     /// Data store for clipboard operations
@@ -109,6 +112,12 @@ final class ClipboardViewModel: ObservableObject {
     }
 
     // MARK: - Public Methods
+
+    /// Set the current clipboard item ID (when user clicks to restore)
+    /// - Parameter itemId: The ID of the item that was just copied to clipboard
+    func setCurrentClipboardItem(_ itemId: UUID) {
+        currentClipboardItemId = itemId
+    }
 
     /// Refresh the clipboard items list
     func refresh() async {
@@ -405,6 +414,8 @@ final class ClipboardViewModel: ObservableObject {
 
                 do {
                     try dataStore.saveItem(existing)
+                    // Update current clipboard item ID when existing item is updated
+                    currentClipboardItemId = existing.id
                 } catch {
                     showError("Failed to update clipboard item: \(error.localizedDescription)")
                 }
@@ -443,6 +454,8 @@ final class ClipboardViewModel: ObservableObject {
             do {
                 try dataStore.saveItem(newItem)
                 NSLog("✅ Item saved with title: '\(newItem.title ?? "nil")'")
+                // Update current clipboard item ID when new item is created
+                currentClipboardItemId = newItem.id
             } catch {
                 showError("Failed to save clipboard item: \(error.localizedDescription)")
             }

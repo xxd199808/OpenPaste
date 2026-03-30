@@ -10,6 +10,9 @@ struct ClipboardItemView: View {
     /// The clipboard item data to display
     let item: ClipboardItemData
 
+    /// Whether this item matches the current clipboard content
+    var isCurrent: Bool = false
+
     /// Whether the item is currently visible (for lazy loading)
     var isVisible: Bool = true
 
@@ -30,6 +33,7 @@ struct ClipboardItemView: View {
     var body: some View {
         ClipboardItemCard(
             item: item,
+            isCurrent: isCurrent,
             onCategoryChange: onCategoryChange,
             onDelete: onDelete,
             onTitleChange: onTitleChange,

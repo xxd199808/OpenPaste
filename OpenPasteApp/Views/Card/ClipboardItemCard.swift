@@ -5,6 +5,7 @@ import CoreImage.CIFilterBuiltins
 /// Complete clipboard item card combining header and content
 struct ClipboardItemCard: View {
     let item: ClipboardItemData
+    var isCurrent: Bool = false
     var onCategoryChange: ((UUID?) -> Void)?
     var onDelete: (() -> Void)?
     var onTitleChange: ((String) -> Void)?
@@ -30,6 +31,18 @@ struct ClipboardItemCard: View {
         }
         .background(cardBackground)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .shadow(color: .blue.opacity(0.6), radius: isCurrent ? 15 : 0)
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(
+                    LinearGradient(
+                        colors: [.blue, .cyan],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: isCurrent ? 3 : 0
+                )
+        )
     }
 
     // MARK: - Card Background

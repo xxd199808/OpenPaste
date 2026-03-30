@@ -33,6 +33,7 @@ struct UnifiedContentView: View {
                     ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
                         ClipboardItemView(
                             item: item,
+                            isCurrent: item.id == viewModel.currentClipboardItemId,
                             onCategoryChange: { categoryId in
                                 Task {
                                     if let categoryId = categoryId {

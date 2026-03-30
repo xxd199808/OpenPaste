@@ -126,6 +126,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             // Restore all formats for accurate pasting in source apps
             PasteboardWriter.writeAll(pasteboardData, to: NSPasteboard.general)
             NSLog("✅ Restored complete pasteboard with \(pasteboardData.types.count) types")
+
+            // Update current clipboard item tracking
+            viewModel?.setCurrentClipboardItem(item.id)
         }
     }
 
