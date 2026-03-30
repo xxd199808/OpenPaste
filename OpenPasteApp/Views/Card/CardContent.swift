@@ -19,6 +19,8 @@ struct CardContent: View {
                 FileView(content: item.content)
             case "public.url":
                 URLView(content: item.content)
+            case "public.email":
+                TextView(content: item.content)
             default:
                 DefaultView(content: item.content, contentType: item.contentType)
             }

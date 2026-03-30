@@ -170,7 +170,7 @@ enum PresetCategory: String, CaseIterable {
 
         case .email:
             // Email addresses
-            return item.content.contains("@") && item.content.contains(".")
+            return item.contentType == "public.email"
 
         case .phoneNumber:
             // Phone numbers (international, with parentheses, mobile, etc.)

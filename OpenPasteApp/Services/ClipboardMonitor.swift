@@ -245,6 +245,10 @@ final class ClipboardMonitor {
         if let urlString = pasteboard.string(forType: NSPasteboard.PasteboardType.URL),
            !urlString.isEmpty,
            let data = urlString.data(using: .utf8) {
+            // Check if it's an email address
+            if isEmailAddress(urlString) {
+                return (data, "public.email", nil)
+            }
             return (data, "public.url", nil)
         }
 
@@ -257,6 +261,11 @@ final class ClipboardMonitor {
         if let string = pasteboard.string(forType: .string),
            !string.isEmpty,
            let data = string.data(using: .utf8) {
+
+            // Check if the string is an email address
+            if isEmailAddress(string) {
+                return (data, "public.email", nil)
+            }
 
             // Check if the string is a pure URL (no extra text around it)
             if isPureURL(string) {
@@ -308,6 +317,21 @@ final class ClipboardMonitor {
         // and contains no spaces or mixed text
         let urlPattern = #"^(https?://|www\.)[^\s]+$"#
         if let regex = try? NSRegularExpression(pattern: urlPattern, options: []),
+           let match = regex.firstMatch(in: trimmed, range: NSRange(location: 0, length: trimmed.utf16.count)) {
+            return match.range.length == trimmed.utf16.count
+        }
+
+        return false
+    }
+
+    /// Check if a string is an email address
+    private func isEmailAddress(_ string: String) -> Bool {
+        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Email pattern: local-part@domain
+        // Simplified but practical pattern for email detection
+        let emailPattern = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
+        if let regex = try? NSRegularExpression(pattern: emailPattern, options: []),
            let match = regex.firstMatch(in: trimmed, range: NSRange(location: 0, length: trimmed.utf16.count)) {
             return match.range.length == trimmed.utf16.count
         }
