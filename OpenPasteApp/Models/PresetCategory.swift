@@ -252,8 +252,10 @@ enum PresetCategory: String, CaseIterable {
     }
 
     private func isFileContentType(_ contentType: String) -> Bool {
-        // Files that are not text, code, or images
+        // Only match specific file and folder types
         let fileTypes = [
+            "public.file-url",      // Files
+            "public.folder",         // Folders
             "public.data",
             "public.content",
             "com.adobe.pdf",
@@ -261,6 +263,6 @@ enum PresetCategory: String, CaseIterable {
             "public.zip-archive",
             "com.apple.disk-image"
         ]
-        return fileTypes.contains(contentType) || contentType.hasPrefix("public.")
+        return fileTypes.contains(contentType)
     }
 }

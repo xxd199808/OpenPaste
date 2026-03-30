@@ -13,6 +13,8 @@ struct CardContent: View {
                 TextView(content: item.content)
             case "public.image", "public.tiff", "public.png":
                 ImageView(content: item.content)
+            case "public.folder":
+                FolderView(content: item.content)
             case "public.file-url":
                 FileView(content: item.content)
             case "public.url":

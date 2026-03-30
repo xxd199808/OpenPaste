@@ -148,6 +148,8 @@ struct CardHeader: View {
             return "文本"
         case "public.image", "public.tiff", "public.png":
             return "图片"
+        case "public.folder":
+            return "文件夹"
         case "public.file-url":
             return "文件"
         case "public.url":

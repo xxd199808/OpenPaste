@@ -216,24 +216,34 @@ final class ClipboardMonitor {
     // MARK: - Private Methods - Content Extraction
 
     private func extractClipboardContent() -> (Data, String)? {
+        // Try to get file URLs FIRST (to capture folders before their icon images)
+        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
+           !fileURLs.isEmpty,
+           fileURLs.allSatisfy({ $0.isFileURL }) {
+
+            // Check if any URL is a directory (folder)
+            let isDirectory = fileURLs.contains { url in
+                var isDir: ObjCBool = false
+                FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
+                return isDir.boolValue
+            }
+
+            let contentType = isDirectory ? "public.folder" : "public.file-url"
+            if let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
+                return (data, contentType)
+            }
+        }
+
         // Try to get image content — return raw data, defer file saving to ViewModel
         if let imageData = pasteboard.data(forType: .tiff) {
             return (imageData, "public.image")
         }
 
-        // Try to get string content
+        // Try to get string content (check last to avoid capturing folder paths as text)
         if let string = pasteboard.string(forType: .string),
            !string.isEmpty,
            let data = string.data(using: .utf8) {
             return (data, "public.utf8-plain-text")
-        }
-
-        // Try to get file URLs (only if there are actual file paths)
-        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
-           !fileURLs.isEmpty,
-           fileURLs.allSatisfy({ $0.isFileURL }),
-           let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
-            return (data, "public.file-url")
         }
 
         return nil
