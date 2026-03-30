@@ -36,6 +36,30 @@ struct UnifiedContentView: View {
                             onSelect: {
                                 selectedIndex = index
                                 copyHandler(item.content)
+                            },
+                            onPinToggle: {
+                                Task {
+                                    await viewModel.togglePin(for: item)
+                                }
+                            },
+                            onCategoryChange: { categoryId in
+                                Task {
+                                    if let categoryId = categoryId {
+                                        await viewModel.assignItem(item, toCategory: categoryId)
+                                    } else {
+                                        await viewModel.removeFromCategory(item)
+                                    }
+                                }
+                            },
+                            onDelete: {
+                                Task {
+                                    await viewModel.deleteItem(item)
+                                }
+                            },
+                            onTitleChange: { newTitle in
+                                Task {
+                                    await viewModel.updateTitle(for: item, to: newTitle)
+                                }
                             }
                         )
                         .contextMenu {
@@ -186,7 +210,7 @@ struct UnifiedContentView: View {
 @MainActor
 private func previewViewModel() -> ClipboardViewModel {
     let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
-    let monitor = ClipboardMonitor(onChange: { _, _, _ in })
+    let monitor = ClipboardMonitor(onChange: { _, _, _, _ in })
     let expiryService = ExpiryService(dataStore: dataStore)
     return ClipboardViewModel(
         dataStore: dataStore,

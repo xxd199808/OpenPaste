@@ -63,10 +63,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create ClipboardViewModel with Core Data persistence
         let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
         let expiryService = ExpiryService(dataStore: dataStore)
-        let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp in
+        let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp, title in
             Task { @MainActor in
                 await self?.viewModel?.handleNewClipboardItem(
-                    content: content, contentType: contentType, sourceApp: sourceApp)
+                    content: content, contentType: contentType, sourceApp: sourceApp, title: title)
             }
         }
         viewModel = ClipboardViewModel(

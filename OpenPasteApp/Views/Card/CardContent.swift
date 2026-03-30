@@ -48,7 +48,8 @@ struct CardContent: View {
         sourceApp: "Safari",
         capturedAt: Date(),
         isPinned: false,
-        categoryId: nil
+        categoryId: nil,
+        title: nil
     ))
     .frame(width: 300)
 }
@@ -61,7 +62,8 @@ struct CardContent: View {
         sourceApp: "Photos",
         capturedAt: Date(),
         isPinned: false,
-        categoryId: nil
+        categoryId: nil,
+        title: nil
     ))
     .frame(width: 300)
 }
@@ -74,7 +76,8 @@ struct CardContent: View {
         sourceApp: "Finder",
         capturedAt: Date(),
         isPinned: false,
-        categoryId: nil
+        categoryId: nil,
+        title: nil
     ))
     .frame(width: 300)
 }

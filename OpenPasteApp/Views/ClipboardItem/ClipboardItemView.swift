@@ -25,6 +25,9 @@ struct ClipboardItemView: View {
     /// Action handler for delete
     var onDelete: (() -> Void)?
 
+    /// Action handler for title change
+    var onTitleChange: ((String) -> Void)?
+
     // MARK: - Body
 
     var body: some View {
@@ -33,7 +36,8 @@ struct ClipboardItemView: View {
             onSelect: onSelect,
             onPinToggle: onPinToggle,
             onCategoryChange: onCategoryChange,
-            onDelete: onDelete
+            onDelete: onDelete,
+            onTitleChange: onTitleChange
         )
     }
 }
@@ -50,7 +54,8 @@ struct ClipboardItemView: View {
                 sourceApp: "Safari",
                 capturedAt: Date().addingTimeInterval(-300),
                 isPinned: false,
-                categoryId: nil
+                categoryId: nil,
+                title: nil
             )
         )
 
@@ -62,7 +67,8 @@ struct ClipboardItemView: View {
                 sourceApp: "Finder",
                 capturedAt: Date(),
                 isPinned: true,
-                categoryId: nil
+                categoryId: nil,
+                title: nil
             )
         )
     }
@@ -79,7 +85,8 @@ struct ClipboardItemView: View {
             sourceApp: "Photos",
             capturedAt: Date().addingTimeInterval(-600),
             isPinned: false,
-            categoryId: nil
+            categoryId: nil,
+            title: nil
         )
     )
     .padding()
@@ -95,7 +102,8 @@ struct ClipboardItemView: View {
             sourceApp: "Finder",
             capturedAt: Date(),
             isPinned: false,
-            categoryId: nil
+            categoryId: nil,
+            title: nil
         )
     )
     .padding()

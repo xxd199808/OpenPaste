@@ -175,7 +175,8 @@ struct ClipboardListView: View {
                 sourceApp: "TestApp",
                 capturedAt: Date(),
                 isPinned: offset + index < 3, // Pin first 3 items
-                categoryId: nil
+                categoryId: nil,
+                title: nil
             )
         }
     }

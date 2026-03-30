@@ -43,13 +43,13 @@ final class ClipboardMonitor {
     private var skipNextChangesCount: Int = 0
 
     /// Callback invoked when clipboard changes are detected
-    private let onChange: ((Data, String, String?) -> Void)
+    private let onChange: ((Data, String, String?, String?) -> Void)
 
     // MARK: - Initialization
 
     /// Initialize the clipboard monitor
-    /// - Parameter onChange: Callback invoked when new clipboard content is detected
-    init(onChange: @escaping (Data, String, String?) -> Void) {
+    /// - Parameter onChange: Callback invoked when new clipboard content is detected (content, contentType, sourceApp, title)
+    init(onChange: @escaping (Data, String, String?, String?) -> Void) {
         self.onChange = onChange
         self.lastChangeCount = pasteboard.changeCount
         self.lastActivityTimestamp = Date()
@@ -179,15 +179,15 @@ final class ClipboardMonitor {
                 currentPollingInterval = pollingIntervals[0]
 
                 // Extract clipboard content
-                if let (content, contentType) = extractClipboardContent() {
+                if let (content, contentType, title) = extractClipboardContent() {
                     // Play notification sound for new content
                     playNotificationSound()
 
                     // Get source app
                     let sourceApp = getCurrentSourceApp()
 
-                    // Notify callback
-                    onChange(content, contentType, sourceApp)
+                    // Notify callback with content, type, source app, and title
+                    onChange(content, contentType, sourceApp, title)
                 }
             }
         } else {
@@ -215,7 +215,7 @@ final class ClipboardMonitor {
 
     // MARK: - Private Methods - Content Extraction
 
-    private func extractClipboardContent() -> (Data, String)? {
+    private func extractClipboardContent() -> (Data, String, String?)? {
         // Try to get file URLs FIRST (to capture folders before their icon images)
         if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
            !fileURLs.isEmpty,
@@ -230,20 +230,27 @@ final class ClipboardMonitor {
 
             let contentType = isDirectory ? "public.folder" : "public.file-url"
             if let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
-                return (data, contentType)
+                return (data, contentType, nil)
             }
+        }
+
+        // Try to get rich link data (from mobile apps sharing)
+        if let richLinkData = pasteboard.data(forType: NSPasteboard.PasteboardType("public.rich-link")),
+           let (content, contentType, title) = parseRichLinkData(richLinkData) {
+            // Store title temporarily to pass with callback
+            return (content, contentType, title)
         }
 
         // Try to get URL (web links) using .url type
         if let urlString = pasteboard.string(forType: NSPasteboard.PasteboardType.URL),
            !urlString.isEmpty,
            let data = urlString.data(using: .utf8) {
-            return (data, "public.url")
+            return (data, "public.url", nil)
         }
 
         // Try to get image content — return raw data, defer file saving to ViewModel
         if let imageData = pasteboard.data(forType: .tiff) {
-            return (imageData, "public.image")
+            return (imageData, "public.image", nil)
         }
 
         // Try to get string content (check last to avoid capturing folder paths as text)
@@ -253,10 +260,41 @@ final class ClipboardMonitor {
 
             // Check if the string is a pure URL (no extra text around it)
             if isPureURL(string) {
-                return (data, "public.url")
+                return (data, "public.url", nil)
             }
 
-            return (data, "public.utf8-plain-text")
+            return (data, "public.utf8-plain-text", nil)
+        }
+
+        return nil
+    }
+
+    /// Parse rich link data from mobile apps (e.g., WeChat, Toutiao)
+    /// Returns (content, contentType, title) tuple with extracted URL and title
+    private func parseRichLinkData(_ data: Data) -> (Data, String, String?)? {
+        // Try to parse as Property List
+        if let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any] {
+            // Extract title and URL from rich link data
+            var urlString: String?
+            var title: String?
+            var icon: Data?
+
+            if let url = plist["url"] as? String {
+                urlString = url
+            }
+            if let t = plist["title"] as? String {
+                title = t
+            }
+            if let imageData = plist["icon"] as? Data {
+                icon = imageData
+            }
+
+            // If we have a URL, store it as content with title metadata
+            if let urlString = urlString,
+               let contentData = urlString.data(using: .utf8) {
+                // Return content, type, and extracted title
+                return (contentData, "public.rich-link", title)
+            }
         }
 
         return nil

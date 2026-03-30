@@ -60,7 +60,7 @@ struct SidebarView: View {
 @MainActor
 private func previewViewModel() -> ClipboardViewModel {
     let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
-    let monitor = ClipboardMonitor(onChange: { _, _, _ in })
+    let monitor = ClipboardMonitor(onChange: { _, _, _, _ in })
     let expiryService = ExpiryService(dataStore: dataStore)
     return ClipboardViewModel(
         dataStore: dataStore,

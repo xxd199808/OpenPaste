@@ -312,7 +312,7 @@ final class ClipboardViewModel: ObservableObject {
 
     // MARK: - Private Methods - Data Handling
 
-    func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
+    func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?, title: String? = nil) async {
         // Hash content directly (images now pass raw data, text/file-url pass encoded data)
         let hash = SHA256.hash(data: content).compactMap { String(format: "%02x", $0) }.joined()
 
@@ -328,6 +328,12 @@ final class ClipboardViewModel: ObservableObject {
                 // Duplicate found — update timestamp only, no new file saved
                 existing.capturedAt = Date()
                 existing.sourceApp = sourceApp
+                // Update title: use provided title (rich link) or set default if existing title is empty
+                if let newTitle = title, !newTitle.isEmpty {
+                    existing.title = newTitle
+                } else if existing.title == nil || existing.title!.isEmpty {
+                    existing.title = defaultTitle(for: contentType)
+                }
                 existing.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
                 do {
                     try dataStore.saveItem(existing)
@@ -344,19 +350,24 @@ final class ClipboardViewModel: ObservableObject {
                 storageContent = imagePathData
             }
 
-            // Create new item
+            // Create new item with default title if none provided
+            let finalTitle = title ?? defaultTitle(for: contentType)
+            NSLog("📝 Creating new item with title: '\(finalTitle)' (from rich link: \(title != nil))")
             let newItem = ClipboardItem(context: context)
             newItem.id = UUID()
             newItem.content = storageContent
             newItem.contentHash = hash
             newItem.contentType = contentType
             newItem.sourceApp = sourceApp
+            newItem.title = finalTitle.isEmpty ? nil : finalTitle
             newItem.capturedAt = Date()
             newItem.isPinned = false
             newItem.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
 
+            NSLog("💾 Item title before save: '\(newItem.title ?? "nil")'")
             do {
                 try dataStore.saveItem(newItem)
+                NSLog("✅ Item saved with title: '\(newItem.title ?? "nil")'")
             } catch {
                 showError("Failed to save clipboard item: \(error.localizedDescription)")
             }
@@ -416,6 +427,68 @@ final class ClipboardViewModel: ObservableObject {
     private func showError(_ message: String) {
         errorMessage = message
         showingError = true
+    }
+
+    // MARK: - Private Methods - Title Generation
+
+    /// Generate default title based on content type
+    private func defaultTitle(for contentType: String) -> String {
+        switch contentType {
+        case "public.utf8-plain-text", "public.text":
+            return "文本"
+        case "public.image", "public.tiff", "public.png":
+            return "图片"
+        case "public.folder":
+            return "文件夹"
+        case "public.file-url":
+            return "文件"
+        case "public.url", "public.rich-link":
+            return "链接"
+        case "public.html":
+            return "HTML"
+        case "public.rtf":
+            return "富文本"
+        case "com.adobe.pdf":
+            return "PDF"
+        default:
+            return "内容"
+        }
+    }
+
+    // MARK: - Public Methods - Title Management
+
+    /// Update the title of a clipboard item
+    /// - Parameters:
+    ///   - item: The item to update
+    ///   - newTitle: The new title to set
+    func updateTitle(for item: ClipboardItemData, to newTitle: String) async {
+        NSLog("📝 Updating title for item \(item.id) to: '\(newTitle)'")
+        do {
+            let predicate = NSPredicate(format: "id == %@", item.id as CVarArg)
+            let fetchedItems = try dataStore.fetchItems(
+                predicate: predicate,
+                sortDescriptors: nil,
+                limit: 1
+            )
+
+            if let nsItem = fetchedItems.first {
+                let finalTitle = newTitle.isEmpty ? nil : newTitle
+                NSLog("💾 Setting item title to: '\(finalTitle ?? "nil")'")
+                nsItem.title = finalTitle
+                try dataStore.saveItem(nsItem)
+                NSLog("✅ Title saved successfully")
+
+                // Update local arrays
+                if let index = allItems.firstIndex(where: { $0.id == item.id }) {
+                    allItems[index] = nsItem.toData()
+                }
+                applyFilters()
+            }
+
+        } catch {
+            NSLog("❌ Failed to update title: \(error.localizedDescription)")
+            showError("Failed to update title: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Public Methods - Category Management
@@ -486,7 +559,8 @@ extension ClipboardItem {
             sourceApp: self.sourceApp,
             capturedAt: self.capturedAt,
             isPinned: self.isPinned,
-            categoryId: self.category?.id
+            categoryId: self.category?.id,
+            title: self.title
         )
     }
 }

@@ -9,4 +9,5 @@ struct ClipboardItemData: Identifiable, Equatable {
     let capturedAt: Date
     let isPinned: Bool
     let categoryId: UUID?  // Category assignment for filtering
+    let title: String?  // Rich link title or additional metadata
 }

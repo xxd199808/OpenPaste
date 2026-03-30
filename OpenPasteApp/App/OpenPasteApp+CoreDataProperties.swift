@@ -23,6 +23,7 @@ extension ClipboardItem {
     @NSManaged public var id: UUID
     @NSManaged public var isPinned: Bool
     @NSManaged public var sourceApp: String?
+    @NSManaged public var title: String?
     @NSManaged public var category: Category?
 }
 

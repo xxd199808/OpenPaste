@@ -142,6 +142,30 @@ struct CategoryManagementView: View {
                                         item: item,
                                         onSelect: {
                                             copyHandler(item.content)
+                                        },
+                                        onPinToggle: {
+                                            Task {
+                                                await viewModel.togglePin(for: item)
+                                            }
+                                        },
+                                        onCategoryChange: { categoryId in
+                                            Task {
+                                                if let categoryId = categoryId {
+                                                    await viewModel.assignItem(item, toCategory: categoryId)
+                                                } else {
+                                                    await viewModel.removeFromCategory(item)
+                                                }
+                                            }
+                                        },
+                                        onDelete: {
+                                            Task {
+                                                await viewModel.deleteItem(item)
+                                            }
+                                        },
+                                        onTitleChange: { newTitle in
+                                            Task {
+                                                await viewModel.updateTitle(for: item, to: newTitle)
+                                            }
                                         }
                                     )
                                     .draggable(item.id.uuidString)
@@ -429,7 +453,7 @@ struct CategoryDropDelegate: DropDelegate {
 
 #Preview {
     let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
-    let monitor = ClipboardMonitor(onChange: { _, _, _ in })
+    let monitor = ClipboardMonitor(onChange: { _, _, _, _ in })
     let expiryService = ExpiryService(dataStore: dataStore)
     let viewModel = ClipboardViewModel(
         dataStore: dataStore,

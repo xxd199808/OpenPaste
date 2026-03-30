@@ -7,6 +7,7 @@ struct ClipboardItemCard: View {
     var onPinToggle: (() -> Void)?
     var onCategoryChange: ((UUID?) -> Void)?
     var onDelete: (() -> Void)?
+    var onTitleChange: ((String) -> Void)?
 
     var body: some View {
         Button(action: { onSelect?() }) {
@@ -16,7 +17,9 @@ struct ClipboardItemCard: View {
                     sourceApp: item.sourceApp,
                     capturedAt: item.capturedAt,
                     categoryId: item.categoryId,
-                    onCategorySelect: onCategoryChange
+                    title: item.title,
+                    onCategorySelect: onCategoryChange,
+                    onTitleChange: onTitleChange
                 )
 
                 CardContent(item: item)
@@ -84,7 +87,8 @@ struct ClipboardItemCard: View {
             sourceApp: "Safari",
             capturedAt: Date().addingTimeInterval(-300),
             isPinned: false,
-            categoryId: nil
+            categoryId: nil,
+            title: nil
         )
     )
     .frame(width: 300)
@@ -100,7 +104,8 @@ struct ClipboardItemCard: View {
             sourceApp: "Finder",
             capturedAt: Date(),
             isPinned: true,
-            categoryId: nil
+            categoryId: nil,
+            title: nil
         )
     )
     .frame(width: 300)
@@ -116,7 +121,8 @@ struct ClipboardItemCard: View {
             sourceApp: "Photos",
             capturedAt: Date().addingTimeInterval(-600),
             isPinned: false,
-            categoryId: nil
+            categoryId: nil,
+            title: nil
         )
     )
     .frame(width: 300)

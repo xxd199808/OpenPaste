@@ -7,12 +7,16 @@ struct CardHeader: View {
     let sourceApp: String?
     let capturedAt: Date
     let categoryId: UUID?
+    let title: String?
     var onCategorySelect: ((UUID?) -> Void)?
+    var onTitleChange: ((String) -> Void)?
 
     @State private var appIcon: NSImage?
     @State private var dominantColor: Color = .clear
     @State private var fallbackAppIcon: NSImage?
     @State private var showingCategoryMenu = false
+    @State private var isEditingTitle = false
+    @State private var editingTitle = ""
 
     @State private var availableCategories: [CategoryData] = []
 
@@ -31,9 +35,26 @@ struct CardHeader: View {
 
             // Right side: title + timestamp
             VStack(alignment: .leading, spacing: 2) {
-                Text(typeTitle)
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(.primary)
+                if isEditingTitle {
+                    TextField("", text: $editingTitle)
+                        .font(.system(size: 15, weight: .bold))
+                        .textFieldStyle(.plain)
+                        .onSubmit {
+                            onTitleChange?(editingTitle)
+                            isEditingTitle = false
+                        }
+                        .onAppear {
+                            editingTitle = title ?? typeTitle
+                        }
+                } else {
+                    Text(title ?? typeTitle)
+                        .font(.system(size: 15, weight: .bold))
+                        .foregroundStyle(.primary)
+                        .onTapGesture(count: 2) {
+                            editingTitle = title ?? typeTitle
+                            isEditingTitle = true
+                        }
+                }
 
                 // Timestamp (below title, smaller)
                 HStack(spacing: 4) {
@@ -274,14 +295,18 @@ struct CardHeader: View {
             contentType: "public.utf8-plain-text",
             sourceApp: "Safari",
             capturedAt: Date().addingTimeInterval(-300),
-            categoryId: nil
+            categoryId: nil,
+            title: nil,
+            onTitleChange: { _ in }
         )
 
         CardHeader(
             contentType: "public.image",
             sourceApp: "Photos",
             capturedAt: Date().addingTimeInterval(-600),
-            categoryId: UUID()
+            categoryId: UUID(),
+            title: "我的照片",
+            onTitleChange: { _ in }
         )
     }
     .frame(width: 300)
