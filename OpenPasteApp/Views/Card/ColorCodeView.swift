@@ -5,84 +5,50 @@ struct ColorCodeView: View {
     let content: String
 
     @State private var parsedColor: ParsedColor?
-    @State private var format: ColorFormat = .hex
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Color preview square
+        VStack(alignment: .leading, spacing: 8) {
             if let color = parsedColor {
-                Rectangle()
-                    .fill(color.swiftColor)
-                    .frame(width: 48, height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                    )
-            } else {
-                Rectangle()
-                    .fill(Color.gray.opacity(0.2))
-                    .frame(width: 48, height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                    .overlay(
-                        Image(systemName: "questionmark")
-                            .foregroundColor(.secondary)
-                    )
-            }
+                // Color bar with overlay text
+                Button(action: {
+                    copyToClipboard(content)
+                }) {
+                    GeometryReader { geometry in
+                        ZStack {
+                            // Checkerboard background for transparency
+                            Checkerboard(cornerRadius: 12)
+                                .frame(height: 44)
 
-            // Color values
-            VStack(alignment: .leading, spacing: 4) {
-                if let color = parsedColor {
-                    // Original format (clickable to copy)
-                    Button(action: {
-                        copyToClipboard(content)
-                    }) {
-                        Text(content)
-                            .font(.system(.footnote, design: .monospaced))
-                            .foregroundColor(.black)
+                            // Color preview overlay
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(color.swiftColor)
+                                .frame(height: 44)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                )
+
+                            // Color value text with shadow (centered)
+                            Text(content.uppercased())
+                                .font(.system(.body, design: .monospaced))
+                                .fontWeight(.medium)
+                                .foregroundColor(.white)
+                                .shadow(color: .black.opacity(0.9), radius: 1, x: 2, y: 2)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .help("点击复制原始值")
-
-                    // Component values display only
-                    Text(componentDisplay)
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                } else {
-                    Text(content)
-                        .font(.system(.footnote, design: .monospaced))
-                        .foregroundColor(.black)
+                    .frame(height: 44)
                 }
+                .buttonStyle(.plain)
+                .help("点击复制")
+            } else {
+                Text(content)
+                    .font(.system(.footnote, design: .monospaced))
+                    .foregroundColor(.black)
             }
-
-            Spacer()
         }
         .onAppear {
             parsedColor = ColorParser.parse(content)
-            detectFormat()
-        }
-    }
-
-    private func detectFormat() {
-        let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.hasPrefix("#") {
-            format = .hex
-        } else if trimmed.hasPrefix("rgb") {
-            format = .rgb
-        } else if trimmed.hasPrefix("hsl") {
-            format = .hsl
-        }
-    }
-
-    private var componentDisplay: String {
-        guard let color = parsedColor else { return "" }
-        switch format {
-        case .hex:
-            return "R:\(Int(color.red * 255)) G:\(Int(color.green * 255)) B:\(Int(color.blue * 255))"
-        case .rgb:
-            return "H:\(Int(color.toHSL().h))° S:\(Int(color.toHSL().s))% L:\(Int(color.toHSL().l))%"
-        case .hsl:
-            return "R:\(Int(color.red * 255)) G:\(Int(color.green * 255)) B:\(Int(color.blue * 255))"
         }
     }
 
@@ -90,6 +56,38 @@ struct ColorCodeView: View {
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
+    }
+}
+
+/// Checkerboard pattern for transparency display
+struct Checkerboard: View {
+    let cornerRadius: CGFloat
+    private let tileSize: CGFloat = 8
+
+    var body: some View {
+        GeometryReader { geometry in
+            let columns = Int(ceil(geometry.size.width / tileSize))
+            let rows = Int(ceil(geometry.size.height / tileSize))
+
+            ZStack {
+                ForEach(0..<rows * columns, id: \.self) { index in
+                    let row = index / columns
+                    let col = index % columns
+
+                    Rectangle()
+                        .fill((row + col) % 2 == 0 ? Color.white : Color.gray.opacity(0.3))
+                        .frame(
+                            width: tileSize,
+                            height: tileSize
+                        )
+                        .position(
+                            x: CGFloat(col) * tileSize + tileSize / 2,
+                            y: CGFloat(row) * tileSize + tileSize / 2
+                        )
+                }
+            }
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius))
+        }
     }
 }
 
