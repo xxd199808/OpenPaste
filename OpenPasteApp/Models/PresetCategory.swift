@@ -165,8 +165,8 @@ enum PresetCategory: String, CaseIterable {
             return isFileContentType(item.contentType)
 
         case .link:
-            // URLs or links
-            return item.content.contains("http://") || item.content.contains("https://") || item.content.hasPrefix("www.")
+            // URLs or links — only pure link type, not text containing URLs
+            return item.contentType == "public.url"
 
         case .email:
             // Email addresses

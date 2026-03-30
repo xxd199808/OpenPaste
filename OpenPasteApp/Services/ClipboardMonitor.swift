@@ -234,6 +234,13 @@ final class ClipboardMonitor {
             }
         }
 
+        // Try to get URL (web links) using .url type
+        if let urlString = pasteboard.string(forType: NSPasteboard.PasteboardType.URL),
+           !urlString.isEmpty,
+           let data = urlString.data(using: .utf8) {
+            return (data, "public.url")
+        }
+
         // Try to get image content — return raw data, defer file saving to ViewModel
         if let imageData = pasteboard.data(forType: .tiff) {
             return (imageData, "public.image")
@@ -243,10 +250,31 @@ final class ClipboardMonitor {
         if let string = pasteboard.string(forType: .string),
            !string.isEmpty,
            let data = string.data(using: .utf8) {
+
+            // Check if the string is a pure URL (no extra text around it)
+            if isPureURL(string) {
+                return (data, "public.url")
+            }
+
             return (data, "public.utf8-plain-text")
         }
 
         return nil
+    }
+
+    /// Check if a string is a pure URL (no surrounding text)
+    private func isPureURL(_ string: String) -> Bool {
+        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Pure URL pattern: starts with http://, https://, or www.
+        // and contains no spaces or mixed text
+        let urlPattern = #"^(https?://|www\.)[^\s]+$"#
+        if let regex = try? NSRegularExpression(pattern: urlPattern, options: []),
+           let match = regex.firstMatch(in: trimmed, range: NSRange(location: 0, length: trimmed.utf16.count)) {
+            return match.range.length == trimmed.utf16.count
+        }
+
+        return false
     }
 
     private func getCurrentSourceApp() -> String? {
