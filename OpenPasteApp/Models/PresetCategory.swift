@@ -13,10 +13,7 @@ enum PresetCategory: String, CaseIterable {
     // Sort order 3: Code snippets
     case code = "代码"
 
-    // Sort order 4: Bash commands
-    case bash = "Bash命令"
-
-    // Sort order 5: Images
+    // Sort order 4: Images
     case image = "图片"
 
     // Sort order 6: Files
@@ -57,8 +54,6 @@ enum PresetCategory: String, CaseIterable {
             return "doc.text"
         case .code:
             return "curlybraces"
-        case .bash:
-            return "terminal"
         case .image:
             return "photo"
         case .file:
@@ -108,18 +103,17 @@ enum PresetCategory: String, CaseIterable {
         case .recent: return 1
         case .text: return 2
         case .code: return 3
-        case .bash: return 4
-        case .image: return 5
-        case .file: return 6
-        case .link: return 7
-        case .email: return 8
-        case .phoneNumber: return 9
-        case .colorCode: return 10
-        case .favorite1: return 11
-        case .favorite2: return 12
-        case .favorite3: return 13
-        case .favorite4: return 14
-        case .favorite5: return 15
+        case .image: return 4
+        case .file: return 5
+        case .link: return 6
+        case .email: return 7
+        case .phoneNumber: return 8
+        case .colorCode: return 9
+        case .favorite1: return 10
+        case .favorite2: return 11
+        case .favorite3: return 12
+        case .favorite4: return 13
+        case .favorite5: return 14
         }
     }
 
@@ -151,10 +145,6 @@ enum PresetCategory: String, CaseIterable {
         case .code:
             // Code file extensions or syntax
             return isCodeContentType(item.contentType) || item.content.contains("func ") || item.content.contains("var ")
-
-        case .bash:
-            // Bash commands or shell scripts
-            return isBashContentType(item.contentType) || item.content.hasPrefix("#!/bin/bash") || item.content.hasPrefix("#!/bin/sh")
 
         case .image:
             // Image content types
@@ -233,12 +223,6 @@ enum PresetCategory: String, CaseIterable {
             "com.apple.swift-syntaxhighlight"
         ]
         return codeExtensions.contains(contentType) || contentType.hasPrefix("public.source-code")
-    }
-
-    private func isBashContentType(_ contentType: String) -> Bool {
-        return contentType == "public.shell-script" ||
-               contentType == "com.apple.shell-script" ||
-               contentType.hasPrefix("public.shell-script")
     }
 
     private func isImageContentType(_ contentType: String) -> Bool {

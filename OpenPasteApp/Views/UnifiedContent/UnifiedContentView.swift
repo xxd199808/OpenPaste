@@ -121,7 +121,6 @@ struct UnifiedContentView: View {
             case .recent: return "doc.on.clipboard"
             case .text: return "doc.text"
             case .code: return "curlybraces"
-            case .bash: return "terminal"
             case .image: return "photo"
             case .file: return "doc"
             case .link: return "link"
