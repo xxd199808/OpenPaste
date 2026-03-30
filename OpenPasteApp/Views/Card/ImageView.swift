@@ -49,6 +49,7 @@ struct ImageView: View {
                     .padding(8)
                 }
             }
+            .allowsHitTesting(false)  // 让ZStack不拦截手势，事件穿透到GeometryReader外层
         }
         .frame(height: fixedHeight)
         .clipped()

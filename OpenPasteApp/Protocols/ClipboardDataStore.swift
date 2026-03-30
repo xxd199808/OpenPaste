@@ -51,6 +51,23 @@ protocol ClipboardDataStore {
     /// - Throws: NSError if creation fails
     func createCategory(name: String, type: String) throws -> Category
 
+    /// Create a new category with a specific ID
+    /// - Parameters:
+    ///   - id: The UUID to use for the category
+    ///   - name: The category name
+    ///   - type: The category type
+    ///   - icon: The SF Symbol icon name
+    ///   - sortOrder: The sort order for display
+    /// - Returns: The newly created Category object
+    /// - Throws: NSError if creation fails
+    func createCategoryWithId(
+        id: UUID,
+        name: String,
+        type: String,
+        icon: String,
+        sortOrder: Int32
+    ) throws -> Category
+
     /// The managed object context for creating new objects
     var viewContext: NSManagedObjectContext { get }
 }

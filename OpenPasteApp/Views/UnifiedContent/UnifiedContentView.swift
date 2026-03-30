@@ -33,15 +33,6 @@ struct UnifiedContentView: View {
                     ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
                         ClipboardItemView(
                             item: item,
-                            onSelect: {
-                                selectedIndex = index
-                                copyHandler(item)
-                            },
-                            onPinToggle: {
-                                Task {
-                                    await viewModel.togglePin(for: item)
-                                }
-                            },
                             onCategoryChange: { categoryId in
                                 Task {
                                     if let categoryId = categoryId {
@@ -60,11 +51,11 @@ struct UnifiedContentView: View {
                                 Task {
                                     await viewModel.updateTitle(for: item, to: newTitle)
                                 }
+                            },
+                            onCopy: {
+                                copyHandler(item)
                             }
                         )
-                        .contextMenu {
-                            categoryMenuContent(for: item)
-                        }
                     }
                 }
                 .padding()
@@ -127,7 +118,7 @@ struct UnifiedContentView: View {
             case .email: return "envelope"
             case .phoneNumber: return "phone"
             case .colorCode: return "paintpalette"
-            case .favorite1, .favorite2, .favorite3, .favorite4: return "star.fill"
+            case .favorite1, .favorite2, .favorite3, .favorite4: return "pin.fill"
             }
         case .custom:
             return "folder"

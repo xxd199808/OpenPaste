@@ -1,50 +1,35 @@
 import SwiftUI
+import CoreImage
+import CoreImage.CIFilterBuiltins
 
 /// Complete clipboard item card combining header and content
 struct ClipboardItemCard: View {
     let item: ClipboardItemData
-    var onSelect: (() -> Void)?
-    var onPinToggle: (() -> Void)?
     var onCategoryChange: ((UUID?) -> Void)?
     var onDelete: (() -> Void)?
     var onTitleChange: ((String) -> Void)?
+    var onCopy: (() -> Void)?
 
     var body: some View {
-        Button(action: { onSelect?() }) {
-            VStack(spacing: 0) {
-                CardHeader(
-                    contentType: item.contentType,
-                    sourceApp: item.sourceApp,
-                    capturedAt: item.capturedAt,
-                    categoryId: item.categoryId,
-                    title: item.title,
-                    onCategorySelect: onCategoryChange,
-                    onTitleChange: onTitleChange
-                )
+        VStack(spacing: 0) {
+            CardHeader(
+                contentType: item.contentType,
+                sourceApp: item.sourceApp,
+                capturedAt: item.capturedAt,
+                categoryId: item.categoryId,
+                title: item.title,
+                onCategorySelect: onCategoryChange,
+                onTitleChange: onTitleChange,
+                onDelete: onDelete
+            )
 
-                CardContent(item: item)
-            }
-            .background(cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .overlay(pinOverlay)
+            CardContent(item: item)
+                .onTapGesture {
+                    onCopy?()
+                }
         }
-        .buttonStyle(.plain)
-        .contextMenu {
-            Button(action: { onPinToggle?() }) {
-                Label(
-                    item.isPinned ? "Unpin" : "Pin",
-                    systemImage: item.isPinned ? "pin.slash" : "pin"
-                )
-            }
-
-            Divider()
-
-            Button(role: .destructive) {
-                onDelete?()
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-        }
+        .background(cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: - Card Background
@@ -61,17 +46,7 @@ struct ClipboardItemCard: View {
         } else {
             RoundedRectangle(cornerRadius: 12)
                 .fill(.regularMaterial)
-                .background(item.isPinned ? Color.accentColor.opacity(0.1) : Color(NSColor.controlBackgroundColor))
-        }
-    }
-
-    // MARK: - Pin Overlay
-
-    @ViewBuilder
-    private var pinOverlay: some View {
-        if item.isPinned {
-            RoundedRectangle(cornerRadius: 12)
-                .strokeBorder(Color.accentColor.opacity(0.3), lineWidth: 1)
+                .background(Color(NSColor.controlBackgroundColor))
         }
     }
 }
@@ -91,7 +66,8 @@ struct ClipboardItemCard: View {
             title: nil,
             allPasteboardData: nil,
             allPasteboardTypes: nil
-        )
+        ),
+        onCopy: { print("Copy triggered") }
     )
     .frame(width: 300)
     .padding()
@@ -110,7 +86,8 @@ struct ClipboardItemCard: View {
             title: nil,
             allPasteboardData: nil,
             allPasteboardTypes: nil
-        )
+        ),
+        onCopy: { print("Copy triggered") }
     )
     .frame(width: 300)
     .padding()
@@ -129,7 +106,8 @@ struct ClipboardItemCard: View {
             title: nil,
             allPasteboardData: nil,
             allPasteboardTypes: nil
-        )
+        ),
+        onCopy: { print("Copy triggered") }
     )
     .frame(width: 300)
     .padding()

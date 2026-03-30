@@ -102,6 +102,7 @@ final class ClipboardViewModel: ObservableObject {
 
         // Load initial data
         Task {
+            await ensurePresetCategoriesExist()
             await loadInitialData()
             await loadCategories()
         }
@@ -331,6 +332,33 @@ final class ClipboardViewModel: ObservableObject {
         } catch {
             // Silently fail - categories might not exist yet
             categories = []
+        }
+    }
+
+    /// Ensure preset favorite categories exist in Core Data
+    private func ensurePresetCategoriesExist() async {
+        let favorites: [(PresetCategory, UUID, String, Color)] = [
+            (.favorite1, UUID(uuidString: "00000000-0000-0000-0000-000000000001")!, "收藏1", .red),
+            (.favorite2, UUID(uuidString: "00000000-0000-0000-0000-000000000002")!, "收藏2", .orange),
+            (.favorite3, UUID(uuidString: "00000000-0000-0000-0000-000000000003")!, "收藏3", .yellow),
+            (.favorite4, UUID(uuidString: "00000000-0000-0000-0000-000000000004")!, "收藏4", .green)
+        ]
+
+        do {
+            let existingCategories = try dataStore.fetchCategories()
+            let existingIds = Set(existingCategories.map { $0.id })
+
+            for (preset, uuid, name, _) in favorites where !existingIds.contains(uuid) {
+                _ = try dataStore.createCategoryWithId(
+                    id: uuid,
+                    name: name,
+                    type: "preset",
+                    icon: "pin.fill",
+                    sortOrder: Int32(preset.sortOrder)
+                )
+            }
+        } catch {
+            // Silently fail - will retry on next launch
         }
     }
 

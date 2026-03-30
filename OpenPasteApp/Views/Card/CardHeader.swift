@@ -1,5 +1,7 @@
 import SwiftUI
 import AppKit
+import CoreImage
+import CoreImage.CIFilterBuiltins
 
 /// Card header displaying app icon, type title, timestamp, and category button
 struct CardHeader: View {
@@ -10,6 +12,7 @@ struct CardHeader: View {
     let title: String?
     var onCategorySelect: ((UUID?) -> Void)?
     var onTitleChange: ((String) -> Void)?
+    var onDelete: (() -> Void)?
 
     @State private var appIcon: NSImage?
     @State private var dominantColor: Color = .clear
@@ -33,7 +36,7 @@ struct CardHeader: View {
             // Left side: App icon (overflowing left only)
             appIconView
 
-            // Right side: title + timestamp
+            // Middle: Title + timestamp (with double-tap gesture)
             VStack(alignment: .leading, spacing: 2) {
                 if isEditingTitle {
                     TextField("", text: $editingTitle)
@@ -50,10 +53,8 @@ struct CardHeader: View {
                     Text(title ?? typeTitle)
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(.primary)
-                        .onTapGesture(count: 2) {
-                            editingTitle = title ?? typeTitle
-                            isEditingTitle = true
-                        }
+                        .contentShape(Rectangle())
+                        .allowsHitTesting(true)
                 }
 
                 // Timestamp (below title, smaller)
@@ -65,16 +66,29 @@ struct CardHeader: View {
                         .foregroundStyle(.secondary.opacity(0.8))
                 }
             }
+            .contentShape(Rectangle())
+            .simultaneousGesture(
+                TapGesture(count: 2)
+                    .onEnded { _ in
+                        editingTitle = title ?? typeTitle
+                        isEditingTitle = true
+                    }
+            )
 
             Spacer()
 
-            // Right side: Category/Favorite button
-            categoryButton
+            // Right side: Pin indicator
+            Image(systemName: categoryId != nil ? "pin.fill" : "pin")
+                .font(.system(size: 16))
+                .foregroundColor(categoryTintColor)
         }
         .frame(height: 40)  // Fixed height for header area
         .padding(.horizontal, 12)
-        .clipped()  // Clip vertical overflow
+        .allowsHitTesting(true)  // Explicitly allow interaction
         .background(dominantColor)
+        .contextMenu {
+            categoryMenuContent
+        }
         .onAppear {
             // Load fallback app icon (our own app's icon)
             loadFallbackAppIcon()
@@ -85,19 +99,111 @@ struct CardHeader: View {
             }
             loadCategories()
         }
-        .confirmationDialog(
-            "Select Category",
-            isPresented: $showingCategoryMenu,
-            titleVisibility: .hidden
-        ) {
-            Button("Uncategorized") {
+        .clipped()  // Clip vertical overflow (applied last)
+    }
+
+    // MARK: - Context Menu
+
+    @ViewBuilder
+    private var categoryMenuContent: some View {
+        // Four colored pin options using colored images
+        Button {
+            onCategorySelect?(PresetCategory.favorite1.favoriteUUID)
+        } label: {
+            coloredPinImage(hue: 0)    // Red
+        }
+
+        Button {
+            onCategorySelect?(PresetCategory.favorite2.favoriteUUID)
+        } label: {
+            coloredPinImage(hue: 30)   // Orange
+        }
+
+        Button {
+            onCategorySelect?(PresetCategory.favorite3.favoriteUUID)
+        } label: {
+            coloredPinImage(hue: 60)   // Yellow
+        }
+
+        Button {
+            onCategorySelect?(PresetCategory.favorite4.favoriteUUID)
+        } label: {
+            coloredPinImage(hue: 120)  // Green
+        }
+
+        // Unpin option (show only if currently pinned)
+        if categoryId != nil {
+            Button(role: .none) {
                 onCategorySelect?(nil)
+            } label: {
+                Image(systemName: "pin.slash")
+                    .frame(width: 20, height: 20)
             }
-            ForEach(availableCategories) { category in
-                Button(category.name) {
-                    onCategorySelect?(category.id)
-                }
-            }
+        }
+
+        Divider()
+
+        // Delete option
+        Button(role: .destructive) {
+            onDelete?()
+        } label: {
+            Image(systemName: "trash")
+                .frame(width: 20, height: 20)
+        }
+    }
+
+    /// Create a colored pin image by applying hue rotation to the base pin image
+    private func coloredPinImage(hue: Double) -> some View {
+        Image(nsImage: generateColoredPinImage(hue: hue))
+            .frame(width: 20, height: 20)
+    }
+
+    /// Generate an NSImage with the pin icon in a specific hue
+    private func generateColoredPinImage(hue: Double) -> NSImage {
+        // Create a red SwiftUI image of the pin as base
+        let pinImage = Image(systemName: "pin.fill")
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.red)
+            .frame(width: 20, height: 20)
+
+        // Render to NSImage
+        let renderer = ImageRenderer(content: pinImage)
+        renderer.scale = 2.0  // Retina support
+        guard let baseImage = renderer.nsImage else {
+            return NSImage(size: NSSize(width: 20, height: 20))
+        }
+
+        // Get CGImage from NSImage
+        guard let imageData = baseImage.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: imageData),
+              let cgImage = bitmap.cgImage else {
+            return baseImage
+        }
+
+        // Apply hue filter
+        guard let filter = CIFilter(name: "CIHueAdjust") else {
+            return baseImage
+        }
+
+        filter.setValue(CIImage(cgImage: cgImage), forKey: kCIInputImageKey)
+        filter.setValue(hue * .pi / 180, forKey: kCIInputAngleKey)
+
+        guard let outputImage = filter.outputImage,
+              let outputCGImage = CIContext().createCGImage(outputImage, from: outputImage.extent) else {
+            return baseImage
+        }
+
+        return NSImage(cgImage: outputCGImage, size: NSSize(width: 20, height: 20))
+    }
+
+    /// Get the actual color for a favorite category (non-optional)
+    private func getColorForFavorite(_ favorite: PresetCategory) -> Color {
+        switch favorite {
+        case .favorite1: return .red
+        case .favorite2: return .orange
+        case .favorite3: return .yellow
+        case .favorite4: return .green
+        default: return .accentColor
         }
     }
 
@@ -123,12 +229,14 @@ struct CardHeader: View {
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .offset(x: -20, y: 0)
+                    .allowsHitTesting(false)
             } else if let icon = appIcon {
                 Image(nsImage: icon)
                     .resizable()
                     .frame(width: 64, height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                     .offset(x: -20, y: 0)
+                    .allowsHitTesting(false)
             } else {
                 // Show unified cloud icon for no app icon
                 Image(systemName: "icloud")
@@ -146,6 +254,7 @@ struct CardHeader: View {
                             )
                     )
                     .offset(x: -20, y: 0)
+                    .allowsHitTesting(false)
             }
         }
     }
@@ -186,25 +295,17 @@ struct CardHeader: View {
         }
     }
 
-    // MARK: - Category Button
-
-    private var categoryButton: some View {
-        Button {
-            showingCategoryMenu = true
-        } label: {
-            Image(systemName: categoryId != nil ? "star.fill" : "star")
-                .font(.system(size: 16))
-                .foregroundColor(categoryTintColor)
-        }
-        .buttonStyle(.plain)
-    }
-
     private var categoryTintColor: Color {
         guard let categoryId = categoryId else {
             return .secondary.opacity(0.6)
         }
 
-        // Find category color
+        // Check if it's a preset favorite category
+        if let preset = PresetCategory.allCases.first(where: { $0.favoriteUUID == categoryId }) {
+            return preset.iconColor ?? .accentColor
+        }
+
+        // For custom categories, find their color
         if let category = availableCategories.first(where: { $0.id == categoryId }) {
             return colorForCategory(category)
         }

@@ -88,8 +88,9 @@ final class ExpiryService {
             let now = Date()
 
             // Count expired items before deletion (for logging)
+            // Items with a category (pinned) are excluded from expiry
             let expiredItems = try dataStore.fetchItems(
-                predicate: NSPredicate(format: "expiresAt < %@ AND isPinned == NO", now as CVarArg),
+                predicate: NSPredicate(format: "expiresAt < %@ AND category == nil", now as CVarArg),
                 sortDescriptors: [] as [NSSortDescriptor]?,
                 limit: nil as Int?
             )

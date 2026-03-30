@@ -13,12 +13,6 @@ struct ClipboardItemView: View {
     /// Whether the item is currently visible (for lazy loading)
     var isVisible: Bool = true
 
-    /// Action handler for item selection
-    var onSelect: (() -> Void)?
-
-    /// Action handler for pin toggle
-    var onPinToggle: (() -> Void)?
-
     /// Action handler for category change
     var onCategoryChange: ((UUID?) -> Void)?
 
@@ -28,16 +22,18 @@ struct ClipboardItemView: View {
     /// Action handler for title change
     var onTitleChange: ((String) -> Void)?
 
+    /// Action handler for copying item to clipboard
+    var onCopy: (() -> Void)?
+
     // MARK: - Body
 
     var body: some View {
         ClipboardItemCard(
             item: item,
-            onSelect: onSelect,
-            onPinToggle: onPinToggle,
             onCategoryChange: onCategoryChange,
             onDelete: onDelete,
-            onTitleChange: onTitleChange
+            onTitleChange: onTitleChange,
+            onCopy: onCopy
         )
     }
 }

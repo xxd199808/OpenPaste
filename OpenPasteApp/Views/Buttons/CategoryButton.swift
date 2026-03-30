@@ -133,7 +133,7 @@ struct CategoryButton: View {
 
         CategoryButton(
             title: "收藏1很长的名字测试换行",
-            icon: "star.fill",
+            icon: "pin.fill",
             iconColor: .red,
             isSelected: false,
             action: {}

@@ -166,9 +166,9 @@ final class CoreDataStore: ClipboardDataStore {
             // Create fetch request for expired items
             let fetchRequest: NSFetchRequest<ClipboardItem> = ClipboardItem.fetchRequest()
 
-            // Only delete items that are not pinned and have expired
+            // Only delete items without a category (not pinned) that have expired
             fetchRequest.predicate = NSPredicate(
-                format: "expiresAt < %@ AND isPinned == NO",
+                format: "expiresAt < %@ AND category == nil",
                 date as CVarArg
             )
 
@@ -177,8 +177,8 @@ final class CoreDataStore: ClipboardDataStore {
 
             // Delete each expired item
             for item in expiredItems {
-                // Double-check isPinned flag (optimistic locking)
-                if !item.isPinned {
+                // Double-check category is nil (optimistic locking)
+                if item.category == nil {
                     viewContext.delete(item)
                 }
             }
@@ -237,6 +237,43 @@ final class CoreDataStore: ClipboardDataStore {
             category.name = name
             category.type = type
             category.sortOrder = 0
+
+            // Insert into context
+            viewContext.insert(category)
+
+            // Save
+            try saveContext()
+
+            result = category
+        }
+
+        guard let category = result else {
+            throw NSError(
+                domain: "CoreDataStore",
+                code: -1,
+                userInfo: [NSLocalizedDescriptionKey: "Failed to create category"]
+            )
+        }
+
+        return category
+    }
+
+    func createCategoryWithId(
+        id: UUID,
+        name: String,
+        type: String,
+        icon: String,
+        sortOrder: Int32
+    ) throws -> Category {
+        var result: Category?
+
+        try viewContext.performAndWait {
+            let category = Category(context: viewContext)
+            category.id = id
+            category.name = name
+            category.type = type
+            category.icon = icon
+            category.sortOrder = sortOrder
 
             // Insert into context
             viewContext.insert(category)

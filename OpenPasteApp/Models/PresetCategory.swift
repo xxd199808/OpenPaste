@@ -66,13 +66,13 @@ enum PresetCategory: String, CaseIterable {
         case .colorCode:
             return "paintpalette"
         case .favorite1:
-            return "star.fill"
+            return "pin.fill"
         case .favorite2:
-            return "star.fill"
+            return "pin.fill"
         case .favorite3:
-            return "star.fill"
+            return "pin.fill"
         case .favorite4:
-            return "star.fill"
+            return "pin.fill"
         }
     }
 

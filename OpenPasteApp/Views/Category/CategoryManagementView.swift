@@ -140,14 +140,6 @@ struct CategoryManagementView: View {
                                 ForEach(Array(filteredItems.enumerated()), id: \.element.id) { index, item in
                                     ClipboardItemView(
                                         item: item,
-                                        onSelect: {
-                                            copyHandler(item)
-                                        },
-                                        onPinToggle: {
-                                            Task {
-                                                await viewModel.togglePin(for: item)
-                                            }
-                                        },
                                         onCategoryChange: { categoryId in
                                             Task {
                                                 if let categoryId = categoryId {
