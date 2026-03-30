@@ -216,10 +216,9 @@ final class ClipboardMonitor {
     // MARK: - Private Methods - Content Extraction
 
     private func extractClipboardContent() -> (Data, String)? {
-        // Try to get image content first
-        if let imageData = pasteboard.data(forType: .tiff),
-           let imagePathData = ImageStorageManager.shared.saveImage(imageData) {
-            return (imagePathData, "public.image")
+        // Try to get image content — return raw data, defer file saving to ViewModel
+        if let imageData = pasteboard.data(forType: .tiff) {
+            return (imageData, "public.image")
         }
 
         // Try to get string content

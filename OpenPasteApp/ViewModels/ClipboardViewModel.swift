@@ -313,9 +313,10 @@ final class ClipboardViewModel: ObservableObject {
     // MARK: - Private Methods - Data Handling
 
     func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
+        // Hash content directly (images now pass raw data, text/file-url pass encoded data)
         let hash = SHA256.hash(data: content).compactMap { String(format: "%02x", $0) }.joined()
 
-        // Deduplicate: update existing item if same content exists
+        // Deduplicate: update existing item if same content hash exists
         await MainActor.run {
             let context = dataStore.viewContext
             let request: NSFetchRequest<ClipboardItem> = ClipboardItem.fetchRequest()
@@ -324,7 +325,7 @@ final class ClipboardViewModel: ObservableObject {
             request.fetchLimit = 1
 
             if let existing = try? context.fetch(request).first {
-                // Update timestamp to bring it to the front
+                // Duplicate found — update timestamp only, no new file saved
                 existing.capturedAt = Date()
                 existing.sourceApp = sourceApp
                 existing.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
@@ -336,10 +337,17 @@ final class ClipboardViewModel: ObservableObject {
                 return
             }
 
-            // No duplicate found — create new item
+            // No duplicate — save image to file only for new items
+            var storageContent = content
+            if contentType == "public.image",
+               let imagePathData = ImageStorageManager.shared.saveImage(content) {
+                storageContent = imagePathData
+            }
+
+            // Create new item
             let newItem = ClipboardItem(context: context)
             newItem.id = UUID()
-            newItem.content = content
+            newItem.content = storageContent
             newItem.contentHash = hash
             newItem.contentType = contentType
             newItem.sourceApp = sourceApp

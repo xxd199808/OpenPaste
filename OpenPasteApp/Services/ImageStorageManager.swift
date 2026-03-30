@@ -1,5 +1,6 @@
 import Foundation
 import AppKit
+import CryptoKit
 
 /// Manages storage of clipboard images as files in the application support directory
 /// instead of storing binary data directly in Core Data
@@ -41,22 +42,25 @@ final class ImageStorageManager {
     /// - Parameter imageData: The raw image data (TIFF format from pasteboard)
     /// - Returns: JSON-encoded array of file URLs, or nil if save failed
     func saveImage(_ imageData: Data) -> Data? {
-        // Generate unique filename with UUID
-        let filename = UUID().uuidString + ".tiff"
+        // Use content hash as filename to avoid duplicate files
+        let hash = SHA256.hash(data: imageData).compactMap { String(format: "%02x", $0) }.joined()
+        let filename = hash + ".tiff"
         let fileURL = imagesDirectory.appendingPathComponent(filename)
 
-        do {
-            // Write image data to file
-            try imageData.write(to: fileURL)
-            NSLog("✅ Saved image to: \(fileURL.path)")
-
-            // Return JSON array with file URL (matches file-url format)
-            let urlArray = [fileURL.absoluteString]
-            return try JSONEncoder().encode(urlArray)
-        } catch {
-            NSLog("❌ Failed to save image: \(error.localizedDescription)")
-            return nil
+        // Skip write if file already exists (same content)
+        if !fileManager.fileExists(atPath: fileURL.path) {
+            do {
+                try imageData.write(to: fileURL)
+                NSLog("✅ Saved image to: \(fileURL.path)")
+            } catch {
+                NSLog("❌ Failed to save image: \(error.localizedDescription)")
+                return nil
+            }
         }
+
+        // Return JSON array with file URL (matches file-url format)
+        let urlArray = [fileURL.absoluteString]
+        return try? JSONEncoder().encode(urlArray)
     }
 
     /// Load image data from a file URL
