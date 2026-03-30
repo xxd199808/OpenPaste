@@ -174,7 +174,7 @@ enum PresetCategory: String, CaseIterable {
 
         case .phoneNumber:
             // Phone numbers (international, with parentheses, mobile, etc.)
-            return item.content.range(of: "^(\\+?\\d{1,3})?[-.\\(\\s]?\\d{1,4}[\\)\\s]?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$", options: .regularExpression) != nil
+            return item.contentType == "public.phone-number"
 
         case .colorCode:
             // Hex color codes (3-digit, 6-digit, and 8-digit with alpha)

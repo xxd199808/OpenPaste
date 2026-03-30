@@ -21,6 +21,8 @@ struct CardContent: View {
                 URLView(content: item.content)
             case "public.email":
                 TextView(content: item.content)
+            case "public.phone-number":
+                TextView(content: item.content)
             default:
                 DefaultView(content: item.content, contentType: item.contentType)
             }

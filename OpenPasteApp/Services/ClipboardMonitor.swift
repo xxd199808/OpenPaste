@@ -262,6 +262,11 @@ final class ClipboardMonitor {
            !string.isEmpty,
            let data = string.data(using: .utf8) {
 
+            // Check if the string is a phone number
+            if isPhoneNumber(string) {
+                return (data, "public.phone-number", nil)
+            }
+
             // Check if the string is an email address
             if isEmailAddress(string) {
                 return (data, "public.email", nil)
@@ -337,6 +342,26 @@ final class ClipboardMonitor {
         }
 
         return false
+    }
+
+    /// Check if a string is a phone number
+    private func isPhoneNumber(_ string: String) -> Bool {
+        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Remove common formatting to check digit count
+        let digitsOnly = trimmed.filter { $0.isNumber }
+
+        // Phone number should have 5-15 digits
+        guard digitsOnly.count >= 5 && digitsOnly.count <= 15 else {
+            return false
+        }
+
+        // Should contain mostly digits and allowed formatting characters
+        let allowedChars = CharacterSet.decimalDigits
+            .union(CharacterSet(charactersIn: "+-() ."))
+        let hasInvalidChars = trimmed.unicodeScalars.contains { !allowedChars.contains($0) }
+
+        return !hasInvalidChars
     }
 
     private func getCurrentSourceApp() -> String? {

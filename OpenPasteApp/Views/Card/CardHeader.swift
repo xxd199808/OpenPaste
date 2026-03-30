@@ -175,6 +175,10 @@ struct CardHeader: View {
             return "文件"
         case "public.url":
             return "链接"
+        case "public.email":
+            return "邮箱"
+        case "public.phone-number":
+            return "电话"
         default:
             return "内容"
         }
