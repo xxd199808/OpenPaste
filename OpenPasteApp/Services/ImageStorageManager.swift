@@ -90,4 +90,26 @@ final class ImageStorageManager {
             NSLog("⚠️ Failed to delete image at \(urlString): \(error.localizedDescription)")
         }
     }
+
+    /// Delete all cached image files
+    /// Removes all TIFF files from the images directory
+    func clearAllImages() {
+        do {
+            // Get all files in the images directory
+            let files = try fileManager.contentsOfDirectory(at: imagesDirectory, includingPropertiesForKeys: nil)
+
+            var deletedCount = 0
+            for file in files {
+                // Only delete .tiff files
+                if file.pathExtension == "tiff" {
+                    try fileManager.removeItem(at: file)
+                    deletedCount += 1
+                }
+            }
+
+            NSLog("✅ Cleared \(deletedCount) cached image files from: \(imagesDirectory.path)")
+        } catch {
+            NSLog("❌ Failed to clear images directory: \(error.localizedDescription)")
+        }
+    }
 }

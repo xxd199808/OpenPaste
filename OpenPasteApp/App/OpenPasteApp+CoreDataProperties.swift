@@ -15,6 +15,8 @@ extension ClipboardItem {
         return NSFetchRequest<ClipboardItem>(entityName: "ClipboardItem")
     }
 
+    @NSManaged public var allPasteboardData: Data?
+    @NSManaged public var allPasteboardTypes: String?
     @NSManaged public var capturedAt: Date
     @NSManaged public var content: Data
     @NSManaged public var contentHash: String?

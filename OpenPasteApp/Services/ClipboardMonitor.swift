@@ -8,7 +8,13 @@ final class ClipboardMonitor {
     // MARK: - Types
 
     /// Callback invoked when new clipboard content is detected
-    typealias ClipboardChangeHandler = (content: Data, contentType: String, sourceApp: String?)
+    /// - Parameters:
+    ///   - content: Primary content data for display
+    ///   - contentType: Primary content type identifier
+    ///   - sourceApp: Source application bundle identifier
+    ///   - title: Optional title (e.g., from rich links)
+    ///   - allPasteboardData: Complete pasteboard data with all types for restoration
+    typealias ClipboardChangeHandler = (Data, String, String?, String?, PasteboardData?) -> Void
 
     // MARK: - Properties
 
@@ -43,13 +49,13 @@ final class ClipboardMonitor {
     private var skipNextChangesCount: Int = 0
 
     /// Callback invoked when clipboard changes are detected
-    private let onChange: ((Data, String, String?, String?) -> Void)
+    private let onChange: (Data, String, String?, String?, PasteboardData?) -> Void
 
     // MARK: - Initialization
 
     /// Initialize the clipboard monitor
-    /// - Parameter onChange: Callback invoked when new clipboard content is detected (content, contentType, sourceApp, title)
-    init(onChange: @escaping (Data, String, String?, String?) -> Void) {
+    /// - Parameter onChange: Callback invoked when new clipboard content is detected (content, contentType, sourceApp, title, allPasteboardData)
+    init(onChange: @escaping (Data, String, String?, String?, PasteboardData?) -> Void) {
         self.onChange = onChange
         self.lastChangeCount = pasteboard.changeCount
         self.lastActivityTimestamp = Date()
@@ -179,15 +185,15 @@ final class ClipboardMonitor {
                 currentPollingInterval = pollingIntervals[0]
 
                 // Extract clipboard content
-                if let (content, contentType, title) = extractClipboardContent() {
+                if let (content, contentType, title, allPasteboardData) = extractClipboardContent() {
                     // Play notification sound for new content
                     playNotificationSound()
 
                     // Get source app
                     let sourceApp = getCurrentSourceApp()
 
-                    // Notify callback with content, type, source app, and title
-                    onChange(content, contentType, sourceApp, title)
+                    // Notify callback with content, type, source app, title, and complete pasteboard data
+                    onChange(content, contentType, sourceApp, title, allPasteboardData)
                 }
             }
         } else {
@@ -215,22 +221,17 @@ final class ClipboardMonitor {
 
     // MARK: - Private Methods - Content Extraction
 
-    private func extractClipboardContent() -> (Data, String, String?)? {
-        // Try to get file URLs FIRST (to capture folders before their icon images)
-        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
-           !fileURLs.isEmpty,
-           fileURLs.allSatisfy({ $0.isFileURL }) {
+    private func extractClipboardContent() -> (Data, String, String?, PasteboardData?)? {
+        // Capture complete pasteboard data FIRST (before reading specific types)
+        let allPasteboardData = PasteboardReader.readAll(from: pasteboard)
 
-            // Check if any URL is a directory (folder)
-            let isDirectory = fileURLs.contains { url in
-                var isDir: ObjCBool = false
-                FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
-                return isDir.boolValue
-            }
-
-            let contentType = isDirectory ? "public.folder" : "public.file-url"
-            if let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
-                return (data, contentType, nil)
+        // Debug: Log all available pasteboard types
+        if let types = pasteboard.types {
+            NSLog("📋 Clipboard types (\(types.count) total):")
+            for type in types {
+                let data = pasteboard.data(forType: type)
+                let size = data?.count ?? 0
+                NSLog("  - \(type.rawValue) (\(size) bytes)")
             }
         }
 
@@ -238,7 +239,7 @@ final class ClipboardMonitor {
         if let richLinkData = pasteboard.data(forType: NSPasteboard.PasteboardType("public.rich-link")),
            let (content, contentType, title) = parseRichLinkData(richLinkData) {
             // Store title temporarily to pass with callback
-            return (content, contentType, title)
+            return (content, contentType, title, allPasteboardData)
         }
 
         // Try to get URL (web links) using .url type
@@ -247,14 +248,48 @@ final class ClipboardMonitor {
            let data = urlString.data(using: .utf8) {
             // Check if it's an email address
             if isEmailAddress(urlString) {
-                return (data, "public.email", nil)
+                return (data, "public.email", nil, allPasteboardData)
             }
-            return (data, "public.url", nil)
+            return (data, "public.url", nil, allPasteboardData)
+        }
+
+        // Try to get file URLs FIRST (before TIFF)
+        // When copying files, the clipboard contains both file URL and file icon (TIFF)
+        // We need to check file URL first to avoid treating file icons as images
+        if let fileURLs = pasteboard.readObjects(forClasses: [NSURL.self], options: nil) as? [URL],
+           !fileURLs.isEmpty,
+           fileURLs.allSatisfy({ $0.isFileURL }) {
+
+            // Check if files are in sandboxed containers (inaccessible to other apps)
+            // If so, skip file URL detection and let other type checks handle it
+            let hasSandboxedFiles = fileURLs.contains { url in
+                url.absoluteString.contains("/Library/Containers/")
+            }
+
+            if hasSandboxedFiles {
+                NSLog("⚠️ Skipping sandboxed file URLs, checking other types...")
+                // Continue to check other types (like TIFF for image content)
+            } else {
+                // Check if any URL is a directory (folder)
+                let isDirectory = fileURLs.contains { url in
+                    var isDir: ObjCBool = false
+                    FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir)
+                    return isDir.boolValue
+                }
+
+                let contentType = isDirectory ? "public.folder" : "public.file-url"
+                if let data = try? JSONEncoder().encode(fileURLs.map { $0.absoluteString }) {
+                    return (data, contentType, nil, allPasteboardData)
+                }
+            }
         }
 
         // Try to get image content — return raw data, defer file saving to ViewModel
+        // Only check for images AFTER checking for file URLs
+        // This ensures file icons (which have TIFF) are identified as files, not images
+        // Image editors (Pixelmator/Photoshop) don't have file-url type, so their layers are still caught here
         if let imageData = pasteboard.data(forType: .tiff) {
-            return (imageData, "public.image", nil)
+            return (imageData, "public.image", nil, allPasteboardData)
         }
 
         // Try to get string content (check last to avoid capturing folder paths as text)
@@ -264,25 +299,25 @@ final class ClipboardMonitor {
 
             // Check if the string is a color code
             if isColorCode(string) {
-                return (data, "public.color-code", nil)
+                return (data, "public.color-code", nil, allPasteboardData)
             }
 
             // Check if the string is a phone number
             if isPhoneNumber(string) {
-                return (data, "public.phone-number", nil)
+                return (data, "public.phone-number", nil, allPasteboardData)
             }
 
             // Check if the string is an email address
             if isEmailAddress(string) {
-                return (data, "public.email", nil)
+                return (data, "public.email", nil, allPasteboardData)
             }
 
             // Check if the string is a pure URL (no extra text around it)
             if isPureURL(string) {
-                return (data, "public.url", nil)
+                return (data, "public.url", nil, allPasteboardData)
             }
 
-            return (data, "public.utf8-plain-text", nil)
+            return (data, "public.utf8-plain-text", nil, allPasteboardData)
         }
 
         return nil

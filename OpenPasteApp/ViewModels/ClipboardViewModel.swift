@@ -164,6 +164,30 @@ final class ClipboardViewModel: ObservableObject {
         isLoading = false
     }
 
+    /// Clear all clipboard data
+    func clearAllData() async {
+        isLoading = true
+
+        do {
+            // Clear cached image files first
+            ImageStorageManager.shared.clearAllImages()
+
+            // Then delete Core Data records
+            try dataStore.deleteAllItems()
+
+            // Clear local arrays
+            allItems.removeAll()
+            items.removeAll()
+            updateAvailableFilters()
+            updateRecentItemCount()
+
+        } catch {
+            showError("Failed to clear all data: \(error.localizedDescription)")
+        }
+
+        isLoading = false
+    }
+
     /// Toggle pin state for an item
     /// - Parameter item: The item to pin/unpin
     func togglePin(for item: ClipboardItemData) async {
@@ -312,9 +336,18 @@ final class ClipboardViewModel: ObservableObject {
 
     // MARK: - Private Methods - Data Handling
 
-    func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?, title: String? = nil) async {
-        // Hash content directly (images now pass raw data, text/file-url pass encoded data)
-        let hash = SHA256.hash(data: content).compactMap { String(format: "%02x", $0) }.joined()
+    func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?, title: String? = nil, allPasteboardData: PasteboardData? = nil) async {
+        // Calculate hash for deduplication based on core content only
+        // This ignores metadata that changes on each copy (RTF formatting, timestamps, etc.)
+        let hash: String
+
+        // All content types use their core content for hashing
+        // - Text: the actual text string
+        // - Images: the TIFF/PNG image data
+        // - Files: the file path array
+        // - URLs: the URL string
+        hash = SHA256.hash(data: content).compactMap { String(format: "%02x", $0) }.joined()
+        NSLog("🔢 Hash based on \(contentType) content: \(hash.prefix(16))...")
 
         // Deduplicate: update existing item if same content hash exists
         await MainActor.run {
@@ -335,6 +368,13 @@ final class ClipboardViewModel: ObservableObject {
                     existing.title = defaultTitle(for: contentType)
                 }
                 existing.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
+
+                // Update complete pasteboard data if provided
+                if let pasteboardData = allPasteboardData {
+                    existing.allPasteboardData = pasteboardData.encode()
+                    existing.allPasteboardTypes = pasteboardData.encodeTypes()
+                }
+
                 do {
                     try dataStore.saveItem(existing)
                 } catch {
@@ -363,6 +403,13 @@ final class ClipboardViewModel: ObservableObject {
             newItem.capturedAt = Date()
             newItem.isPinned = false
             newItem.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
+
+            // Store complete pasteboard data if available
+            if let pasteboardData = allPasteboardData {
+                newItem.allPasteboardData = pasteboardData.encode()
+                newItem.allPasteboardTypes = pasteboardData.encodeTypes()
+                NSLog("✅ Stored complete pasteboard data with \(pasteboardData.types.count) types")
+            }
 
             NSLog("💾 Item title before save: '\(newItem.title ?? "nil")'")
             do {
@@ -566,7 +613,9 @@ extension ClipboardItem {
             capturedAt: self.capturedAt,
             isPinned: self.isPinned,
             categoryId: self.category?.id,
-            title: self.title
+            title: self.title,
+            allPasteboardData: self.allPasteboardData,
+            allPasteboardTypes: self.allPasteboardTypes
         )
     }
 }

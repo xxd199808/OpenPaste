@@ -88,7 +88,9 @@ struct ClipboardItemCard: View {
             capturedAt: Date().addingTimeInterval(-300),
             isPinned: false,
             categoryId: nil,
-            title: nil
+            title: nil,
+            allPasteboardData: nil,
+            allPasteboardTypes: nil
         )
     )
     .frame(width: 300)
@@ -105,7 +107,9 @@ struct ClipboardItemCard: View {
             capturedAt: Date(),
             isPinned: true,
             categoryId: nil,
-            title: nil
+            title: nil,
+            allPasteboardData: nil,
+            allPasteboardTypes: nil
         )
     )
     .frame(width: 300)
@@ -122,7 +126,9 @@ struct ClipboardItemCard: View {
             capturedAt: Date().addingTimeInterval(-600),
             isPinned: false,
             categoryId: nil,
-            title: nil
+            title: nil,
+            allPasteboardData: nil,
+            allPasteboardTypes: nil
         )
     )
     .frame(width: 300)

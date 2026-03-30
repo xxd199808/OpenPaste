@@ -5,7 +5,7 @@ import SwiftUI
 struct UnifiedContentView: View {
     @Binding var selectedCategory: CategorySelector
     @ObservedObject var viewModel: ClipboardViewModel
-    let copyHandler: (String) -> Void
+    let copyHandler: (ClipboardItemData) -> Void
 
     @State private var selectedIndex: Int? = nil
 
@@ -13,7 +13,7 @@ struct UnifiedContentView: View {
         Group {
             if selectedCategory.isSettings {
                 // Show settings view
-                SettingsView()
+                SettingsView(viewModel: viewModel)
             } else {
                 // Show filtered content list
                 contentView
@@ -35,7 +35,7 @@ struct UnifiedContentView: View {
                             item: item,
                             onSelect: {
                                 selectedIndex = index
-                                copyHandler(item.content)
+                                copyHandler(item)
                             },
                             onPinToggle: {
                                 Task {
@@ -210,7 +210,7 @@ struct UnifiedContentView: View {
 @MainActor
 private func previewViewModel() -> ClipboardViewModel {
     let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
-    let monitor = ClipboardMonitor(onChange: { _, _, _, _ in })
+    let monitor = ClipboardMonitor(onChange: { _, _, _, _, _ in })
     let expiryService = ExpiryService(dataStore: dataStore)
     return ClipboardViewModel(
         dataStore: dataStore,

@@ -12,7 +12,7 @@ struct CategoryManagementView: View {
     @ObservedObject var viewModel: ClipboardViewModel
 
     /// Handler for copying content to clipboard
-    var copyHandler: (String) -> Void = { _ in }
+    var copyHandler: (ClipboardItemData) -> Void = { _ in }
 
     /// Available categories
     @State private var categories: [CategoryData] = []
@@ -141,7 +141,7 @@ struct CategoryManagementView: View {
                                     ClipboardItemView(
                                         item: item,
                                         onSelect: {
-                                            copyHandler(item.content)
+                                            copyHandler(item)
                                         },
                                         onPinToggle: {
                                             Task {
@@ -453,14 +453,14 @@ struct CategoryDropDelegate: DropDelegate {
 
 #Preview {
     let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
-    let monitor = ClipboardMonitor(onChange: { _, _, _, _ in })
+    let monitor = ClipboardMonitor(onChange: { _, _, _, _, _ in })
     let expiryService = ExpiryService(dataStore: dataStore)
     let viewModel = ClipboardViewModel(
         dataStore: dataStore,
         monitor: monitor,
         expiryService: expiryService
     )
-    CategoryManagementView(viewModel: viewModel, copyHandler: { content in
+    CategoryManagementView(viewModel: viewModel, copyHandler: { _ in
         // Preview copy handler
     })
 }

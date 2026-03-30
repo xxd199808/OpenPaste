@@ -29,6 +29,10 @@ protocol ClipboardDataStore {
     /// - Throws: NSError if deletion fails
     func deleteItem(_ item: ClipboardItem) throws
 
+    /// Delete all clipboard items from the data store
+    /// - Throws: NSError if deletion fails
+    func deleteAllItems() throws
+
     /// Delete expired clipboard items before a given date
     /// - Parameter date: The cutoff date; items with expiresAt before this date will be deleted
     /// - Throws: NSError if deletion fails

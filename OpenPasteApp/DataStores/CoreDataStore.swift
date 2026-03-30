@@ -143,6 +143,24 @@ final class CoreDataStore: ClipboardDataStore {
         }
     }
 
+    func deleteAllItems() throws {
+        try viewContext.performAndWait {
+            // Create fetch request for all clipboard items
+            let fetchRequest: NSFetchRequest<ClipboardItem> = ClipboardItem.fetchRequest()
+
+            // Fetch all items
+            let allItems = try viewContext.fetch(fetchRequest)
+
+            // Delete all items
+            for item in allItems {
+                viewContext.delete(item)
+            }
+
+            // Save changes
+            try saveContext()
+        }
+    }
+
     func deleteExpiredItems(before date: Date) throws {
         try viewContext.performAndWait {
             // Create fetch request for expired items

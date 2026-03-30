@@ -65,7 +65,9 @@ struct CardContent: View {
         capturedAt: Date(),
         isPinned: false,
         categoryId: nil,
-        title: nil
+        title: nil,
+        allPasteboardData: nil,
+        allPasteboardTypes: nil
     ))
     .frame(width: 300)
 }
@@ -79,7 +81,9 @@ struct CardContent: View {
         capturedAt: Date(),
         isPinned: false,
         categoryId: nil,
-        title: nil
+        title: nil,
+        allPasteboardData: nil,
+        allPasteboardTypes: nil
     ))
     .frame(width: 300)
 }
@@ -93,7 +97,9 @@ struct CardContent: View {
         capturedAt: Date(),
         isPinned: false,
         categoryId: nil,
-        title: nil
+        title: nil,
+        allPasteboardData: nil,
+        allPasteboardTypes: nil
     ))
     .frame(width: 300)
 }

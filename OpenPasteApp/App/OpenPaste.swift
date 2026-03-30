@@ -63,10 +63,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create ClipboardViewModel with Core Data persistence
         let dataStore = CoreDataStore(modelName: CoreDataStore.defaultModelName)
         let expiryService = ExpiryService(dataStore: dataStore)
-        let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp, title in
+        let monitor = ClipboardMonitor { [weak self] content, contentType, sourceApp, title, allPasteboardData in
             Task { @MainActor in
                 await self?.viewModel?.handleNewClipboardItem(
-                    content: content, contentType: contentType, sourceApp: sourceApp, title: title)
+                    content: content, contentType: contentType, sourceApp: sourceApp, title: title, allPasteboardData: allPasteboardData)
             }
         }
         viewModel = ClipboardViewModel(
@@ -95,26 +95,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// Copy content to clipboard without triggering new entry
-    /// - Parameter content: The string content to copy (for files, this is JSON array of URLs)
-    func copyToClipboard(_ content: String) {
+    /// - Parameter item: The clipboard item data to restore (including all pasteboard formats)
+    func copyToClipboard(_ item: ClipboardItemData) {
         MainActor.assumeIsolated {
+            NSLog("📋 copyToClipboard called for item:")
+            NSLog("   - ID: \(item.id)")
+            NSLog("   - Content: \(item.content.prefix(50))...")
+            NSLog("   - contentType: \(item.contentType)")
+            NSLog("   - CapturedAt: \(item.capturedAt)")
+
             // Skip change detection BEFORE writing to pasteboard (critical ordering!)
             viewModel?.skipNextChange()
 
-            // Check if this is a file URL (JSON array)
-            if let data = content.data(using: .utf8),
-               let urls = try? JSONDecoder().decode([String].self, from: data),
-               let firstURLString = urls.first,
-               let url = URL(string: firstURLString) {
-                // This is a file URL - write file URLs to pasteboard
-                NSPasteboard.general.clearContents()
-                let fileURLs = urls.compactMap { URL(string: $0) } as [NSURL]
-                NSPasteboard.general.writeObjects(fileURLs)
-            } else {
-                // Regular text content
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(content, forType: .string)
+            // Restore complete pasteboard data with all formats
+            guard let allPasteboardDataValue = item.allPasteboardData else {
+                NSLog("❌ No allPasteboardData available for item: \(item.id)")
+                return
             }
+
+            NSLog("✅ Found allPasteboardData: \(allPasteboardDataValue.count) bytes")
+
+            guard let pasteboardData = PasteboardData.decode(from: allPasteboardDataValue) else {
+                NSLog("❌ Failed to decode PasteboardData from \(allPasteboardDataValue.count) bytes")
+                return
+            }
+
+            NSLog("✅ Decoded PasteboardData with \(pasteboardData.types.count) types")
+            NSLog("   Writing to pasteboard...")
+
+            // Restore all formats for accurate pasting in source apps
+            PasteboardWriter.writeAll(pasteboardData, to: NSPasteboard.general)
+            NSLog("✅ Restored complete pasteboard with \(pasteboardData.types.count) types")
         }
     }
 
@@ -393,7 +404,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 /// Uses HStack layout: 70pt sidebar + unified content area
 struct FloatingPanelView: View {
     @ObservedObject var viewModel: ClipboardViewModel
-    let copyHandler: (String) -> Void
+    let copyHandler: (ClipboardItemData) -> Void
 
     @State private var selectedCategory: CategorySelector = .preset(.recent)
 

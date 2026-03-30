@@ -12,6 +12,12 @@ struct SettingsView: View {
     /// Showing hotkey customization alert
     @State private var showingHotkeyAlert = false
 
+    /// Showing clear data confirmation alert
+    @State private var showingClearDataAlert = false
+
+    /// ViewModel for clearing data
+    var viewModel: ClipboardViewModel?
+
     // MARK: - Computed Properties
 
     /// Progressive glass background for settings view
@@ -93,6 +99,14 @@ struct SettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.vertical, 4)
+
+            Divider()
+
+            Button(action: { showingClearDataAlert = true }) {
+                Text("Clear All Data")
+                    .foregroundColor(.red)
+            }
+            .accessibilityLabel("Clear all clipboard data")
         }
         .padding()
         .background(sectionBackground)
@@ -217,6 +231,16 @@ struct SettingsView: View {
             }
         } message: {
             Text("Press the key combination you want to use for showing the clipboard history")
+        }
+        .alert("Clear All Data", isPresented: $showingClearDataAlert) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear", role: .destructive) {
+                Task {
+                    await viewModel?.clearAllData()
+                }
+            }
+        } message: {
+            Text("This will permanently delete all clipboard history. This action cannot be undone.")
         }
     }
 }
