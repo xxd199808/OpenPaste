@@ -1,94 +1,88 @@
 import SwiftUI
 
-/// View for displaying color codes with preview and format conversion
+/// View for displaying color codes with preview and component values
 struct ColorCodeView: View {
     let content: String
 
     @State private var parsedColor: ParsedColor?
-    @State private var selectedFormat: ColorFormat = .hex
+    @State private var format: ColorFormat = .hex
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Color preview and primary format
-            HStack(spacing: 12) {
-                // Color preview square
+        HStack(spacing: 12) {
+            // Color preview square
+            if let color = parsedColor {
+                Rectangle()
+                    .fill(color.swiftColor)
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.gray.opacity(0.2), lineWidth: 1)
+                    )
+            } else {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(
+                        Image(systemName: "questionmark")
+                            .foregroundColor(.secondary)
+                    )
+            }
+
+            // Color values
+            VStack(alignment: .leading, spacing: 4) {
                 if let color = parsedColor {
-                    Rectangle()
-                        .fill(color.swiftColor)
-                        .frame(width: 48, height: 48)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8)
-                                .stroke(Color.gray.opacity(0.2), lineWidth: 1)
-                        )
-                } else {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: 48, height: 48)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .overlay(
-                            Image(systemName: "questionmark")
-                                .foregroundColor(.secondary)
-                        )
-                }
-
-                // Primary color value
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(selectedFormat.displayName)
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-
-                    if let color = parsedColor, let formatted = color.format(selectedFormat) {
-                        Text(formatted)
-                            .font(.system(.footnote, design: .monospaced))
-                            .foregroundColor(.primary)
-                            .textSelection(.enabled)
-                    } else {
+                    // Original format (clickable to copy)
+                    Button(action: {
+                        copyToClipboard(content)
+                    }) {
                         Text(content)
                             .font(.system(.footnote, design: .monospaced))
-                            .foregroundColor(.primary)
-                            .textSelection(.enabled)
-                    }
-                }
-
-                Spacer()
-
-                // Copy button for current format
-                if let color = parsedColor, let formatted = color.format(selectedFormat) {
-                    Button(action: {
-                        copyToClipboard(formatted)
-                    }) {
-                        Image(systemName: "doc.on.doc")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.black)
                     }
                     .buttonStyle(.plain)
-                    .help("复制 \(selectedFormat.displayName)")
+                    .help("点击复制原始值")
+
+                    // Component values display only
+                    Text(componentDisplay)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text(content)
+                        .font(.system(.footnote, design: .monospaced))
+                        .foregroundColor(.black)
                 }
             }
 
-            // Format selector
-            if parsedColor != nil {
-                HStack(spacing: 6) {
-                    ForEach(ColorFormat.allCases, id: \.self) { format in
-                        Button(action: {
-                            selectedFormat = format
-                        }) {
-                            Text(format.shortName)
-                                .font(.caption2)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(selectedFormat == format ? Color.accentColor : Color.clear)
-                                .foregroundColor(selectedFormat == format ? .white : .secondary)
-                                .clipShape(RoundedRectangle(cornerRadius: 4))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-            }
+            Spacer()
         }
         .onAppear {
             parsedColor = ColorParser.parse(content)
+            detectFormat()
+        }
+    }
+
+    private func detectFormat() {
+        let trimmed = content.trimmingCharacters(in: .whitespacesAndNewlines)
+        if trimmed.hasPrefix("#") {
+            format = .hex
+        } else if trimmed.hasPrefix("rgb") {
+            format = .rgb
+        } else if trimmed.hasPrefix("hsl") {
+            format = .hsl
+        }
+    }
+
+    private var componentDisplay: String {
+        guard let color = parsedColor else { return "" }
+        switch format {
+        case .hex:
+            return "R:\(Int(color.red * 255)) G:\(Int(color.green * 255)) B:\(Int(color.blue * 255))"
+        case .rgb:
+            return "H:\(Int(color.toHSL().h))° S:\(Int(color.toHSL().s))% L:\(Int(color.toHSL().l))%"
+        case .hsl:
+            return "R:\(Int(color.red * 255)) G:\(Int(color.green * 255)) B:\(Int(color.blue * 255))"
         }
     }
 
@@ -97,6 +91,10 @@ struct ColorCodeView: View {
         pasteboard.clearContents()
         pasteboard.setString(text, forType: .string)
     }
+}
+
+enum ColorFormat {
+    case hex, rgb, hsl
 }
 
 // MARK: - ParsedColor
@@ -111,41 +109,59 @@ struct ParsedColor {
         Color(.sRGB, red: red, green: green, blue: blue, opacity: alpha)
     }
 
-    func format(_ format: ColorFormat) -> String? {
-        switch format {
-        case .hex:
-            return toHex()
-        case .rgb:
-            return toRGB()
-        case .hsl:
-            return toHSL()
-        }
+    var hasAlpha: Bool {
+        alpha < 1.0
     }
 
-    private func toHex() -> String {
+    var rgbComponents: [String] {
         let r = Int(red * 255)
         let g = Int(green * 255)
         let b = Int(blue * 255)
-        let a = Int(alpha * 255)
-
-        if a < 255 {
-            return String(format: "#%02X%02X%02X%02X", r, g, b, a)
+        if hasAlpha {
+            return [String(r), String(g), String(b), String(format: "%.2f", alpha)]
         }
-        return String(format: "#%02X%02X%02X", r, g, b)
+        return [String(r), String(g), String(b)]
     }
 
-    private func toRGB() -> String {
+    var rgbString: String {
         let r = Int(red * 255)
         let g = Int(green * 255)
         let b = Int(blue * 255)
 
-        if alpha < 1.0 {
+        if hasAlpha {
             return String(format: "rgba(%d, %d, %d, %.2f)", r, g, b, alpha)
         }
         return String(format: "rgb(%d, %d, %d)", r, g, b)
     }
 
-    private func toHSL() -> String {
+    var hslComponents: [String] {
+        let (h, s, l) = toHSL()
+        if hasAlpha {
+            return [String(format: "%.0f°", h), String(format: "%.0f%%", s), String(format: "%.0f%%", l), String(format: "%.2f", alpha)]
+        }
+        return [String(format: "%.0f°", h), String(format: "%.0f%%", s), String(format: "%.0f%%", l)]
+    }
+
+    var hslString: String {
+        let (h, s, l) = toHSL()
+
+        if hasAlpha {
+            return String(format: "hsla(%.0f, %.0f%%, %.0f%%, %.2f)", h, s, l, alpha)
+        }
+        return String(format: "hsl(%.0f, %.0f%%, %.0f%%)", h, s, l)
+    }
+
+    var cmykComponents: [String] {
+        let (c, m, y, k) = toCMYK()
+        return [String(format: "%.0f%%", c), String(format: "%.0f%%", m), String(format: "%.0f%%", y), String(format: "%.0f%%", k)]
+    }
+
+    var cmykString: String {
+        let (c, m, y, k) = toCMYK()
+        return String(format: "cmyk(%.0f%%, %.0f%%, %.0f%%, %.0f%%)", c, m, y, k)
+    }
+
+    func toHSL() -> (h: Double, s: Double, l: Double) {
         let max = Swift.max(red, green, blue)
         let min = Swift.min(red, green, blue)
         let l = (max + min) / 2.0
@@ -170,34 +186,25 @@ struct ParsedColor {
         }
         h *= 60
 
-        if alpha < 1.0 {
-            return String(format: "hsla(%.0f, %.0f%%, %.0f%%, %.2f)", h, s * 100, l * 100, alpha)
-        }
-        return String(format: "hsl(%.0f, %.0f%%, %.0f%%)", h, s * 100, l * 100)
-    }
-}
-
-// MARK: - ColorFormat
-
-enum ColorFormat: CaseIterable {
-    case hex
-    case rgb
-    case hsl
-
-    var displayName: String {
-        switch self {
-        case .hex: return "十六进制"
-        case .rgb: return "RGB"
-        case .hsl: return "HSL"
-        }
+        return (h, s * 100, l * 100)
     }
 
-    var shortName: String {
-        switch self {
-        case .hex: return "HEX"
-        case .rgb: return "RGB"
-        case .hsl: return "HSL"
+    private func toCMYK() -> (c: Double, m: Double, y: Double, k: Double) {
+        let r = red
+        let g = green
+        let b = blue
+
+        let k = 1 - Swift.max(r, g, b)
+
+        if k == 1 {
+            return (0, 0, 0, 1)
         }
+
+        let c = (1 - r - k) / (1 - k)
+        let m = (1 - g - k) / (1 - k)
+        let y = (1 - b - k) / (1 - k)
+
+        return (c * 100, m * 100, y * 100, k * 100)
     }
 }
 
@@ -291,30 +298,24 @@ enum ColorParser {
             return nil
         }
 
-        // Extract captured groups
-        let rStr: String
-        if let range = match.range(at: 1, in: 0..<match.numberOfRanges),
-           let temp = (string as NSString).substring(with: range) {
-            rStr = temp
-        } else {
+        // Extract captured groups using NSRange
+        let nsString = string as NSString
+
+        guard match.numberOfRanges > 3 else { return nil }
+
+        let rRange = match.range(at: 1)
+        let gRange = match.range(at: 2)
+        let bRange = match.range(at: 3)
+
+        guard rRange.location != NSNotFound,
+              gRange.location != NSNotFound,
+              bRange.location != NSNotFound else {
             return nil
         }
 
-        let gStr: String
-        if let range = match.range(at: 2, in: 0..<match.numberOfRanges),
-           let temp = (string as NSString).substring(with: range) {
-            gStr = temp
-        } else {
-            return nil
-        }
-
-        let bStr: String
-        if let range = match.range(at: 3, in: 0..<match.numberOfRanges),
-           let temp = (string as NSString).substring(with: range) {
-            bStr = temp
-        } else {
-            return nil
-        }
+        let rStr = nsString.substring(with: rRange)
+        let gStr = nsString.substring(with: gRange)
+        let bStr = nsString.substring(with: bRange)
 
         guard let r = Double(rStr),
               let g = Double(gStr),
@@ -323,11 +324,14 @@ enum ColorParser {
         }
 
         let alpha: Double
-        if match.numberOfRanges > 4,
-           let range = match.range(at: 4, in: 0..<match.numberOfRanges),
-           let aStr = (string as NSString).substring(with: range),
-           let a = Double(aStr) {
-            alpha = a
+        if match.numberOfRanges > 4 {
+            let aRange = match.range(at: 4)
+            if aRange.location != NSNotFound {
+                let aStr = nsString.substring(with: aRange)
+                alpha = Double(aStr) ?? 1.0
+            } else {
+                alpha = 1.0
+            }
         } else {
             alpha = 1.0
         }
@@ -343,20 +347,39 @@ enum ColorParser {
             return nil
         }
 
-        guard let hStr = (string as NSString).substring(with: match.range(at: 1) as? String),
-              let sStr = (string as NSString).substring(with: match.range(at: 2) as? String),
-              let lStr = (string as NSString).substring(with: match.range(at: 3) as? String),
-              let h = Double(hStr),
+        let nsString = string as NSString
+
+        guard match.numberOfRanges > 3 else { return nil }
+
+        let hRange = match.range(at: 1)
+        let sRange = match.range(at: 2)
+        let lRange = match.range(at: 3)
+
+        guard hRange.location != NSNotFound,
+              sRange.location != NSNotFound,
+              lRange.location != NSNotFound else {
+            return nil
+        }
+
+        let hStr = nsString.substring(with: hRange)
+        let sStr = nsString.substring(with: sRange)
+        let lStr = nsString.substring(with: lRange)
+
+        guard let h = Double(hStr),
               let s = Double(sStr),
               let l = Double(lStr) else {
             return nil
         }
 
         let alpha: Double
-        if match.range(at: 4).location != NSNotFound,
-           let aStr = (string as NSString).substring(with: match.range(at: 4) as? String),
-           let a = Double(aStr) {
-            alpha = a
+        if match.numberOfRanges > 4 {
+            let aRange = match.range(at: 4)
+            if aRange.location != NSNotFound {
+                let aStr = nsString.substring(with: aRange)
+                alpha = Double(aStr) ?? 1.0
+            } else {
+                alpha = 1.0
+            }
         } else {
             alpha = 1.0
         }

@@ -6,6 +6,16 @@ struct CardContent: View {
 
     private let fixedHeight: CGFloat = 108
 
+    /// Calculate appropriate height based on content type
+    private var contentHeight: CGFloat {
+        switch item.contentType {
+        case "public.color-code":
+            return 140  // Extra space for format selector buttons
+        default:
+            return fixedHeight
+        }
+    }
+
     var body: some View {
         Group {
             switch item.contentType {
@@ -24,12 +34,12 @@ struct CardContent: View {
             case "public.phone-number":
                 TextView(content: item.content)
             case "public.color-code":
-                TextView(content: item.content)
+                ColorCodeView(content: item.content)
             default:
                 DefaultView(content: item.content, contentType: item.contentType)
             }
         }
-        .frame(height: fixedHeight)
+        .frame(height: contentHeight)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
