@@ -31,12 +31,11 @@ enum PresetCategory: String, CaseIterable {
     // Sort order 10: Color codes (hex, rgb, etc.)
     case colorCode = "颜色"
 
-    // Sort order 11-15: Fixed favorite categories
+    // Sort order 11-14: Fixed favorite categories
     case favorite1 = "收藏1"
     case favorite2 = "收藏2"
     case favorite3 = "收藏3"
     case favorite4 = "收藏4"
-    case favorite5 = "收藏5"
 
     // MARK: - Properties
 
@@ -74,8 +73,6 @@ enum PresetCategory: String, CaseIterable {
             return "star.fill"
         case .favorite4:
             return "star.fill"
-        case .favorite5:
-            return "star.fill"
         }
     }
 
@@ -90,8 +87,6 @@ enum PresetCategory: String, CaseIterable {
             return .yellow
         case .favorite4:
             return .green
-        case .favorite5:
-            return .blue
         default:
             return nil
         }
@@ -113,7 +108,6 @@ enum PresetCategory: String, CaseIterable {
         case .favorite2: return 11
         case .favorite3: return 12
         case .favorite4: return 13
-        case .favorite5: return 14
         }
     }
 
@@ -170,7 +164,7 @@ enum PresetCategory: String, CaseIterable {
             // Hex color codes (3-digit, 6-digit, and 8-digit with alpha)
             return item.contentType == "public.color-code"
 
-        case .favorite1, .favorite2, .favorite3, .favorite4, .favorite5:
+        case .favorite1, .favorite2, .favorite3, .favorite4:
             // Favorites only show manually assigned items
             // Check if item's categoryId matches this favorite's UUID
             return item.categoryId == favoriteUUID
@@ -189,8 +183,6 @@ enum PresetCategory: String, CaseIterable {
             return UUID(uuidString: "00000000-0000-0000-0000-000000000003")!
         case .favorite4:
             return UUID(uuidString: "00000000-0000-0000-0000-000000000004")!
-        case .favorite5:
-            return UUID(uuidString: "00000000-0000-0000-0000-000000000005")!
         default:
             return UUID()
         }

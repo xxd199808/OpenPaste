@@ -127,7 +127,7 @@ struct UnifiedContentView: View {
             case .email: return "envelope"
             case .phoneNumber: return "phone"
             case .colorCode: return "paintpalette"
-            case .favorite1, .favorite2, .favorite3, .favorite4, .favorite5: return "star.fill"
+            case .favorite1, .favorite2, .favorite3, .favorite4: return "star.fill"
             }
         case .custom:
             return "folder"
