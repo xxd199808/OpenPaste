@@ -79,7 +79,7 @@ final class ClipboardMonitor {
 
     /// Skip the next detected clipboard change (call before writing to pasteboard)
     func skipNextChange() {
-        skipNextChangesCount = 10  // Skip multiple changes to ensure write operations complete
+        skipNextChangesCount = 1  // Skip only one change since a single write increments changeCount once
     }
 
     /// Stop monitoring the clipboard
@@ -165,35 +165,37 @@ final class ClipboardMonitor {
         let currentChangeCount = pasteboard.changeCount
 
         if currentChangeCount != lastChangeCount {
-            lastChangeCount = currentChangeCount
-
             // Skip if the app itself triggered this change
             if skipNextChangesCount > 0 {
                 skipNextChangesCount -= 1
-                return
-            }
+                lastChangeCount = currentChangeCount
+                // Do NOT return here — must schedule next poll!
+            } else {
+                // Update lastChangeCount
+                lastChangeCount = currentChangeCount
 
-            // Reset to fast polling when change is detected
-            adaptiveLevel = 0
-            currentPollingInterval = pollingIntervals[0]
+                // Reset to fast polling when change is detected
+                adaptiveLevel = 0
+                currentPollingInterval = pollingIntervals[0]
 
-            // Extract clipboard content
-            if let (content, contentType) = extractClipboardContent() {
-                // Play notification sound for new content
-                playNotificationSound()
+                // Extract clipboard content
+                if let (content, contentType) = extractClipboardContent() {
+                    // Play notification sound for new content
+                    playNotificationSound()
 
-                // Get source app
-                let sourceApp = getCurrentSourceApp()
+                    // Get source app
+                    let sourceApp = getCurrentSourceApp()
 
-                // Notify callback
-                onChange(content, contentType, sourceApp)
+                    // Notify callback
+                    onChange(content, contentType, sourceApp)
+                }
             }
         } else {
             // No change - check if we should slow down polling
             updateAdaptivePolling()
         }
 
-        // Schedule next poll
+        // Always schedule next poll
         scheduleNextPoll()
     }
 
