@@ -23,6 +23,8 @@ struct CardContent: View {
                 TextView(content: item.content)
             case "public.phone-number":
                 TextView(content: item.content)
+            case "public.color-code":
+                TextView(content: item.content)
             default:
                 DefaultView(content: item.content, contentType: item.contentType)
             }

@@ -448,6 +448,8 @@ final class ClipboardViewModel: ObservableObject {
             return "邮箱"
         case "public.phone-number":
             return "电话"
+        case "public.color-code":
+            return "颜色"
         case "public.html":
             return "HTML"
         case "public.rtf":

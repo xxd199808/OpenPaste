@@ -179,6 +179,8 @@ struct CardHeader: View {
             return "邮箱"
         case "public.phone-number":
             return "电话"
+        case "public.color-code":
+            return "颜色"
         default:
             return "内容"
         }

@@ -178,7 +178,7 @@ enum PresetCategory: String, CaseIterable {
 
         case .colorCode:
             // Hex color codes (3-digit, 6-digit, and 8-digit with alpha)
-            return item.content.range(of: "#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\\b", options: .regularExpression) != nil
+            return item.contentType == "public.color-code"
 
         case .favorite1, .favorite2, .favorite3, .favorite4, .favorite5:
             // Favorites only show manually assigned items

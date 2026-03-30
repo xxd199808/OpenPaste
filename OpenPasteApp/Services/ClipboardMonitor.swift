@@ -262,6 +262,11 @@ final class ClipboardMonitor {
            !string.isEmpty,
            let data = string.data(using: .utf8) {
 
+            // Check if the string is a color code
+            if isColorCode(string) {
+                return (data, "public.color-code", nil)
+            }
+
             // Check if the string is a phone number
             if isPhoneNumber(string) {
                 return (data, "public.phone-number", nil)
@@ -362,6 +367,34 @@ final class ClipboardMonitor {
         let hasInvalidChars = trimmed.unicodeScalars.contains { !allowedChars.contains($0) }
 
         return !hasInvalidChars
+    }
+
+    /// Check if a string is a hex color code
+    private func isColorCode(_ string: String) -> Bool {
+        let trimmed = string.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        // Hex color code pattern: # followed by 3, 6, or 8 hex digits
+        let hexPattern = #"^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\b"#
+        if let regex = try? NSRegularExpression(pattern: hexPattern, options: []),
+           let match = regex.firstMatch(in: trimmed, range: NSRange(location: 0, length: trimmed.utf16.count)) {
+            return match.range.length == trimmed.utf16.count
+        }
+
+        // RGB/RGBA pattern: rgb(r, g, b) or rgba(r, g, b, a)
+        let rgbPattern = #"^rgba?\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*(,\s*[\d.]+\s*)?\)$"#
+        if let regex = try? NSRegularExpression(pattern: rgbPattern, options: []),
+           let match = regex.firstMatch(in: trimmed, range: NSRange(location: 0, length: trimmed.utf16.count)) {
+            return match.range.length == trimmed.utf16.count
+        }
+
+        // HSL/HSLA pattern: hsl(h, s%, l%) or hsla(h, s%, l%, a)
+        let hslPattern = #"^hsla?\(\s*\d+\s*,\s*\d+%\s*,\s*\d+%\s*(,\s*[\d.]+\s*)?\)$"#
+        if let regex = try? NSRegularExpression(pattern: hslPattern, options: []),
+           let match = regex.firstMatch(in: trimmed, range: NSRange(location: 0, length: trimmed.utf16.count)) {
+            return match.range.length == trimmed.utf16.count
+        }
+
+        return false
     }
 
     private func getCurrentSourceApp() -> String? {
