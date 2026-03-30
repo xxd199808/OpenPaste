@@ -2,6 +2,8 @@ import Foundation
 import SwiftUI
 import Combine
 import CoreData
+import CryptoKit
+import CryptoKit
 
 // MARK: - ClipboardViewModel
 /// View model that bridges UI and services with reactive state management.
@@ -311,13 +313,34 @@ final class ClipboardViewModel: ObservableObject {
     // MARK: - Private Methods - Data Handling
 
     func handleNewClipboardItem(content: Data, contentType: String, sourceApp: String?) async {
+        let hash = SHA256.hash(data: content).compactMap { String(format: "%02x", $0) }.joined()
 
-        // Save to Core Data on main thread
+        // Deduplicate: update existing item if same content exists
         await MainActor.run {
             let context = dataStore.viewContext
+            let request: NSFetchRequest<ClipboardItem> = ClipboardItem.fetchRequest()
+            request.predicate = NSPredicate(format: "contentHash == %@", hash)
+            request.sortDescriptors = [NSSortDescriptor(key: "capturedAt", ascending: false)]
+            request.fetchLimit = 1
+
+            if let existing = try? context.fetch(request).first {
+                // Update timestamp to bring it to the front
+                existing.capturedAt = Date()
+                existing.sourceApp = sourceApp
+                existing.expiresAt = Calendar.current.date(byAdding: .day, value: AppSettings.shared.retentionDays, to: Date()) ?? Date()
+                do {
+                    try dataStore.saveItem(existing)
+                } catch {
+                    showError("Failed to update clipboard item: \(error.localizedDescription)")
+                }
+                return
+            }
+
+            // No duplicate found — create new item
             let newItem = ClipboardItem(context: context)
             newItem.id = UUID()
             newItem.content = content
+            newItem.contentHash = hash
             newItem.contentType = contentType
             newItem.sourceApp = sourceApp
             newItem.capturedAt = Date()

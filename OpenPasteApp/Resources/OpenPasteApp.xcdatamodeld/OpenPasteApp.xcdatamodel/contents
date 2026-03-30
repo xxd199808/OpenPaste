@@ -3,6 +3,7 @@
     <entity name="ClipboardItem" representedClassName="ClipboardItem" syncable="YES">
         <attribute name="capturedAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="content" optional="NO" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="contentHash" optional="YES" attributeType="String"/>
         <attribute name="contentType" optional="NO" attributeType="String"/>
         <attribute name="expiresAt" optional="NO" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="NO" attributeType="UUID" usesScalarValueType="NO"/>

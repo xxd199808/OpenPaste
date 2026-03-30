@@ -17,6 +17,7 @@ extension ClipboardItem {
 
     @NSManaged public var capturedAt: Date
     @NSManaged public var content: Data
+    @NSManaged public var contentHash: String?
     @NSManaged public var contentType: String
     @NSManaged public var expiresAt: Date
     @NSManaged public var id: UUID
