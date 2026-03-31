@@ -42,6 +42,7 @@ struct CardHeader: View {
                     TextField("", text: $editingTitle)
                         .font(.system(size: 15, weight: .bold))
                         .textFieldStyle(.plain)
+                        .foregroundColor(.white)
                         .onSubmit {
                             onTitleChange?(editingTitle)
                             isEditingTitle = false
@@ -52,7 +53,7 @@ struct CardHeader: View {
                 } else {
                     Text(title ?? typeTitle)
                         .font(.system(size: 15, weight: .bold))
-                        .foregroundStyle(.primary)
+                        .foregroundStyle(.white)
                         .contentShape(Rectangle())
                         .allowsHitTesting(true)
                 }
@@ -61,9 +62,10 @@ struct CardHeader: View {
                 HStack(spacing: 4) {
                     Image(systemName: "clock")
                         .font(.caption2)
+                        .foregroundColor(.white)
                     Text(capturedAt, style: .relative)
                         .font(.caption2)
-                        .foregroundStyle(.secondary.opacity(0.8))
+                        .foregroundStyle(.white.opacity(0.8))
                 }
             }
             .contentShape(Rectangle())
@@ -97,7 +99,6 @@ struct CardHeader: View {
                 loadAppIcon(for: sourceApp)
                 loadDominantColor(for: sourceApp)
             }
-            loadCategories()
         }
         .clipped()  // Clip vertical overflow (applied last)
     }
@@ -297,7 +298,7 @@ struct CardHeader: View {
 
     private var categoryTintColor: Color {
         guard let categoryId = categoryId else {
-            return .secondary.opacity(0.6)
+            return .white.opacity(0.6)
         }
 
         // Check if it's a preset favorite category
@@ -388,10 +389,6 @@ struct CardHeader: View {
         #endif
     }
 
-    private func loadCategories() {
-        // TODO: Load from ViewModel - for now use empty array
-        // This will be connected to the actual category system
-    }
 }
 
 // MARK: - Preview
