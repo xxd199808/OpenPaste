@@ -11,7 +11,7 @@ import SwiftUI
 // MARK: - Layout Constants
 
 /// Default width for the floating panel
-private let defaultPanelWidth: CGFloat = 520
+private let defaultPanelWidth: CGFloat = 300
 
 // MARK: - Global Status Item
 // 🔥 macOS 15 要求：必须在全局作用域持有强引用
@@ -377,8 +377,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             button.title = "📋"
         }
 
-        button.toolTip = "OpenPaste - 点击打开剪贴板历史"
-
         // 🔥 核心：纯 action，无 menu、无 sendAction、无手势
         button.target = self
         button.action = #selector(openFloatingPanel)
@@ -428,7 +426,6 @@ struct FloatingPanelView: View {
                 viewModel: viewModel,
                 selectedCategory: $selectedCategory
             )
-            .frame(width: 250)
 
             // Right content area with rounded glass background
             UnifiedContentView(
