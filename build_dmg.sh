@@ -35,6 +35,12 @@ cat > dmg_temp/"Drag OpenPaste → Applications to install.txt" << 'EOF'
 Drag OpenPaste.app to Applications folder to install
 
 First time: Right-click -> Open -> Open
+
+If you see a security warning:
+
+1. Open "System Settings" -> "Privacy & Security"
+2. Find "OpenPaste" in the blocked list
+3. Click "Open Anyway"
 EOF
 
 # 3. 创建 Applications 快捷方式
