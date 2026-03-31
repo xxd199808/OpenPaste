@@ -357,54 +357,40 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusBarLock.lock()
         defer { statusBarLock.unlock() }
 
-        NSLog("🔧 Setting up status bar...")
+        NSLog("🔧 Setting up status bar (macOS 15 safe: action-only, no menu)")
 
-        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+        // 稳定长度
+        statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
-        if let button = statusItem?.button {
-            // Load custom status bar icon
-            if let icon = NSImage(named: "StatusBarIcon") {
-                icon.isTemplate = true  // Auto-adapt to dark/light mode
-                icon.size = NSSize(width: 18, height: 18)
-                button.image = icon
-                button.imageScaling = .scaleProportionallyDown
-            } else {
-                // Fallback to emoji if icon not found
-                button.title = "📋"
-            }
-
-            button.toolTip = "OpenPaste - 点击打开剪贴板历史\n右键显示菜单"
-
-            // Add click gesture to button
-            button.action = #selector(statusBarButtonClicked(_:))
-            button.target = self
-            button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-
-            NSLog("✅ Status bar button created")
-        } else {
-            NSLog("❌ Failed to create status bar button")
+        guard let button = statusItem?.button else {
+            NSLog("❌ Status bar button unavailable")
+            return
         }
 
-        // 🔥 macOS 15 要求：必须始终有菜单关联
-        let menu = NSMenu()
-        let quitItem = NSMenuItem(title: "退出 OpenPaste", action: #selector(quitApp), keyEquivalent: "q")
-        quitItem.target = self
-        menu.addItem(quitItem)
-        statusItem?.menu = menu
+        // 图标 / 文字
+        if let icon = NSImage(named: "StatusBarIcon") {
+            icon.isTemplate = true  // 自动适配明暗模式
+            icon.size = NSSize(width: 18, height: 18)
+            button.image = icon
+            button.imageScaling = .scaleProportionallyDown
+        } else {
+            button.title = "📋"
+        }
 
-        NSLog("✅ Status bar setup complete")
+        button.toolTip = "OpenPaste - 点击打开剪贴板历史"
+
+        // 🔥 核心：纯 action，无 menu、无 sendAction、无手势
+        button.target = self
+        button.action = #selector(openFloatingPanel)
+
+        // ✅ 关键：完全不设置 menu
+
+        NSLog("✅ Status bar ready: left-click only, no menu")
     }
-    
-    @objc private func statusBarButtonClicked(_ sender: NSStatusBarButton) {
-        guard let event = NSApp.currentEvent else { return }
 
-        if event.type == .rightMouseUp {
-            // 菜单已经存在，自动显示
-            statusItem?.button?.performClick(nil)
-        } else {
-            // Toggle panel on left click
-            toggleFloatingPanel()
-        }
+    // 左键点击：打开/切换面板
+    @objc private func openFloatingPanel() {
+        toggleFloatingPanel()
     }
 
     @objc private func quitApp() {
