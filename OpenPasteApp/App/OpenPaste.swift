@@ -11,7 +11,7 @@ import SwiftUI
 // MARK: - Layout Constants
 
 /// Default width for the floating panel
-private let defaultPanelWidth: CGFloat = 520
+private let defaultPanelWidth: CGFloat = 300
 
 // MARK: - Global Status Item
 // 🔥 macOS 15 要求：必须在全局作用域持有强引用
@@ -521,7 +521,6 @@ struct FloatingPanelView: View {
                 viewModel: viewModel,
                 selectedCategory: $selectedCategory
             )
-            .frame(width: 250)
 
             // Right content area with rounded glass background
             UnifiedContentView(

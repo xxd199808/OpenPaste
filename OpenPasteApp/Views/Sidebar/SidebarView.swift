@@ -22,11 +22,10 @@ struct SidebarView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 8)
+                .padding(.trailing, 10)
                 .padding(.vertical, 12)
             }
-            .frame(width: 250)
-
+            
             Spacer()
 
             // Search button (pinned above settings)
@@ -37,10 +36,9 @@ struct SidebarView: View {
             ) {
                 selectedCategory = .search
             }
-            .padding(.horizontal, 8)
+            .padding(.trailing, 10)
             .padding(.bottom, 6)
-            .frame(width: 250) // Match scrollview width
-
+            
             // Settings button (pinned to bottom)
             CategoryButton(
                 title: "设置",
@@ -49,12 +47,10 @@ struct SidebarView: View {
             ) {
                 selectedCategory = .settings
             }
-            .padding(.horizontal, 8)
+            .padding(.trailing, 10)
             .padding(.bottom, 12)
-            .frame(width: 250) // Match scrollview width
-        }
-        .frame(width: 250)
-        .background(Color.clear)
+                    }
+                .background(Color.clear)
     }
 }
 

@@ -26,26 +26,21 @@ struct CategoryButton: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
-            Spacer()
+        Button(action: action) {
+            ZStack {
+                Circle()
+                    .fill(.clear)
+                    .background(buttonBackground)
 
-            // Button
-            Button(action: action) {
-                ZStack {
-                    Circle()
-                        .fill(.clear)
-                        .background(buttonBackground)
-
-                    iconWithStroke(
-                        for: Image(systemName: icon)
-                            .font(.system(size: 14, weight: .medium))
-                    )
-                }
-                .frame(width: 36, height: 36)
-                .clipShape(Circle())
+                iconWithStroke(
+                    for: Image(systemName: icon)
+                        .font(.system(size: 14, weight: .medium))
+                )
             }
-            .buttonStyle(.plain)
+            .frame(width: 36, height: 36)
+            .clipShape(Circle())
         }
+        .buttonStyle(.plain)
         .frame(height: 36)
         .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.15)) {
