@@ -46,6 +46,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// HotKey instance
     private var hotKey: HotKey?
+    private var globalClickMonitor: Any?
+    private var localClickMonitor: Any?
+    private var statusBarIcon: NSImage?
+    private var statusBarAlternateIcon: NSImage?
 
     // MARK: - NSApplicationDelegate
 
@@ -79,16 +83,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             dataStore: dataStore, monitor: monitor, expiryService: expiryService)
 
         NSLog("✅ OpenPaste setup complete")
-
-        // Show the floating panel initially so user sees it's working
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.showFloatingPanel()
-        }
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         // Cleanup hotkey
         hotKey = nil
+        if let globalClickMonitor {
+            NSEvent.removeMonitor(globalClickMonitor)
+            self.globalClickMonitor = nil
+        }
+        if let localClickMonitor {
+            NSEvent.removeMonitor(localClickMonitor)
+            self.localClickMonitor = nil
+        }
     }
 
     func applicationDidBecomeActive(_ notification: Notification) {
@@ -144,7 +151,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create hotkey with Command+Shift+V
         hotKey = HotKey(key: .v, modifiers: [.command, .shift], keyDownHandler: { [weak self] in
             NSLog("🔥 Hotkey triggered!")
-            self?.toggleFloatingPanel()
+            self?.toggleFloatingPanel(activateApp: true)
         })
 
         NSLog("✅ Hotkey ⌘⇧V registered successfully!")
@@ -156,24 +163,25 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    private func toggleFloatingPanel() {
+    private func toggleFloatingPanel(activateApp: Bool) {
         if floatingPanel == nil {
-            showFloatingPanel()
+            showFloatingPanel(activateApp: activateApp)
             return
         }
 
         if let panel = floatingPanel, panel.isVisible {
             hideFloatingPanel()
         } else {
-            showFloatingPanel()
+            showFloatingPanel(activateApp: activateApp)
         }
     }
 
     // MARK: - Floating Panel Management
 
-    @objc private func showFloatingPanel() {
-        // Activate app and bring to front
-        NSApplication.shared.activate(ignoringOtherApps: true)
+    private func showFloatingPanel(activateApp: Bool) {
+        if activateApp {
+            NSApplication.shared.activate(ignoringOtherApps: true)
+        }
 
         if let panel = floatingPanel {
             let screen = NSScreen.main?.visibleFrame ?? NSRect.zero
@@ -200,6 +208,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 let targetFrame = NSRect(x: targetX, y: targetY, width: panelWidth, height: panelHeight)
                 panel.animator().setFrame(targetFrame, display: true)
             }
+            refreshStatusBarButtonAppearance()
         } else {
             createFloatingPanel()
         }
@@ -281,56 +290,65 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             panel.animator().setFrame(NSRect(x: targetX, y: targetY, width: panelWidth, height: panelHeight), display: true)
         }
 
+        refreshStatusBarButtonAppearance()
+
         // Add click-outside observer
         addClickOutsideObserver()
     }
 
     private func addClickOutsideObserver() {
-        // Use global monitor to detect clicks anywhere on screen
-        NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
-            guard let self = self,
-                  let panel = self.floatingPanel,
-                  panel.isVisible else {
-                return
-            }
+        if globalClickMonitor == nil {
+            // Use global monitor to detect clicks anywhere on screen
+            globalClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
+                guard let self = self,
+                      let panel = self.floatingPanel,
+                      panel.isVisible else {
+                    return
+                }
 
-            // Convert screen coordinates to check if click is outside panel
-            let clickPoint = event.locationInWindow
-            let panelFrame = panel.frame
+                if self.isStatusItemClick(event) {
+                    return
+                }
 
-            // Check if click is outside the panel
-            if !panelFrame.contains(clickPoint) {
-                self.hideFloatingPanel()
+                let clickPoint = event.locationInWindow
+                if !panel.frame.contains(clickPoint) {
+                    self.hideFloatingPanel()
+                }
             }
         }
 
-        // Also monitor local events within the app
-        NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
-            guard let self = self,
-                  let panel = self.floatingPanel,
-                  panel.isVisible else {
-                return event
-            }
+        if localClickMonitor == nil {
+            // Also monitor local events within the app
+            localClickMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
+                guard let self = self,
+                      let panel = self.floatingPanel,
+                      panel.isVisible else {
+                    return event
+                }
 
-            // Check if the event's window is not our panel
-            if event.window !== panel {
-                // Get click location in screen coordinates
-                let screenLocation = event.locationInWindow
-                if let eventWindow = event.window {
-                    let windowFrame = eventWindow.frame
-                    let clickInScreen = NSPoint(
-                        x: windowFrame.origin.x + screenLocation.x,
-                        y: windowFrame.origin.y + screenLocation.y
-                    )
+                if self.isStatusItemClick(event) {
+                    return event
+                }
 
-                    // Check if click is outside panel
-                    if !panel.frame.contains(clickInScreen) {
+                if event.window !== panel {
+                    let screenLocation = event.locationInWindow
+                    if let eventWindow = event.window {
+                        let windowFrame = eventWindow.frame
+                        let clickInScreen = NSPoint(
+                            x: windowFrame.origin.x + screenLocation.x,
+                            y: windowFrame.origin.y + screenLocation.y
+                        )
+
+                        if !panel.frame.contains(clickInScreen) {
+                            self.hideFloatingPanel()
+                        }
+                    } else if !panel.frame.contains(screenLocation) {
                         self.hideFloatingPanel()
                     }
                 }
-            }
 
-            return event
+                return event
+            }
         }
     }
 
@@ -347,6 +365,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             panel.animator().setFrameOrigin(NSPoint(x: screen.maxX, y: currentFrame.origin.y))
         } completionHandler: {
             panel.orderOut(nil)
+            self.refreshStatusBarButtonAppearance()
         }
     }
 
@@ -361,34 +380,111 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         // 稳定长度
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+        statusItem?.isVisible = true
 
         guard let button = statusItem?.button else {
             NSLog("❌ Status bar button unavailable")
             return
         }
 
-        // 图标 / 文字
-        if let icon = NSImage(named: "StatusBarIcon") {
-            icon.isTemplate = true  // 自动适配明暗模式
-            icon.size = NSSize(width: 18, height: 18)
-            button.image = icon
-            button.imageScaling = .scaleProportionallyDown
-        } else {
-            button.title = "📋"
-        }
+        configureStatusBarButton(button)
 
-        // 🔥 核心：纯 action，无 menu、无 sendAction、无手势
+        button.toolTip = "OpenPaste - 点击打开剪贴板历史"
+        button.imagePosition = .imageOnly
+        button.isEnabled = true
+        button.appearsDisabled = false
+
+        // 🔥 核心：纯 action，无 menu、无手势
         button.target = self
-        button.action = #selector(openFloatingPanel)
+        button.action = #selector(handleStatusItemClick(_:))
+        button.sendAction(on: [.leftMouseDown])
 
         // ✅ 关键：完全不设置 menu
 
         NSLog("✅ Status bar ready: left-click only, no menu")
     }
 
+    private func configureStatusBarButton(_ button: NSStatusBarButton) {
+        button.title = ""
+
+        if statusBarIcon == nil {
+            statusBarIcon = makeStatusBarIcon()
+        }
+        if statusBarAlternateIcon == nil {
+            statusBarAlternateIcon = makeStatusBarIcon()
+        }
+
+        if let icon = statusBarIcon {
+            button.image = icon
+            button.alternateImage = statusBarAlternateIcon
+            button.imageScaling = .scaleProportionallyDown
+        } else {
+            button.image = nil
+            button.alternateImage = nil
+            button.title = "📋"
+        }
+    }
+
+    private func makeStatusBarIcon() -> NSImage? {
+        guard let icon = NSImage(named: "StatusBarIcon")?.copy() as? NSImage else {
+            return nil
+        }
+        icon.isTemplate = true
+        icon.size = NSSize(width: 18, height: 18)
+        return icon
+    }
+
+    private func refreshStatusBarButtonAppearance() {
+        DispatchQueue.main.async {
+            guard let statusItem, let button = statusItem.button else { return }
+            statusItem.isVisible = true
+            self.configureStatusBarButton(button)
+            button.imagePosition = .imageOnly
+            button.isEnabled = true
+            button.appearsDisabled = false
+            button.needsLayout = true
+            button.needsDisplay = true
+            button.superview?.needsDisplay = true
+        }
+    }
+
+    private func isStatusItemClick(_ event: NSEvent) -> Bool {
+        guard let button = statusItem?.button,
+              let buttonWindow = button.window else {
+            return false
+        }
+
+        if event.window === buttonWindow {
+            let pointInButtonWindow = event.locationInWindow
+            let buttonFrameInWindow = button.convert(button.bounds, to: nil)
+            return buttonFrameInWindow.contains(pointInButtonWindow)
+        }
+
+        let buttonFrameInWindow = button.convert(button.bounds, to: nil)
+        let buttonFrameOnScreen = buttonWindow.convertToScreen(buttonFrameInWindow)
+        let eventPointOnScreen: NSPoint
+
+        if let eventWindow = event.window {
+            let windowFrame = eventWindow.frame
+            let pointInWindow = event.locationInWindow
+            eventPointOnScreen = NSPoint(
+                x: windowFrame.origin.x + pointInWindow.x,
+                y: windowFrame.origin.y + pointInWindow.y
+            )
+        } else {
+            eventPointOnScreen = event.locationInWindow
+        }
+
+        return buttonFrameOnScreen.contains(eventPointOnScreen)
+    }
+
     // 左键点击：打开/切换面板
-    @objc private func openFloatingPanel() {
-        toggleFloatingPanel()
+    @objc private func handleStatusItemClick(_ sender: Any?) {
+        refreshStatusBarButtonAppearance()
+        toggleFloatingPanel(activateApp: false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.refreshStatusBarButtonAppearance()
+        }
     }
 
     @objc private func quitApp() {
@@ -410,13 +506,12 @@ struct FloatingPanelView: View {
 
     @ViewBuilder
     private var panelBackground: some View {
-        if #available(macOS 26.0, *) {
-            RoundedRectangle(cornerRadius: 12)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
-        } else {
-            RoundedRectangle(cornerRadius: 12)
-                .background(.ultraThinMaterial)
-        }
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.ultraThinMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
+            )
     }
 
     var body: some View {
