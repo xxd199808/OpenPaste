@@ -16,6 +16,8 @@ private let defaultPanelWidth: CGFloat = 520
 // MARK: - Global Status Item
 // 🔥 macOS 15 要求：必须在全局作用域持有强引用
 var statusItem: NSStatusItem?
+// 🔥 macOS 15 多线程保护：防止系统在后台线程强制回收
+let statusBarLock = NSLock()
 
 // MARK: - CustomPanel
 /// Custom NSPanel subclass that can become key window even with utilityWindow style
@@ -51,8 +53,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSLog("🚀 OpenPaste launched!")
 
         // Setup status bar FIRST - this is critical
-        // 🔥 macOS 15 启动时序 Bug: 延迟初始化确保 NSStatusBar 系统已准备就绪
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+        // 🔥 macOS 15 启动时序 Bug: 延迟 0.3 秒确保 NSStatusBar 系统已准备就绪
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
             self.setupStatusBar()
         }
 
@@ -351,6 +353,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - Status Bar
 
     private func setupStatusBar() {
+        // 🔥 macOS 15 多线程保护：防止系统在后台线程强制回收
+        statusBarLock.lock()
+        defer { statusBarLock.unlock() }
+
         NSLog("🔧 Setting up status bar...")
 
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)

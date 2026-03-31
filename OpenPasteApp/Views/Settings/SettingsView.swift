@@ -18,6 +18,13 @@ struct SettingsView: View {
     /// ViewModel for clearing data
     var viewModel: ClipboardViewModel?
 
+    // MARK: - Actions
+
+    /// Quit the application
+    private func quitApp() {
+        NSApplication.shared.terminate(nil)
+    }
+
     // MARK: - Computed Properties
 
     /// Progressive glass background for settings view
@@ -202,6 +209,14 @@ struct SettingsView: View {
                 Link("View License", destination: URL(string: "https://opensource.org/licenses/MIT")!)
                     .font(.caption)
             }
+
+            Divider()
+
+            Button(action: quitApp) {
+                Text("Quit OpenPaste")
+                    .foregroundColor(.red)
+            }
+            .accessibilityLabel("Quit OpenPaste application")
         }
         .padding()
         .background(sectionBackground)
