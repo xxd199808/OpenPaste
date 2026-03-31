@@ -166,30 +166,6 @@ struct SettingsView: View {
         .cornerRadius(10)
     }
 
-    /// Theme section
-    private var themeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Theme")
-                .font(.headline)
-                .padding(.bottom, 4)
-
-            Picker("Appearance", selection: $settings.theme) {
-                Text("Light").tag(AppTheme.light)
-                Text("Dark").tag(AppTheme.dark)
-                Text("Auto").tag(AppTheme.auto)
-            }
-            .pickerStyle(.segmented)
-            .accessibilityLabel("Theme preference")
-
-            Text("Auto matches your system appearance setting")
-                .font(.caption)
-                .foregroundColor(.secondary)
-        }
-        .padding()
-        .background(sectionBackground)
-        .cornerRadius(10)
-    }
-
     /// About section
     private var aboutSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -234,7 +210,6 @@ struct SettingsView: View {
                 keyboardShortcutSection
                 dataManagementSection
                 historySection
-                themeSection
                 aboutSection
             }
             .padding()
