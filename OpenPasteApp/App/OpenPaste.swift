@@ -151,7 +151,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Create hotkey with Command+Shift+V
         hotKey = HotKey(key: .v, modifiers: [.command, .shift], keyDownHandler: { [weak self] in
             NSLog("🔥 Hotkey triggered!")
-            self?.toggleFloatingPanel(activateApp: true)
+            self?.handleHotkeyToggle()
         })
 
         NSLog("✅ Hotkey ⌘⇧V registered successfully!")
@@ -198,7 +198,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             panel.setFrame(offScreenFrame, display: false)
 
             // Make panel visible
-            panel.makeKeyAndOrderFront(nil)
+            if activateApp {
+                panel.makeKeyAndOrderFront(nil)
+            } else {
+                panel.orderFrontRegardless()
+                panel.makeKey()
+            }
             panel.level = .modalPanel
 
             // Animate in from right
@@ -278,7 +283,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         floatingPanel = panel
 
         // Show the panel
-        panel.makeKeyAndOrderFront(nil)
+        panel.orderFrontRegardless()
+        panel.makeKey()
 
         // Slide-in animation from right
         let startFrame = NSRect(x: screen.maxX, y: targetY, width: panelWidth, height: panelHeight)
@@ -480,6 +486,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     // 左键点击：打开/切换面板
     @objc private func handleStatusItemClick(_ sender: Any?) {
+        refreshStatusBarButtonAppearance()
+        toggleFloatingPanel(activateApp: false)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.refreshStatusBarButtonAppearance()
+        }
+    }
+
+    private func handleHotkeyToggle() {
         refreshStatusBarButtonAppearance()
         toggleFloatingPanel(activateApp: false)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
