@@ -13,6 +13,10 @@ import SwiftUI
 /// Default width for the floating panel
 private let defaultPanelWidth: CGFloat = 520
 
+// MARK: - Global Status Item
+// 🔥 macOS 15 要求：必须在全局作用域持有强引用
+var statusItem: NSStatusItem?
+
 // MARK: - CustomPanel
 /// Custom NSPanel subclass that can become key window even with utilityWindow style
 class CustomPanel: NSPanel {
@@ -37,9 +41,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     /// View model for clipboard data, persistence, and monitoring
     private var viewModel: ClipboardViewModel?
-
-    /// Status bar menu item
-    private var statusItem: NSStatusItem?
 
     /// HotKey instance
     private var hotKey: HotKey?
@@ -146,7 +147,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     private func updateStatusTitle(_ title: String) {
         DispatchQueue.main.async {
-            self.statusItem?.button?.title = title
+            statusItem?.button?.title = title
         }
     }
 
@@ -362,34 +363,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 // Fallback to emoji if icon not found
                 button.title = "📋"
             }
-            
+
             button.toolTip = "OpenPaste - 点击打开剪贴板历史\n右键显示菜单"
-            
+
             // Add click gesture to button
             button.action = #selector(statusBarButtonClicked(_:))
             button.target = self
             button.sendAction(on: [.leftMouseUp, .rightMouseUp])
-            
+
             NSLog("✅ Status bar button created")
         } else {
             NSLog("❌ Failed to create status bar button")
         }
+
+        // 🔥 macOS 15 要求：必须始终有菜单关联
+        let menu = NSMenu()
+        let quitItem = NSMenuItem(title: "退出 OpenPaste", action: #selector(quitApp), keyEquivalent: "q")
+        quitItem.target = self
+        menu.addItem(quitItem)
+        statusItem?.menu = menu
 
         NSLog("✅ Status bar setup complete")
     }
     
     @objc private func statusBarButtonClicked(_ sender: NSStatusBarButton) {
         guard let event = NSApp.currentEvent else { return }
-        
+
         if event.type == .rightMouseUp {
-            // Show menu on right click
-            let menu = NSMenu()
-            let quitItem = NSMenuItem(title: "退出 OpenPaste", action: #selector(quitApp), keyEquivalent: "q")
-            quitItem.target = self
-            menu.addItem(quitItem)
-            statusItem?.menu = menu
+            // 菜单已经存在，自动显示
             statusItem?.button?.performClick(nil)
-            statusItem?.menu = nil
         } else {
             // Toggle panel on left click
             toggleFloatingPanel()
