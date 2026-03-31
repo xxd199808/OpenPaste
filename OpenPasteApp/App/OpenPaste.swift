@@ -51,7 +51,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSLog("🚀 OpenPaste launched!")
 
         // Setup status bar FIRST - this is critical
-        setupStatusBar()
+        // 🔥 macOS 15 启动时序 Bug: 延迟初始化确保 NSStatusBar 系统已准备就绪
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            self.setupStatusBar()
+        }
 
         // Hide all windows except our floating panel
         NSApplication.shared.windows.forEach { window in
