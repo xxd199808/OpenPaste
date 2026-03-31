@@ -49,18 +49,13 @@ struct ClipboardItemCard: View {
 
     @ViewBuilder
     private var cardBackground: some View {
-        if #available(macOS 26.0, *) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.ultraThinMaterial)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
-                )
-        } else {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.regularMaterial)
-                .background(Color(NSColor.controlBackgroundColor))
-        }
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.regularMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.white.opacity(0.14), lineWidth: 1)
+            )
+            .background(Color(NSColor.controlBackgroundColor))
     }
 }
 

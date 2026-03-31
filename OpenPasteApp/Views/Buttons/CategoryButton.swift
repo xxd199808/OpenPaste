@@ -95,21 +95,16 @@ struct CategoryButton: View {
 
     @ViewBuilder
     private var buttonBackground: some View {
-        if #available(macOS 26.0, *) {
-            Circle()
-                .glassEffect(.regular, in: Circle())
-                .background(
-                    Circle()
-                        .fill(isSelected ? Color.accentColor : Color.clear)
-                )
-        } else {
-            Circle()
-                .fill(.ultraThinMaterial)
-                .background(
-                    Circle()
-                        .fill(isSelected ? Color.accentColor : Color.clear)
-                )
-        }
+        Circle()
+            .fill(.ultraThinMaterial)
+            .overlay(
+                Circle()
+                    .stroke(Color.white.opacity(0.16), lineWidth: 1)
+            )
+            .background(
+                Circle()
+                    .fill(isSelected ? Color.accentColor : Color.clear)
+            )
     }
 }
 

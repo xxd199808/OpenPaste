@@ -262,13 +262,12 @@ struct CardHeader: View {
 
     @ViewBuilder
     private var iconBackground: some View {
-        if #available(macOS 26.0, *) {
-            RoundedRectangle(cornerRadius: 12)
-                .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 12))
-        } else {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.ultraThinMaterial)
-        }
+        RoundedRectangle(cornerRadius: 12)
+            .fill(.ultraThinMaterial)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.white.opacity(0.16), lineWidth: 1)
+            )
     }
 
     // MARK: - Type Title
