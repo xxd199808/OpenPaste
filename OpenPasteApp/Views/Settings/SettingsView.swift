@@ -12,9 +12,6 @@ struct SettingsView: View {
     /// Showing hotkey customization alert
     @State private var showingHotkeyAlert = false
 
-    /// Showing clear data confirmation alert
-    @State private var showingClearDataAlert = false
-
     /// ViewModel for clearing data
     var viewModel: ClipboardViewModel?
 
@@ -109,11 +106,17 @@ struct SettingsView: View {
 
             Divider()
 
-            Button(action: { showingClearDataAlert = true }) {
-                Text("Clear All Data")
-                    .foregroundColor(.red)
-            }
+            SlideToConfirmView(
+                title: "Slide to Clear All Data",
+                themeColor: .red,
+                onConfirm: {
+                    Task {
+                        await viewModel?.clearAllData()
+                    }
+                }
+            )
             .accessibilityLabel("Clear all clipboard data")
+            .accessibilityHint("Slide the slider to the right to confirm clearing all data")
         }
         .padding()
         .background(sectionBackground)
@@ -246,16 +249,6 @@ struct SettingsView: View {
             }
         } message: {
             Text("Press the key combination you want to use for showing the clipboard history")
-        }
-        .alert("Clear All Data", isPresented: $showingClearDataAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Clear", role: .destructive) {
-                Task {
-                    await viewModel?.clearAllData()
-                }
-            }
-        } message: {
-            Text("This will permanently delete all clipboard history. This action cannot be undone.")
         }
     }
 }
