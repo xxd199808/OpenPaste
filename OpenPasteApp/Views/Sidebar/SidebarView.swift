@@ -29,6 +29,18 @@ struct SidebarView: View {
 
             Spacer()
 
+            // Search button (pinned above settings)
+            CategoryButton(
+                title: "搜索",
+                icon: "magnifyingglass",
+                isSelected: selectedCategory == .search
+            ) {
+                selectedCategory = .search
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 6)
+            .frame(width: 250) // Match scrollview width
+
             // Settings button (pinned to bottom)
             CategoryButton(
                 title: "设置",

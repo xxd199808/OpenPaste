@@ -14,6 +14,12 @@ struct UnifiedContentView: View {
             if selectedCategory.isSettings {
                 // Show settings view
                 SettingsView(viewModel: viewModel)
+            } else if selectedCategory == .search {
+                // Show search view
+                SearchView(
+                    viewModel: viewModel,
+                    copyHandler: copyHandler
+                )
             } else {
                 // Show filtered content list
                 contentView
@@ -100,6 +106,10 @@ struct UnifiedContentView: View {
             // Filter by custom category
             return viewModel.items.filter { $0.categoryId == categoryId }
 
+        case .search:
+            // Search handled in SearchView
+            return []
+
         case .settings:
             // Settings handled in body
             return []
@@ -123,6 +133,8 @@ struct UnifiedContentView: View {
             }
         case .custom:
             return "folder"
+        case .search:
+            return "magnifyingglass"
         case .settings:
             return "gearshape"
         }
@@ -134,6 +146,8 @@ struct UnifiedContentView: View {
             return "No \(preset.displayName) items"
         case .custom:
             return "No items in this category"
+        case .search:
+            return "搜索"
         case .settings:
             return "Settings"
         }
@@ -150,6 +164,8 @@ struct UnifiedContentView: View {
             }
         case .custom:
             return "Drag items here or assign from context menu"
+        case .search:
+            return ""
         case .settings:
             return ""
         }

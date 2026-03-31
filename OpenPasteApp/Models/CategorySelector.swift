@@ -5,6 +5,7 @@ import Foundation
 enum CategorySelector: Equatable {
     case preset(PresetCategory)
     case custom(UUID)
+    case search
     case settings
 
     // MARK: - Computed Properties
@@ -16,6 +17,8 @@ enum CategorySelector: Equatable {
             return "preset_\(preset.rawValue)"
         case .custom(let uuid):
             return "custom_\(uuid.uuidString)"
+        case .search:
+            return "search"
         case .settings:
             return "settings"
         }
@@ -28,6 +31,8 @@ enum CategorySelector: Equatable {
             return preset.displayName
         case .custom:
             return "自定义分类"
+        case .search:
+            return "搜索"
         case .settings:
             return "设置"
         }
@@ -40,6 +45,8 @@ enum CategorySelector: Equatable {
             return preset.icon
         case .custom:
             return "folder"
+        case .search:
+            return "magnifyingglass"
         case .settings:
             return "gearshape"
         }

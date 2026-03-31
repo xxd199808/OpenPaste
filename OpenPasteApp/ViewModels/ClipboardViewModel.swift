@@ -22,6 +22,9 @@ final class ClipboardViewModel: ObservableObject {
         }
     }
 
+    /// Search text for the dedicated search view
+    @Published var searchText: String = ""
+
     /// Selected content type filter
     @Published var selectedContentType: String? = nil {
         didSet {
@@ -624,6 +627,27 @@ final class ClipboardViewModel: ObservableObject {
     /// - Parameter item: The clipboard item to save
     func saveItem(_ item: ClipboardItem) throws {
         try dataStore.saveItem(item)
+    }
+
+    // MARK: - Computed Properties - Search
+
+    /// Filtered items for the search view based on searchText
+    /// Searches both title and content fields
+    var filteredSearchItems: [ClipboardItemData] {
+        guard !searchText.isEmpty else {
+            return []
+        }
+
+        return allItems.filter { item in
+            // Search in title (if exists)
+            let titleMatch = item.title != nil &&
+                item.title!.localizedCaseInsensitiveContains(searchText)
+
+            // Search in content
+            let contentMatch = item.content.localizedCaseInsensitiveContains(searchText)
+
+            return titleMatch || contentMatch
+        }
     }
 }
 
