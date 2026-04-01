@@ -1,5 +1,9 @@
 # OpenPaste
 
+<div align="center">
+  <img src="openpaste_app.png" alt="OpenPaste Application Screenshot" width="600">
+</div>
+
 A modern macOS clipboard management application built with SwiftUI.
 
 ## Overview
@@ -25,6 +29,14 @@ xcodebuild -project OpenPaste.xcodeproj -scheme OpenPaste -configuration Debug
 ```
 
 ## Installation
+
+### Direct Download (Recommended)
+
+Download the latest `OpenPaste.dmg` from the repository and open it to install.
+
+1. Download [OpenPaste.dmg](./OpenPaste.dmg)
+2. Open the downloaded DMG file
+3. Drag OpenPaste to Applications folder
 
 ### From Source
 
