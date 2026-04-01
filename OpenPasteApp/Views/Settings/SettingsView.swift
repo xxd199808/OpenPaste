@@ -12,9 +12,6 @@ struct SettingsView: View {
     /// Showing hotkey customization alert
     @State private var showingHotkeyAlert = false
 
-    /// Showing clear data confirmation alert
-    @State private var showingClearDataAlert = false
-
     /// ViewModel for clearing data
     var viewModel: ClipboardViewModel?
 
@@ -109,11 +106,17 @@ struct SettingsView: View {
 
             Divider()
 
-            Button(action: { showingClearDataAlert = true }) {
-                Text("Clear All Data")
-                    .foregroundColor(.red)
-            }
+            SlideToConfirmView(
+                title: "Slide to Clear All Data",
+                themeColor: .red,
+                onConfirm: {
+                    Task {
+                        await viewModel?.clearAllData()
+                    }
+                }
+            )
             .accessibilityLabel("Clear all clipboard data")
+            .accessibilityHint("Slide the slider to the right to confirm clearing all data")
         }
         .padding()
         .background(sectionBackground)
@@ -157,30 +160,6 @@ struct SettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
             }
             .padding(.vertical, 4)
-        }
-        .padding()
-        .background(sectionBackground)
-        .cornerRadius(10)
-    }
-
-    /// Theme section
-    private var themeSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Theme")
-                .font(.headline)
-                .padding(.bottom, 4)
-
-            Picker("Appearance", selection: $settings.theme) {
-                Text("Light").tag(AppTheme.light)
-                Text("Dark").tag(AppTheme.dark)
-                Text("Auto").tag(AppTheme.auto)
-            }
-            .pickerStyle(.segmented)
-            .accessibilityLabel("Theme preference")
-
-            Text("Auto matches your system appearance setting")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
         .padding()
         .background(sectionBackground)
@@ -231,7 +210,6 @@ struct SettingsView: View {
                 keyboardShortcutSection
                 dataManagementSection
                 historySection
-                themeSection
                 aboutSection
             }
             .padding()
@@ -246,16 +224,6 @@ struct SettingsView: View {
             }
         } message: {
             Text("Press the key combination you want to use for showing the clipboard history")
-        }
-        .alert("Clear All Data", isPresented: $showingClearDataAlert) {
-            Button("Cancel", role: .cancel) { }
-            Button("Clear", role: .destructive) {
-                Task {
-                    await viewModel?.clearAllData()
-                }
-            }
-        } message: {
-            Text("This will permanently delete all clipboard history. This action cannot be undone.")
         }
     }
 }
